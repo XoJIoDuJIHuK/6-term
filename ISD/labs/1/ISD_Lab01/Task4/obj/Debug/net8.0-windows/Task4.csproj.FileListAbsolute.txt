@@ -1,0 +1,16 @@
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\bin\Debug\net8.0-windows\Task4.exe
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\bin\Debug\net8.0-windows\Task4.deps.json
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\bin\Debug\net8.0-windows\Task4.runtimeconfig.json
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\bin\Debug\net8.0-windows\Task4.dll
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\bin\Debug\net8.0-windows\Task4.pdb
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.Form1.resources
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.csproj.GenerateResource.cache
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.GeneratedMSBuildEditorConfig.editorconfig
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.AssemblyInfoInputs.cache
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.AssemblyInfo.cs
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.csproj.CoreCompileInputs.cache
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.dll
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\refint\Task4.dll
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.pdb
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\Task4.genruntimeconfig.cache
+D:\6sem\ISD\labs\1\ISD_Lab01\Task4\obj\Debug\net8.0-windows\ref\Task4.dll

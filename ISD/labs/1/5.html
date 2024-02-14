@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <script>
+            function getMul() {
+                var xhr = new XMLHttpRequest()
+                xhr.open("POST", 'http://localhost:5000/5.TOV', true)
+                xhr.withCredentials = true
+                xhr.send(JSON.stringify({
+                    ParmA: x.value,
+                    ParmB: y.value
+                }))
+                xhr.addEventListener('load', function() {
+                    if (xhr.status === 200) {
+                        result.innerText = xhr.responseText
+                    } else {
+                        console.error('Ошибка: ' + xhr.status);
+                    }
+                });
+            }
+        </script>
+        <input type="number" id="x"/>
+        <input type="number" id="y"/>
+        <div id="result" style="border: 2px red;"></div>
+        <button onclick="getMul()">Fetch</button>
+    </body>
+</html>

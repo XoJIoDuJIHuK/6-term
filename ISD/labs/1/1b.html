@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Example</title>
+    <script>
+        var socket;
+
+        function start() {
+            try {
+                socket = new WebSocket('ws://localhost:5201/ws');
+                socket.onmessage = function (event) {
+                    messages.innerHTML += '<p>' + event.data + '</p>';
+                };
+            } catch(ex) {
+                console.log(ex);
+            }
+        }
+
+        function stop() {
+            socket.close();
+        }
+    </script>
+</head>
+<body>
+    <h1>WebSocket Example</h1>
+    <button onclick="start()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <div id="messages"></div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewData["Title"] = "html6";
+}
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <form method="POST" action="/Form/FormAction" asp-controller="Form">
+            <input type="number" id="x"/>
+            <input type="number" id="y"/>
+            <button type="submit">Fetch</button>
+        </form>
+        <div id="result" style="min-width: 100px;min-height: 10px;border: 2px red;">@ViewBag.Result</div>
+    </body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <script>
+            function getBrowserInfo() {
+                return {
+                    appCodeName: navigator.appCodeName,
+                    appName: navigator.appName,
+                    appVersion: navigator.appVersion,
+                    userAgent: navigator.userAgent
+                }
+            }
+        </script>
+        <h1>Лабораторная работа 1</h1>
+        <div><a href="https://belstu.by">BSTU</a></div>
+        <button onclick="console.log('hello world'); const data = getBrowserInfo(); info.innerText = `appCodeName: ${data.appCodeName}\nappName: ${data.appName}\nappVersion: ${data.appVersion}\nuserAgent: ${data.userAgent}`">Информация о браузере</button>
+        <div id="info"></div>
+    </body>
+</html>

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\ISD_Lab01.props" />
+</Project>
