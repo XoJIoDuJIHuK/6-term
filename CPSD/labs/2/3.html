@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        function sendRequest(method) {
+            console.log(method)
+            console.log(requestBody.value)
+            let url = 'http://localhost:3000/api/teachers' + (method === 'DELETE' ? '/' + xyz.innerText : '')
+            options = {
+                method,
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+            if (method !== 'GET') {
+                options.body = requestBody.value
+            }
+            fetch(url, options).then(res => {
+                if (res.ok) {
+                    return res.json()
+                } else {
+                    throw new Error(res.text())
+                }
+            }).then(data => {
+                result.innerText = JSON.stringify(data)
+            }).catch(err => {
+                alert(err)
+            })
+        }
+    </script>
+    <style>
+        .wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+        }
+        .request-element {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: fit-content;                
+        }
+        button {
+            height: min-content;
+            width: 200px;
+            background-color: brown;
+            font-weight: 600;
+            color: white;
+        }
+        .divided-row {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+        }
+        #result, #requestBody {
+            align-items: flex-start;
+            justify-content: flex-start;
+            min-width: 40vw;
+            min-height: 100px;
+            background-color: aliceblue;
+            border: 2px black;
+            text-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="request-element">
+            <button onclick="sendRequest('GET')">Push me</button>
+            <p>GET api/teachers</p>
+        </div>
+        <div class="request-element">
+            <button onclick="sendRequest('POST')">And then just touch me</button>
+            <p>POST api/teachers</p>
+        </div>
+        <div class="request-element">
+            <button onclick="sendRequest('PUT')">Until I get my</button>
+            <p>PUT api/teachers</p>
+        </div>
+        <div class="request-element">
+            <button onclick="sendRequest('DELETE')">Satisfaction</button>
+            <p>DELETE api/teachers/</p>
+            <input id="xyz" type="text" value="xyz"/>
+        </div>
+        <div class="divided-row">
+            <textarea id="requestBody"></textarea>
+            <div id="result"></div>
+        </div>
+    </div>
+</body>
+</html>

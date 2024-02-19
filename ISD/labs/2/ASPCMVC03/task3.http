@@ -1,0 +1,27 @@
+### укажите свой hostname и port
+@hostname=localhost
+@port=5002
+GET http://{{hostname}}:{{port}}/Start/Index
+###
+GET http://{{hostname}}:{{port}}/Start/One
+###
+GET http://{{hostname}}:{{port}}/Start/Two
+###
+GET http://{{hostname}}:{{port}}/Start/Three
+###
+POST http://{{hostname}}:{{port}}/Start/Index
+###
+POST http://{{hostname}}:{{port}}/Start/One
+###
+POST http://{{hostname}}:{{port}}/Start/Two
+###
+POST http://{{hostname}}:{{port}}/Start/Three
+###
+
+### task 7
+GET http://belstu.by
+
+
+### task 8
+GET http://{{hostname}}:{{port}}/xd/lmao
+

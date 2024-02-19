@@ -43,8 +43,10 @@ def xor(a, b):
     return bytes(x ^ y for x, y in zip(a, b))
 
 print('task 1')
-text = str(read_file('d:/Codewars/prescreen.md'))
+text = str(read_file('/home/xojiodujihuk/6-term/IS/labs/3/lab3.py'))
+print(text)
 based_text = string_to_base64(text)
+print(based_text)
 
 print('task 2')
 print('entropy a', lab1.task1(lang='eng', text=text))

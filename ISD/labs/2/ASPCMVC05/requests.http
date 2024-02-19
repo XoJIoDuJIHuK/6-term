@@ -1,0 +1,42 @@
+### укажите свой hostname и port
+@hostname=localhost 
+@port=5004
+GET http://{{hostname}}:{{port}}/Parm/Index
+###
+GET http://{{hostname}}:{{port}}/Parm/Index/1
+###
+GET http://{{hostname}}:{{port}}/Parm/Index/ddd
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri1/1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri1/x1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri2
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri2/1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri2/×1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri3
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri3/1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri3/x1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri3/1.222
+### 
+GET http://{{hostname}}:{{port}}/Parm/Uri3/12,22
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri4
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri4/1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri4/x1
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri4/1.222
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri4/2023.01.02
+###
+GET http://{{hostname}}:{{port}}/Parm/Uri4/2023.01.02%2014:00:33|

@@ -1,0 +1,20 @@
+All paths are relative
+
+New solution
+dotnet new sln -o SolutionName
+
+New Project (without cd, creates subfolder for project)
+dotnet new short-name -o ProjectName
+
+Add project to solution
+dotnet sln SolutionName.sln add path/to/project.csproj
+
+Add project reference
+dotnet add path/to/project.csproj reference path/to/project.csproj
+
+Build project (maybe)
+dotnet build
+
+Run project
+dotnet run [in project directory]
+dotnet path/to/bin/Debug/net8.0/project.dll

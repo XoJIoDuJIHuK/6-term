@@ -18,7 +18,7 @@ app.Map("/ws", WebSocketHandler.HandleWebSocketRequest);
 
 app.MapGet("/", async context =>
 {
-    await context.Response.WriteAsync(File.ReadAllText("D:\\6sem\\ISD\\labs\\1\\1b.html"));
+    await context.Response.WriteAsync(File.ReadAllText("../../1b.html"));
 });
 
 app.Run();

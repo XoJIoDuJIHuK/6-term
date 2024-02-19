@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\ISD_Lab1b\\ISD_Lab1b.csproj": {}
+    "/home/xojiodujihuk/6-term/ISD/labs/1/ISD_Lab01/ISD_Lab1b/ISD_Lab1b.csproj": {}
   },
   "projects": {
-    "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\ISD_Lab1b\\ISD_Lab1b.csproj": {
+    "/home/xojiodujihuk/6-term/ISD/labs/1/ISD_Lab01/ISD_Lab1b/ISD_Lab1b.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\ISD_Lab1b\\ISD_Lab1b.csproj",
+        "projectUniqueName": "/home/xojiodujihuk/6-term/ISD/labs/1/ISD_Lab01/ISD_Lab1b/ISD_Lab1b.csproj",
         "projectName": "ISD_Lab1b",
-        "projectPath": "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\ISD_Lab1b\\ISD_Lab1b.csproj",
-        "packagesPath": "C:\\Users\\XoJIoDuJIHuK\\.nuget\\packages\\",
-        "outputPath": "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\ISD_Lab1b\\obj\\",
+        "projectPath": "/home/xojiodujihuk/6-term/ISD/labs/1/ISD_Lab01/ISD_Lab1b/ISD_Lab1b.csproj",
+        "packagesPath": "/home/xojiodujihuk/.nuget/packages/",
+        "outputPath": "/home/xojiodujihuk/6-term/ISD/labs/1/ISD_Lab01/ISD_Lab1b/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\XoJIoDuJIHuK\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/xojiodujihuk/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -58,7 +56,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

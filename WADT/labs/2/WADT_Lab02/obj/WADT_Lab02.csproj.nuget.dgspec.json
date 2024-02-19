@@ -1,0 +1,64 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/xojiodujihuk/6-term/WADT/labs/2/WADT_Lab02/WADT_Lab02.csproj": {}
+  },
+  "projects": {
+    "/home/xojiodujihuk/6-term/WADT/labs/2/WADT_Lab02/WADT_Lab02.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/xojiodujihuk/6-term/WADT/labs/2/WADT_Lab02/WADT_Lab02.csproj",
+        "projectName": "WADT_Lab02",
+        "projectPath": "/home/xojiodujihuk/6-term/WADT/labs/2/WADT_Lab02/WADT_Lab02.csproj",
+        "packagesPath": "/home/xojiodujihuk/.nuget/packages/",
+        "outputPath": "/home/xojiodujihuk/6-term/WADT/labs/2/WADT_Lab02/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/xojiodujihuk/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

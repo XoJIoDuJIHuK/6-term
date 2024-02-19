@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/WADT_Lab02.props" />
+</Project>
