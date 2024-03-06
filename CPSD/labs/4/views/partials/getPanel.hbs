@@ -1,0 +1,8 @@
+<ul>
+    {{#each phonebook}}
+        {{> record active=true}}
+    {{/each}}
+</ul>
+<div class="input-field">
+    <button class="get-add-button" onclick="window.location.href='/Add'">Добавить</button>
+</div>

@@ -38,7 +38,7 @@ public class TAResearchController : Controller
     }
 
     [HttpGet("{f:float}/{str:length(2,5)}")]
-    [HttpDelete("{f:float}/{str:length(2,5})")]
+    [HttpDelete("{f:float}/{str:length(2,5)})")]
     public IActionResult HandleFString(float f, string str)
     {
         return Content($"{HttpContext.Request.Method}:M06:/{f}/{str}");

@@ -33,7 +33,6 @@ public static class WebSocketHandler
 
             try
             {
-                // Send messages every two seconds to the client
                 while (webSocket.State == WebSocketState.Open)
                 {
                     var message = DateTime.Now.ToString("HH:mm:ss");

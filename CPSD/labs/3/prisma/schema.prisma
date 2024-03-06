@@ -1,0 +1,57 @@
+datasource db {
+    provider = "sqlserver"
+    url      = "sqlserver://192.168.43.25;database=CPSD_Lab13;user=SA;password=Qwe12345;trustServerCertificate=true"
+}
+
+model Faculty {
+  FACULTY     String   @id
+  FACULTY_NAME String?
+  pulpits Pulpit[]
+  @@map("FACULTY")
+}
+
+model Pulpit {
+  PULPIT       String   @id
+  PULPIT_NAME  String?
+  FACULTY      String
+  Faculty      Faculty  @relation(fields: [FACULTY], references: [FACULTY])
+  teachers Teacher[]
+  subjects Subject[]
+  @@map("PULPIT")
+}
+
+model Teacher {
+  TEACHER       String   @id
+  TEACHER_NAME  String?
+  PULPIT        String
+  Pulpit        Pulpit   @relation(fields: [PULPIT], references: [PULPIT])
+  @@map("TEACHER")
+}
+
+model Subject {
+  SUBJECT       String   @id
+  SUBJECT_NAME  String?
+  PULPIT        String
+  Pulpit        Pulpit   @relation(fields: [PULPIT], references: [PULPIT])
+  @@map("SUBJECT")
+}
+
+model AuditoriumType {
+  AUDITORIUM_TYPE     String   @id
+  AUDITORIUM_TYPENAME String?
+  auditoriums Auditorium[]
+  @@map("AUDITORIUM_TYPE")
+}
+
+model Auditorium {
+  AUDITORIUM         String   @id
+  AUDITORIUM_NAME    String?
+  AUDITORIUM_CAPACITY Int?
+  AUDITORIUM_TYPE    String
+  AuditoriumType     AuditoriumType @relation(fields: [AUDITORIUM_TYPE], references: [AUDITORIUM_TYPE])
+  @@map("AUDITORIUM")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}

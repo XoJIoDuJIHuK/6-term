@@ -2,10 +2,9 @@ function BCD2(a, b) { //по примеру 14
 	if (!b) {
 		return a
 	}
-	return gcd(b, a % b)
+	return BCD2(b, a % b)
 }
 function BCD3(a, b, c) {
-
 	return BCD2(BCD2(a, b), c);
 }
 
@@ -29,6 +28,17 @@ function countPrimes(maxNumber) {
 		}
 	}
 	return count
+}
+
+function getDivisors(n, primes) {
+	const ret = []
+	for (let prime of primes) {
+		while (n > 1 && n % prime === 0) {
+			ret.push(prime)
+			n /= prime
+		}
+	}
+	return ret
 }
 
 function task1(start, end) {
@@ -65,9 +75,18 @@ const m = 379
 const n = 411
 
 console.log('task1')
-task1(2, n)
-task1(m, n)
+task1('2, n', 2, n)
+task1('m, n', m, n)
 
 console.log('task2')
-console.log(Eratosthenes(2, n))
-console.log(Eratosthenes(m, n))
+const primes = Eratosthenes(2, n)
+console.log('2, n', primes)
+console.log('n, m', Eratosthenes(m, n))
+
+console.log('divisors n', getDivisors(n, primes))
+console.log('divisors m', getDivisors(m, primes))
+console.log('is prime m | n?', isPrime(m | n))
+console.log('bcd m, n', BCD2(m, n))
+
+
+//n=3780 (2^2*3^3*5*7)

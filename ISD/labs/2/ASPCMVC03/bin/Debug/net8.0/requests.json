@@ -1,0 +1,18 @@
+[
+    { "method": "GET", "url": "http://localhost:5002/Start/Index" },
+    { "method": "GET", "url": "http://localhost:5002/Start/One" },
+    { "method": "GET", "url": "http://localhost:5002/Start/Two" },
+    { "method": "GET", "url": "http://localhost:5002/Start/Three" },
+    { "method": "POST", "url": "http://localhost:5002/Start/Index" },
+    { "method": "POST", "url": "http://localhost:5002/Start/One" },
+    { "method": "POST", "url": "http://localhost:5002/Start/Two" },
+    { "method": "POST", "url": "http://localhost:5002/Start/Three" },
+    { "method": "GET", "url": "http://localhost:5002/xd/lmao" },
+    { "method": "GET", "url": "https://belstu.by" }
+]
+
+for (let request of requests) {
+    fetch(request.url, {method: request.method}).then(result =>{
+        console.log(result.status)
+    })
+}

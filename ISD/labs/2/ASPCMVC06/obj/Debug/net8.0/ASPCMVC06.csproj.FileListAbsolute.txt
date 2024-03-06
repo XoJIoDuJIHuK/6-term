@@ -28,3 +28,34 @@
 /run/media/xojiodujihuk/DISC D/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.pdb
 /run/media/xojiodujihuk/DISC D/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.genruntimeconfig.cache
 /run/media/xojiodujihuk/DISC D/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ref/ASPCMVC06.dll
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/bin/Debug/net8.0/appsettings.Development.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/bin/Debug/net8.0/appsettings.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/bin/Debug/net8.0/ASPCMVC06.staticwebassets.runtime.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/bin/Debug/net8.0/ASPCMVC06
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/bin/Debug/net8.0/ASPCMVC06.deps.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/bin/Debug/net8.0/ASPCMVC06.runtimeconfig.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/bin/Debug/net8.0/ASPCMVC06.dll
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/bin/Debug/net8.0/ASPCMVC06.pdb
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.GeneratedMSBuildEditorConfig.editorconfig
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.AssemblyInfoInputs.cache
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.AssemblyInfo.cs
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.csproj.CoreCompileInputs.cache
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.MvcApplicationPartsAssemblyInfo.cache
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.RazorAssemblyInfo.cache
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.RazorAssemblyInfo.cs
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.sourcelink.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/staticwebassets.build.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/staticwebassets.development.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/staticwebassets/msbuild.ASPCMVC06.Microsoft.AspNetCore.StaticWebAssets.props
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/staticwebassets/msbuild.build.ASPCMVC06.props
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.ASPCMVC06.props
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.ASPCMVC06.props
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/staticwebassets.pack.json
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/scopedcss/Views/Shared/_Layout.cshtml.rz.scp.css
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/scopedcss/bundle/ASPCMVC06.styles.css
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/scopedcss/projectbundle/ASPCMVC06.bundle.scp.css
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.dll
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/refint/ASPCMVC06.dll
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.pdb
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ASPCMVC06.genruntimeconfig.cache
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC06/obj/Debug/net8.0/ref/ASPCMVC06.dll

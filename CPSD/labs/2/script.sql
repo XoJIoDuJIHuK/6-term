@@ -11,7 +11,7 @@ CREATE TABLE FACULTY
 	 CONSTRAINT PK_FACULTY PRIMARY KEY(FACULTY) 
 	);
 select * from FACULTY;
-
+go
 delete FACULTY;
 insert into FACULTY   (FACULTY,   FACULTY_NAME )
 						 values  (N'ИДиП',   N'Издательское дело и полиграфия');
@@ -25,7 +25,7 @@ insert into FACULTY   (FACULTY,   FACULTY_NAME )
 						values  (N'ТТЛП',    N'Технология и техника лесной промышленности');
 insert into FACULTY   (FACULTY,   FACULTY_NAME )
 						values  (N'ТОВ',     N'Технология органических веществ');
-
+go
 --------------------------------------------------------------------------------------------
 -- DROP TABLE PULPIT
 CREATE TABLE PULPIT 
@@ -36,7 +36,7 @@ CREATE TABLE PULPIT
  CONSTRAINT FK_PULPIT_FACULTY FOREIGN KEY(FACULTY)   REFERENCES FACULTY(FACULTY), 
  CONSTRAINT PK_PULPIT PRIMARY KEY(PULPIT) 
  ); 
- 
+go
 delete PULPIT; 
 select * from PULPIT; 
 insert into PULPIT   (PULPIT,    PULPIT_NAME, FACULTY )
@@ -78,7 +78,6 @@ CREATE TABLE TEACHER
 	CONSTRAINT PK_TEACHER  PRIMARY KEY(TEACHER), 
 	CONSTRAINT FK_TEACHER_PULPIT FOREIGN   KEY(PULPIT)   REFERENCES PULPIT(PULPIT)
  ) ;
- 
 go 
 delete  TEACHER;
 insert into  TEACHER    (TEACHER,   TEACHER_NAME, PULPIT )
@@ -236,6 +235,7 @@ create table AUDITORIUM
  AUDITORIUM_TYPE      NVARCHAR(10) not null      -- тип аудитории
 											references AUDITORIUM_TYPE(AUDITORIUM_TYPE)  
 );
+select * from AUDITORIUM;
 go
 delete  AUDITORIUM;
 insert into  AUDITORIUM   (AUDITORIUM,   AUDITORIUM_NAME, AUDITORIUM_TYPE, AUDITORIUM_CAPACITY )

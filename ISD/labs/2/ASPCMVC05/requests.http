@@ -39,4 +39,4 @@ GET http://{{hostname}}:{{port}}/Parm/Uri4/1.222
 ###
 GET http://{{hostname}}:{{port}}/Parm/Uri4/2023.01.02
 ###
-GET http://{{hostname}}:{{port}}/Parm/Uri4/2023.01.02%2014:00:33|
+GET http://{{hostname}}:{{port}}/Parm/Uri4/2023.01.02%2014:00:33

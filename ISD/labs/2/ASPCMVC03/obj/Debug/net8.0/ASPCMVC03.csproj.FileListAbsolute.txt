@@ -29,3 +29,4 @@
 /home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC03/obj/Debug/net8.0/ASPCMVC03.pdb
 /home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC03/obj/Debug/net8.0/ASPCMVC03.genruntimeconfig.cache
 /home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC03/obj/Debug/net8.0/ref/ASPCMVC03.dll
+/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC03/bin/Debug/net8.0/requests.json

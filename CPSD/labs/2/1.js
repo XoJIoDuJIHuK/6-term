@@ -1,7 +1,6 @@
 const express = require('express')
-const http = require('http')
 const fs = require('fs')
-const { FACULTY, PULPIT, SUBJECT, TEACHER, AUDITORIUM, AUDITORIUM_TYPE } = require('./models.js')
+const { FACULTY, PULPIT, SUBJECT, TEACHER, AUDITORIUM, AUDITORIUM_TYPE, task6 } = require('./models.js')
 
 const app = express();
 app.use(express.json())
@@ -180,6 +179,28 @@ app.all('/api/*', async (request, response) => {
 	}
 })
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
+app.listen(3000, async () => {
+	console.log('Server is running on port 3000')
+
+	console.log('task 4 - scope')
+	AUDITORIUM.scope('capacityRange').findAll().then(auditoriums => {
+		console.log(auditoriums)
+	}).catch(err => {
+		console.error('Ошибка при выполнении запроса:', err)
+	})
+
+	console.log('task 5 - hooks')
+	try {
+		await FACULTY.destroy({
+			where: {
+				FACULTY: 'ФКП'
+			}
+		})
+		const faculty = await FACULTY.create({ FACULTY: 'ФКП', FACULTY_NAME: 'Факультет приколов' });
+		console.log('Создан факультет:', faculty.FACULTY_NAME);
+	} catch (error) {
+		console.error('Ошибка при создании факультета:', error);
+	}
+
+	await task6();
+})

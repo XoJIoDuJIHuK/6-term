@@ -1,7 +1,11 @@
-const { Sequelize, Model, DataTypes } = require('sequelize')
+const { Sequelize, Model, DataTypes, Op } = require('sequelize')
 const sequelize = new Sequelize('CPSD_Lab13', 'SA', 'Qwe12345', {
-	host: '192.168.124.252',
+	host: '192.168.43.25',
 	dialect: 'mssql',
+	pool: {
+		max: 10,
+		min: 0
+	}
 })
 
 class FACULTY extends Model {}
@@ -23,6 +27,14 @@ FACULTY.init(
 	timestamps: false,
   }
 )
+FACULTY.beforeCreate((faculty, options) => {
+	console.log('Хук beforeCreate вызван')
+	console.log('Создается факультет:', faculty.FACULTY_NAME)
+})
+FACULTY.afterCreate((faculty, options) => {
+	console.log('Хук afterCreate вызван')
+	console.log('Создан факультет:', faculty.FACULTY_NAME)
+})
 
 class PULPIT extends Model {}
 PULPIT.init(
@@ -167,6 +179,14 @@ AUDITORIUM.init(
 	timestamps: false,
   }
 )
+AUDITORIUM.addScope('capacityRange', {
+	where: {
+	  AUDITORIUM_CAPACITY: {
+		[Sequelize.Op.between]: [10, 60] // Вместительность от 10 до 60 человек
+	  }
+	}
+})
+
 AUDITORIUM.belongsTo(AUDITORIUM_TYPE, {
   foreignKey: 'AUDITORIUM_TYPE',
   as: 'auditTypeToAudit',
@@ -174,13 +194,30 @@ AUDITORIUM.belongsTo(AUDITORIUM_TYPE, {
 AUDITORIUM_TYPE.hasMany(AUDITORIUM, {
 	foreignKey: 'AUDITORIUM_TYPE',
 	as: 'auditToAuditType',
-  })
+})
 
 module.exports = {
-  FACULTY,
-  PULPIT,
-  TEACHER,
-  SUBJECT,
-  AUDITORIUM_TYPE,
-  AUDITORIUM,
+  	FACULTY,
+  	PULPIT,
+  	TEACHER,
+  	SUBJECT,
+  	AUDITORIUM_TYPE,
+	AUDITORIUM,
+	task6: async function() {
+		console.log('task 6 - transaction')
+		sequelize.transaction(async (transaction) => {
+			await AUDITORIUM.update({ AUDITORIUM_CAPACITY: 0 }, { 
+				transaction,
+				where: {
+					AUDITORIUM: {
+						[Op.ne]: null
+					}
+				}
+			})
+			console.log('Изменения в аудиториях применены')
+			await new Promise(resolve => setTimeout(resolve, 10000))
+			throw new Error('Произошла ошибка')
+			console.log('Транзакция завершена');
+		})
+	}
 }
