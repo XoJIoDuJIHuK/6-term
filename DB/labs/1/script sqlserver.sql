@@ -9,15 +9,16 @@ CREATE TABLE ROLES (
 );
 go
 
+drop table STAFF;
 CREATE TABLE STAFF (
-    ID INT IDENTITY(1,1) PRIMARY KEY,
+    NODE HIERARCHYID PRIMARY KEY CLUSTERED,
+    LEVEL AS NODE.GetLevel() PERSISTED,
     NAME NVARCHAR(50) UNIQUE NOT NULL,
-    PRINCIPAL INT,
     ROLE INT NOT NULL,
-    CONSTRAINT FK_STAFF_PRINCIPAL FOREIGN KEY (PRINCIPAL) REFERENCES STAFF(ID),
     CONSTRAINT FK_STAFF_ROLE FOREIGN KEY (ROLE) REFERENCES ROLES(ID)
 );
 go
+select * from staff;
 
 CREATE TABLE TEST_DATA (
     ID INT IDENTITY(1,1) PRIMARY KEY,
@@ -26,6 +27,7 @@ CREATE TABLE TEST_DATA (
 );
 go
 
+drop table COMMITS;
 CREATE TABLE COMMITS (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     DEVELOPER INT NOT NULL,
@@ -34,6 +36,7 @@ CREATE TABLE COMMITS (
 );
 go
 
+drop table TESTS;
 CREATE TABLE TESTS (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     TESTER INT NOT NULL,
@@ -140,3 +143,41 @@ BEGIN
     update STAFF set PRINCIPAL = @principal_id where PRINCIPAL = @sid;
     delete STAFF where ID = @sid;
 END
+
+select NODE.ToString(), level, name, role from STAFF;
+insert STAFF (NODE, NAME, ROLE) values (hierarchyid::GetRoot(), N'Big Boss', 1);
+delete staff where level = 2;
+
+declare @manager HIERARCHYID, @root HIERARCHYID;
+set @manager = (select node from staff where name = N'tester_manager1');
+set @root = (select node from staff where name = N'Big Boss');
+INSERT INTO STAFF (NODE, NAME, ROLE) VALUES (@root.GetDescendant(@manager, NULL), 
+    N'tester_manager2', 3);
+
+go
+declare @i int, @j int, @k int, @manager hierarchyid, @laststaff hierarchyid, @staffname VARCHAR(50), @department varchar(50);
+set @i = 1;
+set @k = 1;
+while @i < 5
+BEGIN
+    if @i < 3
+        set @manager = (select node from staff where name = concat('dev_manager', @i));
+    else
+        set @manager = (select node from staff where name = concat('tester_manager', @i - 2));
+    set @j = 1;
+    set @laststaff = null;
+    while @j < 6
+    BEGIN
+        set @staffname = 'dev' + cast(@k as varchar);
+        INSERT INTO STAFF (NODE, NAME, ROLE) VALUES (@manager.GetDescendant(@laststaff, NULL), 
+            @staffname, 4);
+        set @laststaff = (select node from staff where name = @staffname);
+        set @j = @j + 1;
+        set @k = @k + 1;
+    end;
+    set @i = @i + 1;
+end;
+go
+declare @manager HIERARCHYID;
+set @manager = (select node from staff where name = N'dev_manafer1');
+insert into staff values (@manager.GetDescendant(null, @manager.GetDescendant(null, null)), N'xd', 5);

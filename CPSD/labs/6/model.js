@@ -1,6 +1,6 @@
 const { Sequelize, Model, DataTypes, Op } = require('sequelize')
 const sequelize = new Sequelize('CPSD_Lab13', 'SA', 'Qwe12345', {
-	host: '192.168.1.2',
+	host: '127.0.0.1',
 	dialect: 'mssql',
 	pool: {
 		max: 10,

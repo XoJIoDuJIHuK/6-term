@@ -8,11 +8,15 @@ const salt = '$2b$10$iujfXl.zABzRKFiRSkMl3.'
 const { Sequelize, DataTypes } = require('sequelize')
 const cookieParser = require('cookie-parser')
 const redis = require('redis')
-const redisClient = redis.createClient({
+let redisClient
+redis.createClient({
 	host: 'localhost',
 	port: 6379
-})
+}).connect().then(c => { redisClient = c })
+
 const { AUTH } = require('./model')
+const refreshSecret = 'refresh-secret'
+const accessSecret = 'access-secret'
 
 const app = express()
 app.use(express.urlencoded({ extended: true }))
@@ -58,18 +62,41 @@ passport.deserializeUser(async (id, done) => {
 	}
 })
 
-const authenticateToken = (req, res, next) => {
-	const token = req.cookies.refresh_token
-	if (token) {
-		jwt.verify(token, 'access-secret', (err, user) => {
-			if (err) {
-				return res.sendStatus(401)
+const authenticateTokens = async (req, res, next) => {
+	const refreshToken = req.cookies.refresh_token
+	const accessToken = req.cookies.access_token
+	const username = req.cookies.username
+	if (refreshToken && accessToken) {
+		try {
+			jwt.verify(refreshToken, refreshSecret)
+			if (refreshToken !== await redisClient.get(getTokenName(username, false))) {
+				throw new Error('refresh token not in white list')
 			}
-			req.user = user
-			next()
-		})
+			jwt.verify(accessToken, accessSecret, async (err, user) => {
+				if (err) {
+					if (err.name === 'TokenExpiredError') {
+						const user = jwt.verify(await setNewToken(req, res, true), accessSecret)
+						req.user = user
+					} else {
+						throw err
+					}
+				} else {
+					if (accessToken !== await redisClient.get(getTokenName(username, true))) {
+						throw new Error('access token not in white list')
+					}
+					req.user = user
+				}
+				next()
+			})
+		} catch (err) {
+			if (err.name === 'TokenExpiredError') {
+				res.redirect('/logout')
+			} else {
+				res.status(400).send(JSON.stringify(err))
+			}
+		}
 	} else {
-		res.sendStatus(401)
+		res.redirect('/logout')
 	}
 }
 
@@ -84,58 +111,63 @@ app.get('/login', (req, res) => {
 	`)
 })
 
-app.post('/login', passport.authenticate('local', { session: false, failureRedirect: '/login' }), 
-	(req, res) => {
-		const accessToken = jwt.sign(req.user.toJSON(), 'access-secret', { expiresIn: '10m' })
-		const refreshToken = jwt.sign(req.user.toJSON(), 'refresh-secret', { expiresIn: '24h' })
+app.post('/login', passport.authenticate('local', { session: false, failureRedirect: '/login' }),
+	async (req, res) => { await login(req, res) })
 
-		redisClient.lpush('refresh-tokens', refreshToken)
+app.get('/register', (req, res) => {
+	res.send(`
+		<h1>Register</h1>
+		<form action="/register" method="post">
+			<input type="text" name="username" placeholder="Username" required><br>
+			<input type="password" name="password" placeholder="Password" required><br>
+			<button type="submit">Register</button>
+		</form>
+	`)
+})
 
-		res.cookie('access_token', accessToken, { httpOnly: true, sameSite: 'strict' })
-		res.cookie('refresh_token', refreshToken, { httpOnly: true, sameSite: 'strict' })
-
-		res.redirect('/resource')
+app.post('/register', async (req, res) => {
+	const { username, password } = req.body
+	const user = await AUTH.findByPk(username)
+	if (user) {
+		res.status(404).send('user exists')
+		return
+	} else {
+		await AUTH.create({ username, password })
 	}
-)
+	await login(req, res)
+})
 
 app.get('/refresh-token', (req, res) => {
 	const refreshToken = req.cookies.refresh_token
 
-	if (!refresh-token) {
+	if (!refreshToken) {
 		return res.sendStatus(401)
 	}
 
-	jwt.verify(refreshToken, 'refresh-secret', (err, user) => {
+	jwt.verify(refreshToken, refreshSecret, (err, user) => {
 		if (err) {
 			return res.sendStatus(401)
 		}
-
-		const accessToken = jwt.sign(user, 'access-secret', { expiresIn: '10m' })
-		const newRefreshToken = jwt.sign(user, 'refresh-secret', { expiresIn: '24h' })
-
-		redisClient.lpush('blacklist-refresh-tokens', refreshToken)
-
-		redisClient.lpush('refresh-tokens', newRefreshToken)
-
-		res.cookie('access_token', accessToken, { httpOnly: true, sameSite: 'strict' })
+		setNewToken(req, res, true)
+		setNewToken(req, res, false)
 
 		res.sendStatus(200)
 	})
 })
 
-app.get('/logout', (req, res) => {
-	const refreshToken = req.cookies.refresh_token
+app.get('/logout', async (req, res) => {
+	const username = req.cookies.username
 
-	if (refreshToken) {
-		redisClient.lpush('blacklist-refresh-tokens', refreshToken)
-	}
+	redisClient.del(getTokenName(username, true))
+	redisClient.del(getTokenName(username, false))
 
 	res.clearCookie('access_token')
 	res.clearCookie('refresh_token')
-	res.sendStatus(200)
+	res.clearCookie('username')
+	res.redirect('/login')
 })
 
-app.get('/resource', authenticateToken, (req, res) => {
+app.get('/resource', authenticateTokens, (req, res) => {
 	res.send(`
 		<h1>Resource</h1>
 		<p>Welcome, ${req.user.username}!</p>
@@ -151,4 +183,26 @@ app.listen(3000, () => {
 	console.log('Server started on port 3000')
 })
 
-bcrypt.hash('1234', salt).then(data => {console.log(data)})
+function getTokenName(username, access = true) {
+	return `${username}-${access ? 'access' : 'refresh'}`
+}
+async function login(req, res) {
+	res.cookie('username', req.body.username, { httpOnly: true, sameSite: 'strict' })
+	await setNewToken(req, res, true)
+	const refreshToken = await setNewToken(req, res, false)
+	await redisClient.set(getTokenName(req.body.username, false), refreshToken)
+	res.redirect('/resource')
+}
+async function setNewToken(req, res, access) {
+	const secret = access ? accessSecret : refreshSecret
+	const cookieName = access ? 'access_token' : 'refresh_token'
+	const seconds = access ? 10 * 60 : 24 * 60 * 60
+	const username = req.cookies.username ?? req.body.username
+	const token = jwt.sign({
+		username,
+		exp: Math.floor(Date.now() / 1000) + seconds
+	}, secret)
+	res.cookie(cookieName, token, { httpOnly: true, sameSite: 'strict' })
+	await redisClient.set(getTokenName(username, access), token)
+	return token
+}

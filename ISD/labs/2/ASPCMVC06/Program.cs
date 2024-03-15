@@ -25,19 +25,8 @@ app.UseEndpoints(endpoints =>
     #region M01
     endpoints.MapControllerRoute(
         name: "m01",
-        pattern: "/MResearch/M01/{id:int:range(1,1)=1}",
-        defaults: new { controller = "TMResearch", action = "M01" }
-    );
-
-    endpoints.MapControllerRoute(
-        name: "mResearch",
-        pattern: "/MResearch",
-        defaults: new { controller = "TMResearch", action = "M01" }
-    );
-
-    endpoints.MapControllerRoute(
-        name: "root",
-        pattern: "/",
+        pattern: "/{xd=MResearch}/{xdd=M01}/{id:int:range(1,1)=1}",
+        constraints: new { xd = "^MResearch$", xdd = "^M01$" },
         defaults: new { controller = "TMResearch", action = "M01" }
     );
 
@@ -56,20 +45,9 @@ app.UseEndpoints(endpoints =>
 
     #region M02
     endpoints.MapControllerRoute(
-        name: "v2",
-        pattern: "/V2",
-        defaults: new { controller = "TMResearch", action = "M02" }
-    );
-
-    endpoints.MapControllerRoute(
-        name: "v2mResearch",
-        pattern: "/V2/MResearch",
-        defaults: new { controller = "TMResearch", action = "M02" }
-    );
-
-    endpoints.MapControllerRoute(
-        name: "v2mResearchM2",
-        pattern: "/V2/MResearch/M02",
+        name: "m02",
+        pattern: "/V2/{xd=MResearch}/{xdd=M02}",
+        constraints: new { xd = "^MResearch$", xdd = "^M02$" },
         defaults: new { controller = "TMResearch", action = "M02" }
     );
 
@@ -88,20 +66,9 @@ app.UseEndpoints(endpoints =>
 
     #region M03
     endpoints.MapControllerRoute(
-        name: "v3",
-        pattern: "/V3",
-        defaults: new { controller = "TMResearch", action = "M03" }
-    );
-
-    endpoints.MapControllerRoute(
-        name: "v3mResearchString",
-        pattern: "/V3/MResearch/{id}",
-        defaults: new { controller = "TMResearch", action = "M03" }
-    );
-
-    endpoints.MapControllerRoute(
-        name: "v3mResearchStringM3",
-        pattern: "/V2/MResearch/{id}/M03",
+        name: "m03",
+        pattern: "/V3/{xd=MResearch}/{id}/{xdd=M03}",
+        constraints: new { xd = "^MResearch$", xdd = "^M03$" },
         defaults: new { controller = "TMResearch", action = "M03" }
     );
     #endregion

@@ -98,19 +98,35 @@ function buildHistogram(message) {
 
 
 const text = String(fs.readFileSync('text.txt'))
-
+console.log('Caesar')
 let t1, t2, delta
 t1 = performance.now()
 const cipheredCaesar = cipherCaesar(text)
 t2 = performance.now()
 delta = t2 - t1
-// console.log(cipheredCaesar)
-// console.log(decipherCaesar(cipheredCaesar))
+console.log('cipher caesar time: ', delta)
+t1 = performance.now()
+const decipheredCaesar = decipherCaesar(cipheredCaesar)
+t2 = performance.now()
+delta = t2 - t1
+console.log('decipher caesar time: ', delta)
+console.log(cipheredCaesar)
+console.log(decipheredCaesar)
+buildHistogram(cipheredCaesar)
+buildHistogram(decipheredCaesar)
+
+console.log('Tritemius')
 t1 = performance.now()
 const cipheredTritemius = cipherTritemius('QWERTY')
 t2 = performance.now()
 delta = t2 - t1
-// console.log(cipheredTritemius)
-// console.log(decipherTritemius(cipheredTritemius))
-buildHistogram(cipheredCaesar)
-buildHistogram(decipherCaesar(cipheredCaesar))
+console.log('cipher tritemius time: ', delta)
+t1 = performance.now()
+const decipheredTritemius = decipherTritemius(cipheredTritemius)
+t2 = performance.now()
+delta = t2 - t1
+console.log('decipher tritemius time: ', delta)
+console.log(cipheredTritemius)
+console.log(decipheredTritemius)
+buildHistogram(cipheredTritemius)
+buildHistogram(decipheredTritemius)
