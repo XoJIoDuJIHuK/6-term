@@ -1,0 +1,99 @@
+WITH TestsWithDate AS (
+    SELECT
+        DATEPART(YEAR, c.COMMIT_DATE) AS Year,
+        DATEPART(MONTH, c.COMMIT_DATE) AS Month,
+        (DATEPART(MONTH, c.COMMIT_DATE) - 1) / 3 + 1 AS Quarter,
+        CASE WHEN DATEPART(MONTH, COMMIT_DATE) <= 6 THEN 'First Half' ELSE 'Second Half' END AS HalfYear,
+        COUNT(*) AS TestsMade
+    FROM TESTS t JOIN COMMITS c ON t.COMMIT_ID = c.ID
+    GROUP BY DATEPART(YEAR, COMMIT_DATE), DATEPART(MONTH, COMMIT_DATE)
+)
+SELECT
+    Year,
+    Month,
+    Quarter,
+    HalfYear,
+    TestsMade
+FROM TestsWithDate
+UNION ALL
+SELECT
+    Year,
+    NULL AS Month,
+    Quarter,
+    HalfYear,
+    SUM(TestsMade) AS TestsMade
+FROM TestsWithDate
+GROUP BY Year, Quarter, HalfYear
+UNION ALL
+SELECT
+    Year,
+    NULL AS Month,
+    NULL AS Quarter,
+    HalfYear,
+    SUM(TestsMade) AS TestsMade
+FROM TestsWithDate
+GROUP BY Year, HalfYear
+UNION ALL
+SELECT
+    Year,
+    NULL AS Month,
+    NULL AS Quarter,
+    NULL AS HalfYear,
+    SUM(TestsMade) AS TestsMade
+FROM TestsWithDate
+GROUP BY Year
+ORDER BY Year, Quarter, HalfYear, Month;
+
+
+
+SELECT
+    DATEPART(YEAR, c.COMMIT_DATE) AS [Year],
+    CONCAT(DATEPART(YEAR, c.COMMIT_DATE), '-', DATEPART(QUARTER, c.COMMIT_DATE)) AS [Year-Quarter],
+    CONCAT(DATEPART(YEAR, c.COMMIT_DATE), '-', DATEPART(MONTH, c.COMMIT_DATE)) AS [Year-Month],
+    CONCAT(DATEPART(YEAR, c.COMMIT_DATE), '-', CASE WHEN DATEPART(MONTH, c.COMMIT_DATE) <= 6 THEN '1' ELSE '2' END) AS [Year-Half],
+    COUNT(t.ID) AS PassedTests
+FROM
+    TESTS t
+    INNER JOIN COMMITS c ON t.COMMIT_ID = c.ID
+WHERE
+    t.PASSED = 'Y'
+GROUP BY
+    DATEPART(YEAR, c.COMMIT_DATE),
+    CONCAT(DATEPART(YEAR, c.COMMIT_DATE), '-', DATEPART(QUARTER, c.COMMIT_DATE)),
+    CONCAT(DATEPART(YEAR, c.COMMIT_DATE), '-', DATEPART(MONTH, c.COMMIT_DATE)),
+    CONCAT(DATEPART(YEAR, c.COMMIT_DATE), '-', CASE WHEN DATEPART(MONTH, c.COMMIT_DATE) <= 6 THEN '1' ELSE '2' END)
+ORDER BY
+    [Year] ASC, [Year-Quarter] ASC, [Year-Month] ASC, [Year-Half] ASC;
+
+
+SELECT
+    CASE
+        WHEN GROUPING(DATEPART(YEAR, c.COMMIT_DATE)) = 1 THEN 'Total'
+        ELSE CONVERT(VARCHAR(10), DATEPART(YEAR, c.COMMIT_DATE))
+    END AS [Year],
+    CASE
+        WHEN GROUPING(DATEPART(QUARTER, c.COMMIT_DATE)) = 1 THEN ''
+        ELSE CONVERT(VARCHAR(10), DATEPART(YEAR, c.COMMIT_DATE)) + '-' + CONVERT(VARCHAR(10), DATEPART(QUARTER, c.COMMIT_DATE))
+    END AS [Year-Quarter],
+    CASE
+        WHEN GROUPING(DATEPART(MONTH, c.COMMIT_DATE)) = 1 THEN ''
+        ELSE CONVERT(VARCHAR(10), DATEPART(YEAR, c.COMMIT_DATE)) + '-' + CONVERT(VARCHAR(10), DATEPART(MONTH, c.COMMIT_DATE))
+    END AS [Year-Month],
+    CASE
+        WHEN GROUPING(DATEPART(YEAR, c.COMMIT_DATE)) = 1 THEN ''
+        ELSE CONVERT(VARCHAR(10), DATEPART(YEAR, c.COMMIT_DATE)) + '-' + CASE WHEN DATEPART(MONTH, c.COMMIT_DATE) <= 6 THEN '1' ELSE '2' END
+    END AS [Year-Half],
+    COUNT(t.ID) AS PassedTests
+FROM
+    TESTS t
+    INNER JOIN COMMITS c ON t.COMMIT_ID = c.ID
+WHERE
+    t.PASSED = 'Y'
+GROUP BY
+    ROLLUP (
+        DATEPART(YEAR, c.COMMIT_DATE),
+        DATEPART(QUARTER, c.COMMIT_DATE),
+        DATEPART(MONTH, c.COMMIT_DATE)
+    )
+ORDER BY
+    [Year] ASC, [Year-Quarter] ASC, [Year-Month] ASC, [Year-Half] ASC;

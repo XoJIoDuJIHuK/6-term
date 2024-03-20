@@ -1,6 +1,14 @@
 -- Создать процедуру, которая отобразит все подчиненные узлы с указанием уровня иерархии 
 -- (параметр – значение узла).
 -- drop procedure GetSubordinates;
+-- DROP PROCEDURE GetSubordinatesByName;
+CREATE PROCEDURE GetSubordinatesByName
+    @parentName NVARCHAR(50)
+AS
+BEGIN
+    DECLARE @principal HIERARCHYID = (select node from staff where name = @parentName);
+    EXEC GetSubordinates @parentNode = @principal;
+END;
 CREATE PROCEDURE GetSubordinates
     @parentNode hierarchyid
 AS
@@ -14,7 +22,7 @@ BEGIN
         FROM
             STAFF
         WHERE
-            NODE.IsDescendantOf(@parentNode) = 1
+            NODE.IsDescendantOf(@parentNode) = 1 AND NODE != @parentNode
     )
     SELECT
         NODE.ToString() AS NodePath,
@@ -76,9 +84,12 @@ go
 select NODE.ToString(), level, name, role from STAFF;
 delete staff where name = N'xd';
 
-declare @root HIERARCHYID = (select node from staff where name = N'Big Boss'), 
-    @oldParent hierarchyid = (SELECT node from staff where name = N'dev_manager1'),
-    @newParent hierarchyid = (SELECT node from staff where name = N'xd');
--- EXEC GetSubordinates @parentNode = @root;
+declare @root HIERARCHYID = (select node from staff where name = N'dev_manager1'), 
+    @oldParent hierarchyid = (SELECT node from staff where name = N'xd'),
+    @newParent hierarchyid = (SELECT node from staff where name = N'dev_manager1');
+EXEC GetSubordinates @parentNode = @root;
 -- EXEC AddSubordinate @parentNode = @oldParent, @Name = N'xd1', @Role = 2;
-EXEC MoveSubordinates @oldParent = @oldParent, @newParent = @newParent;
+-- EXEC MoveSubordinates @oldParent = @oldParent, @newParent = @newParent;
+
+select * from TEST_DATA;
+delete TEST_DATA;
