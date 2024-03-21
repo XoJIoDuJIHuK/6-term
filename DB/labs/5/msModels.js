@@ -1,4 +1,4 @@
-const { Sequelize, Model, DataTypes, Op, STRING, INTEGER } = require('sequelize')
+const { Sequelize, Model, DataTypes } = require('sequelize')
 const sequelize = new Sequelize('SEPDB', 'SA', 'Qwe12345', {
 	host: '127.0.0.1',
 	dialect: 'mssql',

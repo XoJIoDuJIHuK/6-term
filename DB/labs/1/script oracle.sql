@@ -142,3 +142,6 @@ BEGIN
     delete STAFF where ID = sid;
 END;
 commit;
+
+
+select * from STAFF;

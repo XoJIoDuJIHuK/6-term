@@ -1,6 +1,7 @@
 const { where, Op } = require('sequelize')
 const { sql } = require('@sequelize/core')
 const { STAFF, ROLE, TEST_DATA, COMMITS, sequelize, GetSubordinates, InsertTestData } = require('./msModels')
+// const { STAFF, ROLE, TEST_DATA, COMMITS, sequelize, GetSubordinates, InsertTestData } = require('./oraModels')
 
 async function renameTesters() {
 	const regex = /dev((1[1-9])|20)/
@@ -91,8 +92,8 @@ async function InsertTests() {
 	}
 }
 
-// printDevelopers()
-// printTesters()
+printDevelopers()
+printTesters()
 // GetSubordinates('dev_manager1')
 // const jsonDataArr = ['{"xd":"kek"}', JSON.stringify({someData:[1,2,3]}), JSON.stringify(['mama', 'mia'])]
 // for (let jsonData of jsonDataArr) {
@@ -100,4 +101,4 @@ async function InsertTests() {
 // 	InsertTestData(jsonData)
 // }
 // InsertCommits()
-InsertTests()
+// InsertTests()
