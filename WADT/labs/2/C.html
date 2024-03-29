@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WEBD</title>
+</head>
+<body>
+	<form id="formA">
+		<label for="x">X:</label>
+		<input type="number" id="xa" name="xa"><br><br>
+		<label for="y">Y:</label>
+		<input type="number" id="ya" name="ya"><br><br>
+		<input type="submit" value="Submit">
+	  </form>
+	
+	  <p id="resultA"></p>
+	
+	  <script>
+		document.getElementById('formA').addEventListener('submit', event => {
+			event.preventDefault();
+			const x = document.getElementById('xa').value;
+			const y = document.getElementById('ya').value;
+	
+			const xhr = new XMLHttpRequest();
+			xhr.open('POST', '/processA', true);
+			xhr.setRequestHeader('X-Value-x', x);
+			xhr.setRequestHeader('X-Value-y', y);
+	
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === XMLHttpRequest.DONE) {
+					if (xhr.status === 200) {
+						const z = xhr.getResponseHeader('X-Value-z');
+						document.getElementById('result').textContent = 'Z: ' + z;
+					} else {
+						document.getElementById('result').textContent = 'Error occurred.';
+					}
+				}
+			};
+	
+			xhr.send();
+		});
+	  </script>
+
+<form id="formB">
+    <label for="nb">N:</label>
+    <input type="number" id="nb" name="nb"><br><br>
+    <input type="submit" value="Submit">
+  </form>
+
+  <p id="resultB"></p>
+
+  <script>
+    document.getElementById('formB').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const n = document.getElementById('nb').value;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/processB', true);
+      xhr.setRequestHeader('X-Rand-N', n);
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            document.getElementById('resultB').textContent = 'Result: ' + response.join(', ');
+          } else {
+            document.getElementById('resultB').textContent = 'Error occurred.';
+          }
+        }
+      };
+
+      xhr.send();
+    });
+  </script>
+
+
+  <h2>Form C</h2>
+  <form id="formC">
+	<label for="xc">X:</label>
+	<input type="number" id="xc" name="xc"><br><br>
+	<label for="yc">Y:</label>
+	<input type="number" id="yc" name="yc"><br><br>
+
+	<label for="nc">N:</label>
+	<input type="number" id="nc" name="nc"><br><br>
+
+	<input type="submit" id="submitCA" value="A">
+	<input type="submit" id="submitCB" value="B">
+  </form>
+
+  <p id="resultCA"></p>
+  <p id="resultCB"></p>
+
+  <script>
+	document.getElementById('submitCA').onclick = event => {
+	  event.preventDefault();
+
+	  const n = document.getElementById('nc').value;
+
+	  const xhr = new XMLHttpRequest();
+	  xhr.open('POST', '/processA', false);
+	  const x = document.getElementById('xc').value;
+	  const y = document.getElementById('yc').value;
+	  xhr.setRequestHeader('X-Value-x', x);
+	  xhr.setRequestHeader('X-Value-y', y);
+
+	  xhr.onreadystatechange = function() {
+		if (xhr.readyState === XMLHttpRequest.DONE) {
+		  if (xhr.status === 200) {
+			const z = xhr.getResponseHeader('X-Value-z');
+			document.getElementById('resultCA').innerText = z;
+		  } else {
+			document.getElementById('resultCA').innerText = 'Error occurred.';
+		  }
+		}
+	  };
+
+	  xhr.send();
+	};
+
+	document.getElementById('submitCB').onclick = event => {
+	  event.preventDefault();
+
+	  const xhr = new XMLHttpRequest();
+	  xhr.open('POST', '/processB', false);
+	  const n = document.getElementById('nc').value;
+	  xhr.setRequestHeader('X-Rand-N', n);
+
+	  xhr.onreadystatechange = function() {
+		if (xhr.readyState === XMLHttpRequest.DONE) {
+		  if (xhr.status === 200) {
+			const response = JSON.parse(xhr.responseText);
+			document.getElementById('resultCB').innerText = response.join(', ');
+		  } else {
+			document.getElementById('resultCB').innerText = 'Error occurred.';
+		  }
+		}
+	  };
+
+	  xhr.send();
+	};
+  </script>
+</body>
+</html>

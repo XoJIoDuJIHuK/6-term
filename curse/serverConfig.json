@@ -1,0 +1,5 @@
+{
+    "refreshSecret": "refresh-secret",
+    "accessSecret": "access-secret",
+    "salt": "$2b$10$iujfXl.zABzRKFiRSkMl3."
+} 

@@ -1,0 +1,4 @@
+master-password: jpbs-cb4j-y95p
+database name: db
+password: password
+email: tochilo.oleg@yandex.by

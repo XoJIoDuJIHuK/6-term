@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WEB5B</title>
+</head>
+<body>
+  <form id="formB">
+    <label for="n">N:</label>
+    <input type="number" id="n" name="n"><br><br>
+    <input type="submit" value="Submit">
+  </form>
+
+  <p id="result"></p>
+
+  <script>
+    document.getElementById('formB').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const n = document.getElementById('n').value;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/process', true);
+      xhr.setRequestHeader('X-Rand-N', n);
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            document.getElementById('result').textContent = 'Result: ' + response.join(', ');
+          } else {
+            document.getElementById('result').textContent = 'Error occurred.';
+          }
+        }
+      };
+
+      xhr.send();
+    });
+  </script>
+</body>
+</html>

@@ -23,17 +23,34 @@ public class TMResearchController : Controller
         return View();
     }
 
-    public ActionResult M01(string id)
+    public ActionResult V1(string ac, int xdd) {
+        return ac == "M01" ? M01(xdd.ToString()) :
+            ac == "M02" ? M02(xdd.ToString()) :
+            MXX();
+    }
+    public ActionResult V2(string ac) {
+        return ac == "M01" ? M01("") :
+            ac == "M02" ? M02("") :
+            MXX();
+    }
+    public ActionResult V3(string ac, string str) {
+        return ac == "M01" ? M01(str) :
+            ac == "M02" ? M02(str) :
+            ac == "M03" ? M03(str) :
+            MXX();
+    }
+
+    public ActionResult M01(string? id)
     {
         return Content("GET:M01 " + id);
     }
 
-    public ActionResult M02(string id)
+    public ActionResult M02(string? id)
     {
         return Content("GET:M02 " + id);
     }
 
-    public ActionResult M03(string id)
+    public ActionResult M03(string? id)
     {
         return Content("GET:M03 " + id);
     }

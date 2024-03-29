@@ -51,7 +51,7 @@ go
 DECLARE @startDate DATETIME = '2023-01-01';
 DECLARE @endDate DATETIME = '2023-06-01';
 DECLARE @pageSize INT = 5;
-DECLARE @pageNumber INT = 1;
+DECLARE @pageNumber INT = 2;
 
 WITH DeveloperCommits AS (
     SELECT
@@ -99,6 +99,9 @@ WITH DeduplicatedData AS (
 DELETE FROM DeduplicatedData
 WHERE RowNum > 1; 
 go
+insert into tests (tester, COMMIT_ID, DATA_ID, PASSED) VALUEs ((select node from staff where name = 'tester11'), 55, 5, 'Y');
+SELECT * FROM STAFF;
+SELECT * FROM TESTS;
 -- Вернуть для каждого клиента суммы последних 6 заказов
 WITH DeveloperCommits AS (
     SELECT
@@ -114,7 +117,7 @@ SELECT
 FROM
     DeveloperCommits dc
     INNER JOIN STAFF d ON dc.DEVELOPER = d.NODE
-WHERE dc.RowNum <= 3
+WHERE dc.RowNum <= 6
 GROUP BY dc.DEVELOPER, d.NAME;
 go
 

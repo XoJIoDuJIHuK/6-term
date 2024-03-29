@@ -1,0 +1,14 @@
+GET http://localhost:5005/MResearch/M01/1
+GET http://localhost:5005/MResearch/M01
+GET http://localhost:5005/MResearch
+GET http://localhost:5005/
+GET http://localhost:5005/V2/MResearch/M01
+GET http://localhost:5005/V3/MResearch/string/M01
+GET http://localhost:5005/V2
+GET http://localhost:5005/V2/MResearch
+GET http://localhost:5005/V2/MResearch/M02
+GET http://localhost:5005/MResearch/M02
+GET http://localhost:5005/V3/MResearch/string/M02
+GET http://localhost:5005/V3
+GET http://localhost:5005/V3/MResearch/string/
+GET http://localhost:5005/V3/MResearch/string/M03

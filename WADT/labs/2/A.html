@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WEB5A</title>
+</head>
+<body>
+  <form id="formA">
+	<label for="x">X:</label>
+	<input type="number" id="x" name="x"><br><br>
+	<label for="y">Y:</label>
+	<input type="number" id="y" name="y"><br><br>
+	<input type="submit" value="Submit">
+  </form>
+
+  <p id="result"></p>
+
+  <script>
+	document.getElementById('formA').addEventListener('submit', event => {
+		event.preventDefault();
+		const x = document.getElementById('x').value;
+		const y = document.getElementById('y').value;
+
+		const xhr = new XMLHttpRequest();
+		xhr.open('POST', '/process', true);
+		xhr.setRequestHeader('X-Value-x', x);
+		xhr.setRequestHeader('X-Value-y', y);
+
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState === XMLHttpRequest.DONE) {
+				if (xhr.status === 200) {
+					const z = xhr.getResponseHeader('X-Value-z');
+					document.getElementById('result').textContent = 'Z: ' + z;
+				} else {
+					document.getElementById('result').textContent = 'Error occurred.';
+				}
+			}
+		};
+
+		xhr.send();
+	});
+  </script>
+</body>
+</html>
