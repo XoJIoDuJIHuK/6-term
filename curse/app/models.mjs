@@ -1,6 +1,7 @@
-const { Sequelize, Model, DataTypes, Op } = require('sequelize')
-const sequelize = new Sequelize('xd', 'SA', 'Qwe12345', {
-	host: '127.0.0.1',
+// const { Sequelize, Model, DataTypes, Op } = require('sequelize')
+import { Sequelize, Model, DataTypes } from "sequelize"
+const sequelize = new Sequelize('xd', 'SA', 'Qwerty123', {
+	host: '192.168.75.131',
 	dialect: 'mssql',
 	pool: {
 		max: 10,
@@ -20,7 +21,7 @@ PROLETARIAT.init({
 		allowNull: false,
 	},
 	password_hash: {
-		type: DataTypes.STRING(256),
+		type: DataTypes.STRING(60),
 		allowNull: false,
 	},
 	is_admin: {
@@ -109,7 +110,7 @@ BOURGEOISIE.init({
 		unique: true,
 	},
 	password_hash: {
-		type: DataTypes.STRING(256),
+		type: DataTypes.STRING(60),
 		allowNull: false
 	}
 }, {
@@ -304,14 +305,64 @@ REGISTRATION_REQUESTS.init({
 	tableName: 'REGISTRATION_REQUESTS'
 })
 
+class TOKENS extends Model {}
+TOKENS.init({
+	type: {
+		type: DataTypes.CHAR(1),
+		allowNull: false,
+		validate: {
+			isIn: [['A', 'R']]
+		}
+	},
+	owner_p: {
+		type: DataTypes.INTEGER,
+		references: {
+			model: 'PROLETARIAT',
+			key: 'ID'
+		}
+	},
+	owner_b: {
+		type: DataTypes.INTEGER,
+		references: {
+			model: 'BOURGEOISIE',
+			key: 'ID'
+		}
+	},
+	value: {
+		type: DataTypes.STRING(256),
+		allowNull: false
+	},
+	expires: {
+		type: DataTypes.DATE,
+		allowNull: false
+	}
+}, {
+	sequelize,
+	timestamps: false,
+	modelName: 'TOKENS',
+	tableName: 'TOKENS'
+})
+
 sequelize.sync()
 
-module.exports = {
+// module.exports = {
+// 	PROLETARIAT,
+// 	CVS,
+// 	BOURGEOISIE,
+// 	VACANCIES,
+// 	RESPONSES,
+// 	REVIEWS,
+// 	REGISTRATION_REQUESTS,
+// 	TOKENS
+// }
+
+export {
 	PROLETARIAT,
 	CVS,
 	BOURGEOISIE,
 	VACANCIES,
 	RESPONSES,
 	REVIEWS,
-	REGISTRATION_REQUESTS
+	REGISTRATION_REQUESTS,
+	TOKENS
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+    <body>
+        <input type="text" value="adminxdt" id="username"/>
+        <input type="text" id="password"/>
+        <button onclick="login()">log in</button>
+    </body>
+    <script>
+        const url = '/prol/login';
+        const options = { 
+            method:'POST', 
+            body: { 
+                username: username.innerText, 
+                password: password.innerText
+            }
+        };
+        function login() {
+            fetch(url, options).then(r => {
+                if (r.ok && r.redirected) {
+                    window.location.href = r.url
+                } else {
+                    alert(JSON.stringify(r))
+                }
+            });
+        }
+    </script>
+</html>

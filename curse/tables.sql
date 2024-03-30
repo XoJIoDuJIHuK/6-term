@@ -2,16 +2,16 @@ create database xd;
 go
 use xd;
 use master;
-drop database xd;
+-- drop database xd;
 go
 select * from PROLETARIAT;
-insert into PROLETARIAT (name, password_hash, is_admin, education_json, experience_json) values (N'adminxd', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'Y', '{}', '{}');
-insert into BOURGEOISIE (name, password_hash) values ('admincumpany', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2');
+-- insert into PROLETARIAT (name, password_hash, is_admin, education_json, experience_json) values (N'adminxd', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'Y', '{}', '{}');
+-- insert into BOURGEOISIE (name, password_hash) values ('admincumpany', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2');
 go
 create table proletariat(
     id int IDENTITY(1,1) PRIMARY KEY,
     [name] NVARCHAR(70) UNIQUE not null,
-    PASSWORD_hash NVARCHAR(256) not null,
+    PASSWORD_hash NVARCHAR(60) not null,
     is_admin char not null check (is_admin in ('Y', 'N')),
     education_json NVARCHAR(200) not null,
     experience_json NVARCHAR(500) not null
@@ -27,7 +27,7 @@ go
 create table bourgeoisie(
     id int IDENTITY(1,1) PRIMARY KEY,
     [name] NVARCHAR(70) UNIQUE not null,
-    PASSWORD_hash NVARCHAR(256) not null,
+    PASSWORD_hash NVARCHAR(60) not null,
 );
 go
 create table vacancies(
