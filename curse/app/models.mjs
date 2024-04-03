@@ -1,8 +1,16 @@
 // const { Sequelize, Model, DataTypes, Op } = require('sequelize')
 import { Sequelize, Model, DataTypes } from "sequelize"
-const sequelize = new Sequelize('xd', 'SA', 'Qwerty123', {
+// const sequelize = new Sequelize('xd', 'SA', 'Qwerty123', {
+// 	host: '192.168.75.131',
+// 	dialect: 'mssql',
+// 	pool: {
+// 		max: 10,
+// 		min: 0
+// 	}
+// })
+const sequelize = new Sequelize('xd', 'postgres', 'mysecretpassword', {
 	host: '192.168.75.131',
-	dialect: 'mssql',
+	dialect: 'postgres',
 	pool: {
 		max: 10,
 		min: 0
@@ -15,6 +23,11 @@ PROLETARIAT.init({
 		type: DataTypes.INTEGER,
 		primaryKey: true,
 		autoIncrement: true,
+	},
+	login: {
+		type: DataTypes.STRING(20),
+		allowNull: false,
+		unique: true
 	},
 	name: {
 		type: DataTypes.STRING(70),
@@ -53,6 +66,10 @@ PROLETARIAT.init({
 		set(value) {
 			this.setDataValue('experience_json', JSON.stringify(value))
 		}
+	},
+	email: {
+		type: DataTypes.STRING(30),
+		unique: true
 	}
 }, {
 	sequelize,
@@ -104,6 +121,11 @@ BOURGEOISIE.init({
 		primaryKey: true,
 		autoIncrement: true,
 	},
+	login: {
+		type: DataTypes.STRING(20),
+		allowNull: false,
+		unique: true
+	},
 	name: {
 		type: DataTypes.STRING(70),
 		allowNull: false,
@@ -112,6 +134,23 @@ BOURGEOISIE.init({
 	password_hash: {
 		type: DataTypes.STRING(60),
 		allowNull: false
+	},
+	approved: {
+		type: DataTypes.CHAR(1),
+		allowNull: false,
+		get() {
+			return this.getDataValue('approved') === 'Y'
+		},
+		set(value) {
+			this.setDataValue('approved', value ? 'Y' : 'N')
+		}
+	},
+	description: {
+		type: DataTypes.STRING(2000)
+	},
+	email: {
+		type: DataTypes.STRING(30),
+		unique: true
 	}
 }, {
 	sequelize,
@@ -131,6 +170,10 @@ VACANCIES.init({
 		type: DataTypes.STRING(30),
 		allowNull: false,
 		unique: true,
+	},
+	release_date: {
+		type: DataTypes.DATEONLY,
+		allowNull: false,
 	},
 	company: {
 		type: DataTypes.INTEGER,
@@ -213,6 +256,14 @@ RESPONSES.init({
 			key: 'id'
 		}
 	},
+	vacancy: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+		references: {
+			model: 'VACANCIES',
+			key: 'id'
+		}
+	},
 	status: {
 		type: DataTypes.CHAR(1),
 		allowNull: false,
@@ -262,7 +313,7 @@ REVIEWS.init({
 			key: 'id'
 		}
 	},
-	status: {
+	text: {
 		type: DataTypes.STRING(100),
 	},
 	rating: {
@@ -280,20 +331,20 @@ REVIEWS.init({
 	tableName: 'REVIEWS'
 })
 
-class REGISTRATION_REQUESTS extends Model {}
-REGISTRATION_REQUESTS.init({
+class PROMOTION_REQUESTS extends Model {}
+PROMOTION_REQUESTS.init({
 	id: {
 		type: DataTypes.INTEGER,
 		primaryKey: true,
 		autoIncrement: true
 	},
-	name: {
-		type: DataTypes.STRING(70),
-		allowNull: false
-	},
-	password_hash: {
-		type: DataTypes.STRING(256),
-		allowNull: false
+	company_id: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+		references: {
+			model: 'BOURGEOISIE',
+			key: 'id'
+		}
 	},
 	proof: {
 		type: DataTypes.STRING()
@@ -301,9 +352,40 @@ REGISTRATION_REQUESTS.init({
 }, {
 	sequelize,
 	timestamps: false,
-	modelName: 'REGISTRATION_REQUESTS',
-	tableName: 'REGISTRATION_REQUESTS'
-})
+	modelName: 'PROMOTION_REQUESTS',
+	tableName: 'PROMOTION_REQUESTS'
+});
+
+class ACCOUT_DROP_REQUESTS extends Model {}
+ACCOUT_DROP_REQUESTS.init({
+	id: {
+		type: DataTypes.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
+	},
+	isCompany: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+		get() {
+			return ACCOUT_DROP_REQUESTS.getDataValue('is_company') === 'Y';
+		},
+		set(value) {
+			this.setDataValue('is_company', value ? 'Y' : 'N');
+		}
+	},
+	account_id: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	},
+	commentary: {
+		type: DataTypes.STRING()
+	}
+}, {
+	sequelize,
+	timestamps: false,
+	modelName: 'ACCOUT_DROP_REQUESTS',
+	tableName: 'ACCOUT_DROP_REQUESTS'
+});
 
 class TOKENS extends Model {}
 TOKENS.init({
@@ -343,7 +425,9 @@ TOKENS.init({
 	tableName: 'TOKENS'
 })
 
-sequelize.sync()
+sequelize.sync({ 
+	alter: true 
+})
 
 // module.exports = {
 // 	PROLETARIAT,
@@ -352,7 +436,7 @@ sequelize.sync()
 // 	VACANCIES,
 // 	RESPONSES,
 // 	REVIEWS,
-// 	REGISTRATION_REQUESTS,
+// 	PROMOTION_REQUESTS,
 // 	TOKENS
 // }
 
@@ -363,6 +447,7 @@ export {
 	VACANCIES,
 	RESPONSES,
 	REVIEWS,
-	REGISTRATION_REQUESTS,
+	PROMOTION_REQUESTS,
+	ACCOUT_DROP_REQUESTS,
 	TOKENS
 }

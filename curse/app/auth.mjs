@@ -1,13 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { TOKENS, PROLETARIAT, BOURGEOISIE } from "./models.mjs";
-// const  = models;
-// const TOKENS = {
-// 	findOne: async function(options) {
-
-// 	}
-// }
 import fs from 'fs';
-import { sendRedirect, setHeader, setResponseStatus, setCookie, getCookie } from 'h3';
+import { setCookie, getCookie } from 'h3';
 import * as bcrypt from 'bcrypt';
 const { salt, refreshSecret, accessSecret } = JSON.parse(fs.readFileSync('./serverConfig.json'));
 class NotAuthorizedError extends Error {};
@@ -84,7 +78,6 @@ export async function authenticateTokens(event, expectedUserType) {
 	}
 	const userType = getCookie(event, 'user_type');
 	if (expectedUserType !== userType) {
-		// throw new Error('invalid user type');
 		return false;
 	}
 	const refreshToken = getCookie(event, 'refresh_token');
@@ -109,17 +102,9 @@ export async function authenticateTokens(event, expectedUserType) {
 			await validateAccessToken();
 			await validateRefreshToken();
 		} catch (err) {
-			if (err.name === 'TokenExpiredError') {
-				// sendRedirect(event, '/logout');
-			} else {
-				// setResponseStatus(event, 400);
-				// setHeader(event, 'Content-Type', 'application/json');
-				// send(event, JSON.stringify(err));
-			}
 			return false;
 		}
 	} else {
-		// sendRedirect(event, '/logout');
 		return false;
 	}
 	return true;
@@ -135,4 +120,12 @@ export async function validatePassword(username, password, model) {
 	if (!user || !(await bcrypt.compare(password, user.password_hash))) {
 		throw new Error('wrong credentials');
 	}
+}
+export function encryptPassword(password) {
+	return bcrypt.hashSync(password, salt);
+}
+
+export async function isAdmin(event) {
+	const username = getCookie(event, 'username');
+	return (await PROLETARIAT.findAndCountAll({ where: { name: username, isAdmin: true } })).count === 1;
 }

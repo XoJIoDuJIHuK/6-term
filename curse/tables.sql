@@ -6,12 +6,13 @@ use master;
 go
 select * from PROLETARIAT;
 -- insert into PROLETARIAT (name, password_hash, is_admin, education_json, experience_json) values (N'adminxd', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'Y', '{}', '{}');
--- insert into BOURGEOISIE (name, password_hash) values ('admincumpany', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2');
+-- insert into BOURGEOISIE (name, password_hash, approved) values ('admincumpany', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', 'N');
 go
 create table proletariat(
     id int IDENTITY(1,1) PRIMARY KEY,
     [name] NVARCHAR(70) UNIQUE not null,
     PASSWORD_hash NVARCHAR(60) not null,
+    email NVARCHAR(100) not null,
     is_admin char not null check (is_admin in ('Y', 'N')),
     education_json NVARCHAR(200) not null,
     experience_json NVARCHAR(500) not null
@@ -24,15 +25,19 @@ create table cvs(
     skills_json NVARCHAR(100) not null
 )
 go
+-- drop table bourgeoisie;
 create table bourgeoisie(
     id int IDENTITY(1,1) PRIMARY KEY,
     [name] NVARCHAR(70) UNIQUE not null,
     PASSWORD_hash NVARCHAR(60) not null,
+    approved CHAR(1) CHECK (approved in ('Y', 'N'))
 );
 go
+-- drop table vacancies;
 create table vacancies(
     id int IDENTITY(1,1) PRIMARY KEY,
     [name] NVARCHAR(30) UNIQUE not null,
+    release_date date not null,
     company int not null FOREIGN KEY REFERENCES bourgeoisie(id),
     min_salary INT not null check (min_salary >= 0),
     max_salary INT not null check (max_salary >= 0),
@@ -50,6 +55,7 @@ create table responses(
     [status] char(1) not null check ([status] in ('W', 'X', 'Y'))
 );
 GO
+-- drop table reviews;
 create table reviews(
     id int IDENTITY(1,1) PRIMARY KEY,
     [p_subject] int FOREIGN KEY REFERENCES proletariat(id),
@@ -62,9 +68,12 @@ create table reviews(
     CONSTRAINT not_both_objects check (p_object is null or b_object is null)
 );
 go
+-- drop table registration_requests;
 create table registration_requests(
     id int IDENTITY(1,1) PRIMARY KEY,
-    [name] NVARCHAR(70) not null,
+    company_id INTEGER FOREIGN KEY REFERENCES BOURGEOISIE(ID) NOT NULL,
     PASSWORD_hash NVARCHAR(256) not null,
     proofs VARBINARY(max)
 );
+go
+drop table TOKENS;
