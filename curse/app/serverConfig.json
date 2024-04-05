@@ -1,5 +1,11 @@
 {
     "refreshSecret": "refresh-secret",
     "accessSecret": "access-secret",
-    "salt": "$2b$10$iujfXl.zABzRKFiRSkMl3."
+    "salt": "$2b$10$iujfXl.zABzRKFiRSkMl3.",
+    "filterBorderValues": {
+        "minSchedule": 1,
+        "maxSchedule": 5,
+        "minExperience": 1,
+        "maxExperience": 5
+    }
 } 

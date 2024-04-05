@@ -268,7 +268,7 @@ RESPONSES.init({
 		type: DataTypes.CHAR(1),
 		allowNull: false,
 		validate: {
-			isIn: [['W', 'X', 'Y']]
+			isIn: [['W', 'X', 'Y']]//wait, no, yes
 		}
 	}
 }, {
@@ -400,14 +400,14 @@ TOKENS.init({
 		type: DataTypes.INTEGER,
 		references: {
 			model: 'PROLETARIAT',
-			key: 'ID'
+			key: 'id'
 		}
 	},
 	owner_b: {
 		type: DataTypes.INTEGER,
 		references: {
 			model: 'BOURGEOISIE',
-			key: 'ID'
+			key: 'id'
 		}
 	},
 	value: {
@@ -426,7 +426,7 @@ TOKENS.init({
 })
 
 sequelize.sync({ 
-	alter: true 
+	// force: true 
 })
 
 // module.exports = {

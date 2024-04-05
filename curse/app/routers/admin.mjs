@@ -19,7 +19,7 @@ export const adminRouter = createRouter()
 	}))
 	.patch('/promote', defineEventHandler(async event => {
 		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			setResponseStatus(event, 402);
+			setResponseStatus(event, 403);
 			return 'not authorized';
 		}
 		try {
@@ -38,7 +38,7 @@ export const adminRouter = createRouter()
 	}))
 	.delete('/promote', defineEventHandler(async event => {
 		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			setResponseStatus(event, 402);
+			setResponseStatus(event, 403);
 			return 'not authorized';
 		}
 		try {
@@ -55,7 +55,7 @@ export const adminRouter = createRouter()
 	}))
 	.delete('/drop_user', defineEventHandler(async event => {
 		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			setResponseStatus(event, 402);
+			setResponseStatus(event, 403);
 			return 'not authorized';
 		}
 		const query = getQuery(event);
@@ -76,7 +76,7 @@ export const adminRouter = createRouter()
 	}))
 	.post('/drop_user', defineEventHandler(async event => {
 		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			setResponseStatus(event, 402);
+			setResponseStatus(event, 403);
 			return 'not authorized';
 		}
 		try {
