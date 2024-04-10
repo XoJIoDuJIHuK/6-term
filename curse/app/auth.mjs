@@ -3,16 +3,16 @@ import { TOKENS, PROLETARIAT, BOURGEOISIE } from "./models.mjs";
 import fs from 'fs';
 import { setCookie, getCookie } from 'h3';
 import * as bcrypt from 'bcrypt';
+import { ClientError } from './utilFunctions.mjs';
 const { salt, refreshSecret, accessSecret } = JSON.parse(fs.readFileSync('./serverConfig.json'));
-class NotAuthorizedError extends Error {};
 
 export async function setNewToken(event, isAccess, username, userType) {
 	async function upsertToken(isAccess, username, expiresDate) {
 		const tokenType = isAccess ? 'A' : 'R';
 		const owner_p = userType === 'regular' ? 
-			(await PROLETARIAT.findOne({where: {name: username}})).dataValues.id : null;
+			(await PROLETARIAT.findOne({where: {login: username}})).id : null;
 		const owner_b = userType === 'company' ? 
-			(await BOURGEOISIE.findOne({where: {name: username}})).dataValues.id : null;
+			(await BOURGEOISIE.findOne({where: {login: username}})).id : null;
 		const where = {
 			type: tokenType,
 			owner_p,
@@ -50,57 +50,46 @@ export async function setNewToken(event, isAccess, username, userType) {
 	});
 	return token
 }
-export async function authenticateTokens(event, expectedUserType) {
+export async function authorizeTokens(event, expectedUserType) {
 	async function validateRefreshToken() {
-		jwt.verify(refreshToken, refreshSecret);
-		if (refreshToken !== (await TOKENS.findOne({
-			where: Object.assign(searchConditions, {type: 'R'})
-		})).value) {
-			throw new NotAuthorizedError('refresh token is not in white list');
+		const decodedToken = jwt.verify(refreshToken, refreshSecret);
+		const existingToken = (await TOKENS.findOne({ where: { ...searchConditions, type: 'R' }})).value;
+		if (decodedToken.username !== username || refreshToken !== existingToken) {
+			throw new ClientError('refresh token invalid', 403);
 		}
 	}
 	async function validateAccessToken() {
-		jwt.verify(accessToken, accessSecret, async (err) => {
-			if (err) {
-				if (err.name === 'TokenExpiredError') {
-					await setNewToken(event, true, username, userType)
-				} else {
-					throw err
-				}
-			} else {
-				if (accessToken !== (await TOKENS.findOne({
-					where: Object.assign(searchConditions, {type: 'A'})
-				})).value) {
-					throw new NotAuthorizedError('access token is not in white list')
-				}
+		try {
+			const decodedToken = jwt.verify(accessToken, accessSecret);
+			if (decodedToken.username !== username) {
+				throw new ClientError('usernames don\'t match', 403);
 			}
-		})
+		} catch (err) {
+			if (err.name === 'TokenExpiredError' || err.message === 'jwt must be provided') {
+				await setNewToken(event, true, username, userType);
+				await setNewToken(event, false, username, userType);
+			} else {
+				throw err;
+			}
+		}
 	}
 	const userType = getCookie(event, 'user_type');
 	if (expectedUserType !== userType) {
 		return false;
 	}
-	const refreshToken = getCookie(event, 'refresh_token');
-	const accessToken = getCookie(event, 'access_token');
+	const refreshToken = getCookie(event, 'refresh_token') ?? '';
+	const accessToken = getCookie(event, 'access_token') ?? '';
 	const username = getCookie(event, 'username');
 	const searchConditions = {};
 	if (userType === 'company') {
-		searchConditions.owner_b = (await BOURGEOISIE.findOne({
-			where: {
-				name: username
-			}
-		})).dataValues.id;
+		searchConditions.owner_b = (await BOURGEOISIE.findOne({ where: { login: username }})).dataValues.id;
 	} else {
-		searchConditions.owner_p = (await PROLETARIAT.findOne({
-			where: {
-				name: username
-			}
-		})).dataValues.id;
+		searchConditions.owner_p = (await PROLETARIAT.findOne({ where: { login: username } })).dataValues.id;
 	}
-	if (refreshToken && accessToken) {
+	if (refreshToken) {
 		try {
-			await validateAccessToken();
 			await validateRefreshToken();
+			await validateAccessToken();
 		} catch (err) {
 			return false;
 		}
@@ -111,15 +100,16 @@ export async function authenticateTokens(event, expectedUserType) {
 }
 
 export async function validatePassword(username, password, model) {
-	const user = (await model.findOne({
+	const matchingRows = await model.findAndCountAll({
 		where: {
-			name: username
-		},
-		rejectOnEmpty: true
-	})).dataValues;
-	if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+			login: username
+		}
+	});
+	const user = matchingRows.rows[0];
+	if (matchingRows.count === 0 || !(await bcrypt.compare(password, user.password_hash))) {
 		throw new Error('wrong credentials');
 	}
+	return user.login;
 }
 export function encryptPassword(password) {
 	return bcrypt.hashSync(password, salt);

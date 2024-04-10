@@ -43,7 +43,7 @@ create table vacancies(
     max_salary INT not null check (max_salary >= 0),
     region NVARCHAR(20),-- добавить ключевое слово "не имеет значения"
     schedule INT not null check (schedule between 1 and 5),--вахта, полный рабочий день, частичный рабочий день, фриланс, стажировка
-    experience INT not null check (experience between 1 and 5),--не имеет значения, без опыта, 1-3, 3-6, 6+
+    experience INT not null check (experience between 1 and 4),-- без опыта, 1-3, 3-6, 6+
     min_hours_per_day INT not null check (min_hours_per_day > 0),
     max_hours_per_day INT not null check (max_hours_per_day > 0),
     description NVARCHAR(1000) not null

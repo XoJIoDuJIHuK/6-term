@@ -1,23 +1,32 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom/client";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
   RouterProvider,
-} from "react-router-dom";
-import "./index.css";
-import Root, { loader as rootLoader } from "./routes/root";
-import ErrorPage from "./error-page";
-import Contact, { loader as vacancyLoader, } from "./routes/vacancy";
-import EditContact, { action as editAction } from "./routes/edit";
-import { action as destroyAction } from "./routes/destroy";
-import Index, { loader as indexLoader } from "./routes/index";
+} from 'react-router-dom';
+import { CookiesProvider } from 'react-cookie';
+import './assets/index.css';
+import './assets/sign.css';
+import Root from './routes/root';
+import ErrorPage from './error-page';
+import Vacancies, { loader as vacanciesLoader, } from './routes/vacancies';
+import EditVacancy, { loader as editVacancyLoader, } from './routes/editVacancy';
+import Vacancy, { loader as vacancyLoader, } from './routes/vacancy';
+import Index, { loader as indexLoader } from './routes/index';
+import CVs, { loader as cvsLoader } from './routes/cv';
+import EditCv, { loader as cvLoader } from './routes/editCv';
+import Personal, { loader as personalLoader } from './routes/personal';
+import CompanyInfo, { loader as companyInfoLoader } from './routes/company';
+import OutcomingResponses, { loader as outcomingResponseLoader } from './routes/outcomingResponses';
+import IncomingResponses, { loader as incomingResponseLoader } from './routes/incomingResponses';
+import Sign from './routes/sign';
+import Logout from './routes/logout';
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Root />,
     errorElement: <ErrorPage/>,
-    loader: rootLoader,
     children: [
       { 
         index: true, 
@@ -25,27 +34,67 @@ const router = createBrowserRouter([
         loader: indexLoader,
       },
       {
-        path: "vacancy/:vacancyId",
-        element: <Contact />,
+        path: 'cv',
+        element: <CVs/>,
+        loader: cvsLoader,
+      },
+      {
+        path: 'cv/edit/:cvId',
+        element: <EditCv />,
+        loader: cvLoader,
+      },
+      {
+        path: 'outcoming-responses',
+        element: <OutcomingResponses/>,
+        loader: outcomingResponseLoader
+      },
+      {
+        path: 'incoming-responses',
+        element: <IncomingResponses/>,
+        loader: incomingResponseLoader
+      },
+      {
+        path: 'vacancy',
+        element: <Vacancies />,
+        loader: vacanciesLoader,
+      },
+      {
+        path: 'vacancy/edit/:vacancyId',
+        element: <EditVacancy />,
+        loader: editVacancyLoader,
+      },
+      {
+        path: 'vacancy/:vacancyId',
+        element: <Vacancy />,
         loader: vacancyLoader,
       },
       {
-        path: "contacts/:contactId/edit",
-        element: <EditContact />,
-        loader: vacancyLoader,
-        action: editAction,
+        path: 'personal',
+        element: <Personal />,
+        loader: personalLoader
       },
       {
-        path: "contacts/:contactId/destroy",
-        action: destroyAction,
-        errorElement: <div>Oops! There was an error.</div>,
+        path: 'company/:companyId',
+        element: <CompanyInfo />,
+        loader: companyInfoLoader
       },
+      {
+        path: '/logout',
+        element: <Logout/>
+      }
     ],
   },
+  {
+    path: '/sign',
+    element: <Sign/>,
+    errorElement: <ErrorPage/>,
+  }
 ]);
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <CookiesProvider defaultSetOptions={{ path:'/' }}>
+      <RouterProvider router={router} />
+    </CookiesProvider>
   </React.StrictMode>
 );

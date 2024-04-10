@@ -86,7 +86,7 @@ public class CalcController : Controller
         return View("Index");
     }
 
-    public IActionResult Div(float x = 0, float y = 0)
+    public IActionResult Div(float x = 0, float y = 1)
     {
         ViewBag.x = x;
         ViewBag.y = y;

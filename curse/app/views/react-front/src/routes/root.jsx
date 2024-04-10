@@ -1,12 +1,5 @@
-import { Outlet, useNavigation, NavLink } from "react-router-dom";
-import { getVacancies } from "../vacancies";
-
-export async function loader({ request }) {
-  const url = new URL(request.url);
-  const q = url.searchParams.get("q");
-  const vacancies = await getVacancies(q);
-  return { vacancies, q };
-}
+import { Outlet, useNavigation } from "react-router-dom";
+import TabsRouter from "../components/tabsRouter";
 
 export default function Root() {
   const navigation = useNavigation();
@@ -14,20 +7,7 @@ export default function Root() {
     <>
       <div id="topbar">
         <h1>JobHunter</h1>
-        <nav>
-          <ul>
-            <NavLink
-              to={`/`}
-              className={({ isActive, isPending }) =>
-                isActive
-                  ? "active"
-                  : isPending
-                  ? "pending"
-                  : ""
-              }
-            >Home</NavLink>
-          </ul>
-        </nav>
+        <TabsRouter/>
       </div>
       <div 
         id="detail"

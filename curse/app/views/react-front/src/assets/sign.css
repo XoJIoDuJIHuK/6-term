@@ -1,0 +1,44 @@
+#sign-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    font-size: larger;
+
+    margin-top: 200px;
+    margin-left: 200px;
+    border-width: 2px;
+    border-color: black;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+#sign-wrapper .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 5px;
+}
+
+#sign-wrapper .cell {
+    display: flex;
+    flex-direction: row;
+    width: 50%;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+}
+#sign-wrapper .cell.selected {
+    background-color: #1ee63f;
+}
+
+#sign-wrapper button {
+    margin-top: 10px;
+    width: 200px;
+}
+#sign-wrapper label {
+    margin-left: 10px;
+}
+
+#sign-wrapper input {
+    width: 300px;
+}

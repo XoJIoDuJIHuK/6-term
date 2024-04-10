@@ -183,16 +183,24 @@ VACANCIES.init({
 			key: 'id',
 		},
 	},
+	active: {
+		type: DataTypes.CHAR(1),
+		allowNull: false,
+		get() {
+			return this.getDataValue('active') === 'Y';
+		},
+		set(value) {
+			this.setDataValue('active', value ? 'Y' : 'N');
+		}
+	},
 	min_salary: {
 		type: DataTypes.INTEGER,
-		allowNull: false,
 		validate: {
 			min: 0,
 		}
 	},
 	max_salary: {
 		type: DataTypes.INTEGER,
-		allowNull: false,
 		validate: {
 			min: 0,
 		}
@@ -213,19 +221,17 @@ VACANCIES.init({
 		allowNull: false,
 		validate: {
 			min: 1,
-			max: 5
+			max: 4
 		}
 	},
 	min_hours_per_day: {
 		type: DataTypes.INTEGER,
-		allowNull: false,
 		validate: {
 			min: 1,
 		}
 	},
 	max_hours_per_day: {
 		type: DataTypes.INTEGER,
-		allowNull: false,
 		validate: {
 			min: 1,
 		}
@@ -347,7 +353,7 @@ PROMOTION_REQUESTS.init({
 		}
 	},
 	proof: {
-		type: DataTypes.STRING()
+		type: DataTypes.STRING(4000000)
 	}
 }, {
 	sequelize,
@@ -426,20 +432,9 @@ TOKENS.init({
 })
 
 sequelize.sync({ 
+	alter: true
 	// force: true 
 })
-
-// module.exports = {
-// 	PROLETARIAT,
-// 	CVS,
-// 	BOURGEOISIE,
-// 	VACANCIES,
-// 	RESPONSES,
-// 	REVIEWS,
-// 	PROMOTION_REQUESTS,
-// 	TOKENS
-// }
-
 export {
 	PROLETARIAT,
 	CVS,

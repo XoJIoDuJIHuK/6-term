@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/xojiodujihuk/6-term/ISD/labs/3/3a/3a.csproj": {}
+    "D:\\6-term\\ISD\\labs\\3\\3a\\3a.csproj": {}
   },
   "projects": {
-    "/home/xojiodujihuk/6-term/ISD/labs/3/3a/3a.csproj": {
+    "D:\\6-term\\ISD\\labs\\3\\3a\\3a.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/xojiodujihuk/6-term/ISD/labs/3/3a/3a.csproj",
+        "projectUniqueName": "D:\\6-term\\ISD\\labs\\3\\3a\\3a.csproj",
         "projectName": "3a",
-        "projectPath": "/home/xojiodujihuk/6-term/ISD/labs/3/3a/3a.csproj",
-        "packagesPath": "/home/xojiodujihuk/.nuget/packages/",
-        "outputPath": "/home/xojiodujihuk/6-term/ISD/labs/3/3a/obj/",
+        "projectPath": "D:\\6-term\\ISD\\labs\\3\\3a\\3a.csproj",
+        "packagesPath": "C:\\Users\\XoJIoDuJIHuK\\.nuget\\packages\\",
+        "outputPath": "D:\\6-term\\ISD\\labs\\3\\3a\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/xojiodujihuk/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\XoJIoDuJIHuK\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -32,6 +32,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -56,7 +61,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

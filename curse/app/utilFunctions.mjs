@@ -1,29 +1,37 @@
-import { authenticateTokens, setNewToken, validatePassword, encryptPassword } from './auth.mjs';
+import { authorizeTokens, setNewToken, validatePassword, encryptPassword } from './auth.mjs';
 import { stat, readFile } from "node:fs/promises";
 import { join } from "pathe";
-import { deleteCookie, getCookie, sendRedirect, setCookie, readBody, serveStatic, setResponseStatus } from "h3";
+import { deleteCookie, getCookie, sendRedirect, setCookie, readBody, serveStatic, setResponseStatus, send } from "h3";
 const cookies = ['username', 'access_token', 'refresh_token', 'user_type'];//TODO separate
 import { BOURGEOISIE, PROLETARIAT, REVIEWS } from "./models.mjs";
 
+const publicDir ='D:/6-term/curse/app/views/react-front/dist'
+
 export async function login(event, userType) {
 	const { username, password } = await parseBody(event);
+	let fullUserName;
 	try {
 		if (isLoggedIn(event)) {
 			throw new Error('already logged in')
 		}
-		await validatePassword(username, password, getModel(userType));
-		setCookie(event, 'username', username, { httpOnly: false, sameSite: 'strict' });
-		setCookie(event, 'user_type', userType, { httpOnly: false, sameSite: 'strict' });
+		fullUserName = await validatePassword(username, password, getModel(userType));
+		setCookie(event, 'username', username, { sameSite: 'strict' });
+		if ((await PROLETARIAT.findAndCountAll({ where: { login: username } })).is_admin) {
+			userType = 'admin';
+		}
+		setCookie(event, 'user_type', userType, { sameSite: 'strict' });
 		await setNewToken(event, false, username, userType);
 		await setNewToken(event, true,  username, userType);
-		sendRedirect(event, userType === 'company' ? '/bour/home' : '/');
 	} catch (err) {
 		logout(event);
 		setResponseStatus(event, 400);
 		return err;
 	}
+	return { name: fullUserName };
 }
 export function handleStatic(event) {
+	const regex = /.(css|js)$/;
+	if (!regex.test(event.path)) return;
 	return serveStatic(event, {
 		getContents: async id => {
 			return await readFile(join(publicDir, id))
@@ -56,7 +64,14 @@ export function logout(event) {
 	}
 }
 export async function parseBody(event) {
-	return JSON.parse(await readBody(event));
+	try {
+		const body = await readBody(event)
+		const result = JSON.parse(body);
+		return result;
+	} catch (err) {
+		setResponseStatus(event, 400);
+		send(event, err);
+	}
 }
 export function getModel(userType) {
 	if (userType === 'company') {
@@ -68,9 +83,6 @@ export function getModel(userType) {
 	}
 }
 export async function updatePersonal(event, expectedUserType) {
-	if (!isLoggedIn(event) || !(await authenticateTokens(event, 'regular'))) {
-		await sendRedirect(event, '/notfound');
-	}
 	const username = getCookie(event, 'username');
 	const userType = getCookie(event, 'user_type');
 	if (expectedUserType !== userType) {
@@ -84,7 +96,7 @@ export async function updatePersonal(event, expectedUserType) {
 		setResponseStatus(event, 400);
 		return err;
 	}
-	const data = await parseBody(event);
+	const data = await readBody(event);
 	const user = await model.findOne({ where: { login: username } });
 	if (!user) {
 		setResponseStatus(event, 404);
@@ -120,23 +132,22 @@ export async function register(event, userType) {
 			await PROLETARIAT.create({
 				login: username,
 				password_hash: encryptPassword(password),
-				name: 'Ivan Ivanov'
+				name: 'Ivan Ivanov',
+				is_admin: false,
+				education_json: [],
+				experience_json: []
 			});
 		} else {
 			setResponseStatus(event, 400);
-			return 'no such user type';
+			return { message: 'no such user type' };
 		}
 	} catch (err) {
 		setResponseStatus(event, 500);
 		return err;
 	}
-	return 'registered';
+	return { message: 'registered' };
 }
 export async function changePassword(event, userType) {
-	if (!isLoggedIn(event) || !(await authenticateTokens(event, 'regular'))) {
-		setResponseStatus(event, 404);
-		return 'not logged in';
-	}
 	const { oldPassword, newPassword } = await parseBody(event);
 	const username = getCookie(event, 'username');
 	let existingUser;
@@ -183,3 +194,12 @@ export async function createReview(event, fromModel, toModel) {
 		return err;
 	}
 }
+
+export class ClientError {
+	message;
+	code;
+	constructor(message = 'Not found', code = 404) {
+		this.message = message;
+		this.code = code;
+	}
+};

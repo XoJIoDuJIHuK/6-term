@@ -1,11 +1,11 @@
 import { useLoaderData, Form, NavLink } from "react-router-dom";
-import { getVacancies } from "../vacancies";
 
 export async function loader({ request }) {
   const url = new URL(request.url);
-  const q = url.searchParams.get("q");
-  const vacancies = await getVacancies(q);
-  return { vacancies, q };
+  const query = url.searchParams;
+  const vacancies = await (await fetch('/public-vacancies')).json();
+  console.log(vacancies);
+  return { vacancies, query };
 }
 
 export default function Index() {
@@ -34,7 +34,6 @@ export default function Index() {
             ></div>
           </Form>
         </div>
-
       </div>
       <div>
         {vacancies.length ? (
@@ -42,7 +41,7 @@ export default function Index() {
             {vacancies.map((vacancy) => (
               <li key={vacancy.id}>
                 <NavLink
-                  to={`contacts/${vacancy.id}`}
+                  to={`vacancy/${vacancy.id}`}
                   className={({ isActive, isPending }) =>
                     isActive
                       ? "active"

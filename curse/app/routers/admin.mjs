@@ -1,27 +1,17 @@
 import { createRouter, defineEventHandler, sendRedirect, setResponseStatus, getQuery } from "h3";
-import { authenticateTokens, isAdmin } from '../auth.mjs';
+import { isAdmin } from '../auth.mjs';
 import { getModel, sendMail } from '../utilFunctions.mjs';
 import ejs from 'ejs';
 import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, ACCOUT_DROP_REQUESTS } from "../models.mjs";
 
 export const adminRouter = createRouter()
 	.get('/promotion_requests', defineEventHandler(async event => {
-		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			await sendRedirect(event, '/notfound');
-		}
 		return await ejs.renderFile('./views/admin/promotion_requests.html');
 	}))
 	.get('/drop_requests', defineEventHandler(async event => {
-		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			await sendRedirect(event, '/notfound');
-		}
 		return await ejs.renderFile('./views/admin/drop_requests.html');
 	}))
 	.patch('/promote', defineEventHandler(async event => {
-		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			setResponseStatus(event, 403);
-			return 'not authorized';
-		}
 		try {
 			const { requestId } = getQuery(event);
 			const request = await PROMOTION_REQUESTS.findByPk(requestId);
@@ -37,10 +27,6 @@ export const adminRouter = createRouter()
 		return 'approved';
 	}))
 	.delete('/promote', defineEventHandler(async event => {
-		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			setResponseStatus(event, 403);
-			return 'not authorized';
-		}
 		try {
 			const { requestId } = getQuery(event);
 			const request = await PROMOTION_REQUESTS.findByPk({where: {id: requestId}});
@@ -54,10 +40,6 @@ export const adminRouter = createRouter()
 		return 'successfully refused promotion';
 	}))
 	.delete('/drop_user', defineEventHandler(async event => {
-		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			setResponseStatus(event, 403);
-			return 'not authorized';
-		}
 		const query = getQuery(event);
 		const id = +query.id;
 		const userType = query.userType;
@@ -75,10 +57,6 @@ export const adminRouter = createRouter()
 		return 'deleted';
 	}))
 	.post('/drop_user', defineEventHandler(async event => {
-		if (!await authenticateTokens(event, 'company') || !isAdmin(event)) {
-			setResponseStatus(event, 403);
-			return 'not authorized';
-		}
 		try {
 			const requestId = +getQuery(event).requestId;
 			const request = await ACCOUT_DROP_REQUESTS.findByPk(requestId);
