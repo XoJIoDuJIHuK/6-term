@@ -43,10 +43,10 @@ async function InsertCommits() {
 	}
 
 	const startDate = new Date('2023-01-01')
-	const endDate = new Date('2024-03-19')
+	const endDate = new Date('2024-01-01')
 	const developers = await getDevelopers()
 	for (let developer of developers) {
-		const commitsNumber = Math.random() * 5 + 3
+		const commitsNumber = Math.random() * 50 + 25
 		for (let i = 0; i < commitsNumber; i++) {
 			await InsertCommit(developer)
 		}
@@ -56,6 +56,7 @@ async function InsertCommits() {
 async function InsertTests() {
 	async function InsertTest(commit, tester, testData) {
 		try {
+			console.log(commit, tester, testData);
 			const passed = Math.random() < 0.5 ? 'Y' : 'N'
 			const script = `
 				DECLARE tester INT;
@@ -74,6 +75,7 @@ async function InsertTests() {
 	const testers = await getTesters()
 	const testDataArr = (await connection.execute('SELECT ID FROM TEST_DATA')).rows.map(e => e[0])
 	const commits = (await connection.execute('SELECT ID FROM COMMITS')).rows.map(e => e[0])
+	console.log(commits, testDataArr)
 	for (let commit of commits) {
 		for (let testData of testDataArr) {
 			const tester = testers[Math.floor(Math.random() * testers.length)]
@@ -88,13 +90,13 @@ let connection
 	try {
 		connection = await oracledb.getConnection({
 			user: 'SYS',
-			password: 'password',
-			connectString: '127.0.0.1/SEPDB',
+			password: 'Oracle123',
+			connectString: '192.168.75.131/SEPDB',
 			privilege: oracledb.SYSDBA
 		})	
 		// await printDevelopers()
 		// await printTesters()
-		// await InsertCommits()
+		await InsertCommits()
 		await InsertTests()
 	} catch (err) {
 		console.error("Error:", err)

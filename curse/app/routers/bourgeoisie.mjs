@@ -1,6 +1,6 @@
 import { createRouter, defineEventHandler, readBody, getCookie, getQuery, setResponseStatus } from "h3";
 import { login, updatePersonal, register, changePassword, createReview, sendMail, ClientError } from '../utilFunctions.mjs';
-import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, RESPONSES, REVIEWS, VACANCIES } from "../models.mjs";
+import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, RESPONSES, REVIEWS, VACANCIES, CVS } from "../models.mjs";
 
 export const bourgeoisieRouter = createRouter()
     .put('/register', defineEventHandler(async event => {
@@ -53,18 +53,38 @@ export const bourgeoisieRouter = createRouter()
     .get('/info', defineEventHandler(async event => {
         try {
             const { id } = getQuery(event);
-            return await BOURGEOISIE.findByPk(+id, { attributes: ['name', 'description', 'email'] });
+            return await BOURGEOISIE.findByPk(+id, { attributes: ['id', 'name', 'description', 'email'] });
         } catch (err) {
             return err;
         }
     }))
     .get('/responses', defineEventHandler(async event => {
-        return await RESPONSES.findAll({include: [{
-            model: VACANCIES,
-            where: {
-                company: (await BOURGEOISIE.findOne({where: {name: getCookie(event, 'username')}})).id
+        try {
+            const company = (await BOURGEOISIE.findOne({where: {login: getCookie(event, 'username')}})).id;
+            const vacancies = await VACANCIES.findAll({ where: { company } });
+            const responses = await RESPONSES.findAll({ where: { vacancy: vacancies.map(e => e.id) } });
+            const cvs = (await CVS.findAll({ where: { id: responses.map(r => r.cv) } })).map(e => e.dataValues);
+            for (let cv of cvs) {
+                cv.skills_json = JSON.parse(cv.skills_json);
             }
-        }]});
+            const applicants = (await PROLETARIAT.findAll({ 
+                where: { id: cvs.map(c => c.applicant) },
+                attributes: ['id', 'name', 'education_json', 'experience_json']
+            })).map(e => { return { 
+                ...e.dataValues,
+                education_json: JSON.parse(e.dataValues.education_json),
+                experience_json: JSON.parse(e.dataValues.experience_json)
+            } });
+            return { 
+                responses: responses.map(r => r.dataValues), 
+                vacancies: vacancies.map(v => { return { id: v.id, name: v.name } }), 
+                cvs: cvs.map(c => { return {
+                    ...c,
+                    applicant: applicants.find(a => a.id === c.applicant)
+                }}) };
+        } catch (err) {
+            return err;
+        }
     }))
     .post('/responses', defineEventHandler(async event => {
         try {

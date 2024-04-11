@@ -72,6 +72,7 @@ BEGIN
     close rowstomove;
     deallocate rowstomove;
 END;
+
 go
 drop function GetLastDescendant;
 go

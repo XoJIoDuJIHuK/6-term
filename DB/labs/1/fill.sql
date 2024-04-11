@@ -4,7 +4,10 @@ insert into ROLES (NAME) values ('Tester manager');
 insert into ROLES (NAME) values ('Developer');
 insert into ROLES (NAME) values ('Tester');
 select * from Roles;
-
+select * from staff;
+select * from commits;
+select * from test_data;
+select * from tests;
 
 insert into STAFF (NAME, PRINCIPAL, ROLE) values ('supreme leader', null, 1);
 go
@@ -62,3 +65,7 @@ delete STAFF where NAME = 'xd';
 BEGIN
     EXEC GetSubordinates 1;
 END;
+
+INSERT INTO test_data (JSON_DATA, GEO_DATA) VALUES ('{"xd":"lmao"}', SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(1, 1, NULL), NULL, NULL));
+INSERT INTO test_data (JSON_DATA, GEO_DATA) VALUES ('[]', SDO_GEOMETRY(2002, NULL, SDO_POINT_TYPE(1, 1, NULL), NULL, NULL));
+INSERT INTO test_data (JSON_DATA, GEO_DATA) VALUES ('{"kek":[1,2,3]}', SDO_GEOMETRY(2003, NULL, SDO_POINT_TYPE(1, 1, NULL), NULL, NULL));

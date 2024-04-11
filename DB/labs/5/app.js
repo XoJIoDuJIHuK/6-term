@@ -60,10 +60,10 @@ async function InsertCommits() {
 	}
 
 	const startDate = new Date('2023-01-01')
-	const endDate = new Date('2024-03-19')
+	const endDate = new Date('2024-01-01')
 	const developers = await getDevelopers()
 	for (let developer of developers) {
-		const commitsNumber = Math.random() * 5 + 3
+		const commitsNumber = Math.random() * 50 + 25
 		for (let i = 0; i < commitsNumber; i++) {
 			await InsertCommit(developer)
 		}
@@ -92,8 +92,9 @@ async function InsertTests() {
 	}
 }
 
-printDevelopers()
-printTesters()
+// renameTesters()
+// printDevelopers()
+// printTesters()
 // GetSubordinates('dev_manager1')
 // const jsonDataArr = ['{"xd":"kek"}', JSON.stringify({someData:[1,2,3]}), JSON.stringify(['mama', 'mia'])]
 // for (let jsonData of jsonDataArr) {
@@ -101,4 +102,4 @@ printTesters()
 // 	InsertTestData(jsonData)
 // }
 // InsertCommits()
-// InsertTests()
+InsertTests()

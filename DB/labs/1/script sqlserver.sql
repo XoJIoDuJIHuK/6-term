@@ -144,9 +144,10 @@ BEGIN
     delete STAFF where ID = @sid;
 END
 
+select * from staff;
 select NODE.ToString(), level, name, role from STAFF;
 insert STAFF (NODE, NAME, ROLE) values (hierarchyid::GetRoot(), N'Big Boss', 1);
-delete staff where level = 2;
+delete staff where name like 'tester%';
 
 declare @manager HIERARCHYID, @root HIERARCHYID;
 set @manager = (select node from staff where name = N'tester_manager1');
@@ -178,6 +179,7 @@ BEGIN
     set @i = @i + 1;
 end;
 go
+
 declare @manager HIERARCHYID;
 set @manager = (select node from staff where name = N'dev_manafer1');
 insert into staff values (@manager.GetDescendant(null, @manager.GetDescendant(null, null)), N'xd', 5);
@@ -188,3 +190,4 @@ insert COMMITS (DEVELOPER, COMMIT_DATE) VALUES ((select node from staff where na
 
 select * from TESTS;
 delete TESTS;
+

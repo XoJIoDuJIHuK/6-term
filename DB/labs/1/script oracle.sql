@@ -145,3 +145,5 @@ commit;
 
 
 select * from STAFF;
+select * from commits;
+select * from tests;
