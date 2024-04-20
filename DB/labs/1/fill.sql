@@ -9,12 +9,17 @@ select * from commits;
 select * from test_data;
 select * from tests;
 
+drop table tests;
+drop table test_data;
+drop table commits;
+drop table staff;
+
 insert into STAFF (NAME, PRINCIPAL, ROLE) values ('supreme leader', null, 1);
 go
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('manager 1', 1, 2);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('manager 2', 1, 2);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('manager 3', 1, 3);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('manager 4', 1, 3);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('dev_manager1', 1, 2);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('dev_manager2', 1, 2);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester_manager1', 1, 3);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester_manager2', 1, 3);
 go
 insert into STAFF (NAME, PRINCIPAL, ROLE) values ('developer 1', 2, 4);
 insert into STAFF (NAME, PRINCIPAL, ROLE) values ('developer 2', 2, 4);
@@ -26,16 +31,16 @@ insert into STAFF (NAME, PRINCIPAL, ROLE) values ('developer 7', 3, 4);
 insert into STAFF (NAME, PRINCIPAL, ROLE) values ('developer 8', 3, 4);
 insert into STAFF (NAME, PRINCIPAL, ROLE) values ('developer 9', 3, 4);
 insert into STAFF (NAME, PRINCIPAL, ROLE) values ('developer 10', 3, 4);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 11', 4, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 12', 4, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 13', 4, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 14', 4, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 15', 4, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 16', 5, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 17', 5, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 18', 5, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 19', 5, 5);
-insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 20', 5, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 1', 4, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 2', 4, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 3', 4, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 4', 4, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 5', 4, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 6', 5, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 7', 5, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 8', 5, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 9', 5, 5);
+insert into STAFF (NAME, PRINCIPAL, ROLE) values ('tester 10', 5, 5);
 commit;
 
 -- DECLARE

@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  username String  @db.VarChar(16)
+  email    String? @db.VarChar(255)
+  password String  @db.VarChar(32)
+  role     String  @db.VarChar(5)
+  repos    Repo[]
+
+  @@map("users")
+}
+
+model Repo {
+  id       Int      @id @default(autoincrement())
+  name     String?  @db.VarChar(255)
+  authorId Int
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  commits  Commit[]
+
+  @@map("repos")
+}
+
+model Commit {
+  id      Int     @id @default(autoincrement())
+  repoId  Int?
+  message String? @db.VarChar(255)
+  repo    Repo?   @relation(fields: [repoId], references: [id], onDelete: Cascade)
+
+  @@map("commits")
+}

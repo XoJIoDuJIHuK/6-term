@@ -25,6 +25,7 @@ CREATE TABLE TEST_DATA (
     JSON_DATA NVARCHAR2(1000)
 ) TABLESPACE DB_TBS;
 
+SELECT * FROM COMMITS;
 CREATE TABLE COMMITS (
     ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     DEVELOPER INT NOT NULL,
@@ -32,6 +33,7 @@ CREATE TABLE COMMITS (
     CONSTRAINT FK_COMMITS_DEVELOPER FOREIGN KEY (DEVELOPER) REFERENCES STAFF(ID)
 ) TABLESPACE DB_TBS;
 
+SELECT * FROM TESTS;
 CREATE TABLE TESTS (
     ID NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     TESTER INT NOT NULL,
@@ -147,3 +149,14 @@ commit;
 select * from STAFF;
 select * from commits;
 select * from tests;
+select * from test_data;
+
+declare point SDO_GEOMETRY;
+begin
+point := SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(3, 56, null), NULL, NULL);
+insert into TEST_DATA (JSON_DATA, GEO_DATA) values ('{"xd":"kek"}', point);
+point := SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(4, 57, null), NULL, NULL);
+insert into TEST_DATA (JSON_DATA, GEO_DATA) values ('{"lmao":"lul"}', point);
+point := SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(5, 58, null), NULL, NULL);
+insert into TEST_DATA (JSON_DATA, GEO_DATA) values ('{"googoo":"gaga"}', point);
+end;

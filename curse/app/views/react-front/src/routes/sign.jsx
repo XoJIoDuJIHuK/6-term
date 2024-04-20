@@ -1,13 +1,10 @@
-import { useLoaderData } from 'react-router-dom';
 import { useState } from 'react';
 import { Button } from '@mui/material';
-
-export async function loader() {
-
-}
+import { useAlert } from '../components/useAlert';
+import { fetchWithResult } from '../constants';
 
 export default function Sign() {
-  useLoaderData();
+  const showAlert = useAlert();
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const [signType, setSignType] = useState('in');
@@ -15,28 +12,21 @@ export default function Sign() {
   async function sign() {
     const signTypeUri = signType === 'in' ? 'login' : 'register';
     const userTypeUri = userType === 'regular' ? 'prol' : 'bour';
-    fetch(`http://localhost:3000/${userTypeUri}/${signTypeUri}`, {
+    fetchWithResult(`/${userTypeUri}/${signTypeUri}`, {
       method: signType === 'in' ? 'POST' : 'PUT',
+      headers: {'Content-Type': 'application/json'},
       mode: 'cors',
       body: JSON.stringify({
         username, password
       })
-    }).then(r => {
-      if (r.ok) {
-        return r.json();
-      } else {
-        throw r.json();
-      }
-    }).then(d => {
-      if (signTypeUri === 'register') {
-        alert(d);//TODO: add normal pop-up
-      } else {
+    }, showAlert, d => {
+      console.log('signType', signType)
+      if (signType === 'in') {
         localStorage.setItem('userName', d.name);
         window.location.href = '/';
+      } else {
+        console.log('registered');
       }
-    })
-    .catch(err => {
-      console.log(err)
     })
   }
   return (<>

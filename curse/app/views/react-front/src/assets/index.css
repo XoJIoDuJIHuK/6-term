@@ -144,104 +144,8 @@ form[action$="destroy"] button {
   border-bottom: 1px solid #e3e3e3;
 }
 
-#sidebar > div form {
-  position: relative;
-}
-
-#sidebar > div form input[type="search"] {
-  width: 100%;
-  padding-left: 2rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='%23999' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' /%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: 0.625rem 0.75rem;
-  background-size: 1rem;
-  position: relative;
-}
-
-#sidebar > div form input[type="search"].loading {
-  background-image: none;
-}
-
-#search-spinner {
-  width: 1rem;
-  height: 1rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%23000' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M20 4v5h-.582m0 0a8.001 8.001 0 00-15.356 2m15.356-2H15M4 20v-5h.581m0 0a8.003 8.003 0 0015.357-2M4.581 15H9' /%3E%3C/svg%3E");
-  animation: spin 1s infinite linear;
-  position: absolute;
-  left: 0.625rem;
-  top: 0.75rem;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-#sidebar nav {
-  flex: 1;
-  overflow: auto;
-  padding-top: 1rem;
-}
-
-#sidebar nav a span {
-  float: right;
-  color: #eeb004;
-}
-#sidebar nav a.active span {
-  color: inherit;
-}
-
-i {
-  color: #818181;
-}
-#sidebar nav .active i {
-  color: inherit;
-}
-
-#sidebar ul {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-#sidebar li {
-  margin: 0.25rem 0;
-}
-
-#sidebar nav a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  overflow: hidden;
-
-  white-space: pre;
-  padding: 0.5rem;
-  border-radius: 8px;
-  color: inherit;
-  text-decoration: none;
-  gap: 1rem;
-}
-
-#sidebar nav a:hover {
-  background: #e3e3e3;
-}
-
-#sidebar nav a.active {
-  background: hsl(224, 98%, 58%);
-  color: white;
-}
-
-#sidebar nav a.pending {
-  color: hsl(224, 98%, 58%);
-}
-
 #detail {
   flex: 1;
-  padding: 2rem 4rem;
   width: 100%;
 }
 
@@ -249,109 +153,6 @@ i {
   opacity: 0.25;
   transition: opacity 200ms;
   transition-delay: 200ms;
-}
-
-#contact {
-  max-width: 40rem;
-  display: flex;
-}
-
-#contact h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1.2;
-}
-
-#contact h1 + p {
-  margin: 0;
-}
-
-#contact h1 + p + p {
-  white-space: break-spaces;
-}
-
-#contact h1:focus {
-  outline: none;
-  color: hsl(224, 98%, 58%);
-}
-
-#contact a[href*="twitter"] {
-  display: flex;
-  font-size: 1.5rem;
-  color: #3992ff;
-  text-decoration: none;
-}
-#contact a[href*="twitter"]:hover {
-  text-decoration: underline;
-}
-
-#contact img {
-  width: 12rem;
-  height: 12rem;
-  background: #c8c8c8;
-  margin-right: 2rem;
-  border-radius: 1.5rem;
-  object-fit: cover;
-}
-
-#contact h1 ~ div {
-  display: flex;
-  gap: 0.5rem;
-  margin: 1rem 0;
-}
-
-#contact-form {
-  display: flex;
-  max-width: 40rem;
-  flex-direction: column;
-  gap: 1rem;
-}
-#contact-form > p:first-child {
-  margin: 0;
-  padding: 0;
-}
-#contact-form > p:first-child > :nth-child(2) {
-  margin-right: 1rem;
-}
-#contact-form > p:first-child,
-#contact-form label {
-  display: flex;
-}
-#contact-form p:first-child span,
-#contact-form label span {
-  width: 8rem;
-}
-#contact-form p:first-child input,
-#contact-form label input,
-#contact-form label textarea {
-  flex-grow: 2;
-}
-
-#contact-form-avatar {
-  margin-right: 2rem;
-}
-
-#contact-form-avatar img {
-  width: 12rem;
-  height: 12rem;
-  background: hsla(0, 0%, 0%, 0.2);
-  border-radius: 1rem;
-}
-
-#contact-form-avatar input {
-  box-sizing: border-box;
-  width: 100%;
-}
-
-#contact-form p:last-child {
-  display: flex;
-  gap: 0.5rem;
-  margin: 0 0 0 8rem;
-}
-
-#contact-form p:last-child button[type="button"] {
-  color: inherit;
 }
 
 #zero-state {
@@ -380,4 +181,40 @@ i {
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+
+#general-wrapper {
+  padding: 30px;
+}
+
+.incoming-response {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 600px;
+  height: 60px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.incoming-response .cell {
+  width: 100px;
+  text-overflow: ellipsis;
+  text-wrap: nowrap;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.MuiDialog-root.response-dialog > .MuiDialog-container > .MuiPaper-root {
+  width: 70vw;
+  height: 100%;
+  max-height: 90vh;
+  padding: 10px;
+}
+
+.MuiChip-root {
+  margin-right: 5px;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
 }

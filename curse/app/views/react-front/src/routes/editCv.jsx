@@ -1,35 +1,28 @@
 import { useLoaderData } from "react-router-dom";
 import { TextField, Box, Button, Chip } from '@mui/material';
 import { useState, useEffect } from "react";
-
+import { fetchForLoader, fetchWithResult } from "../constants";
+import { useAlert } from '../components/useAlert';
 
 export async function loader({ params }) {
-    const cv = await (await fetch(`/prol/cv?id=${params.cvId}`)).json();
-    console.log(cv)
+    const cv = await fetchForLoader(`/prol/cv?id=${params.cvId}`);
     return { cv };
 }
 
 export default function EditCv() {//TODO: fix too many requests to /prol/cv
     function saveCv() {
-        console.log(skills)
-        fetch('/prol/cv', {
+        fetchWithResult('/prol/cv', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 id: cv.id,
                 name,
                 skills
             })
-        }).then(r => {
-            if (r.ok) {
-                location.href = '/cv';
-            }
-        })
+        }, showAlert, () => { location.href = '/cv'; })
     }
     function deleteCv() {
-        fetch('/prol/cv', {
+        fetchWithResult('/prol/cv', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -37,20 +30,15 @@ export default function EditCv() {//TODO: fix too many requests to /prol/cv
             body: JSON.stringify({
                 name
             })
-        }).then(r => {
-            if (r.ok) {
-                location.href = '/cv';
-            }
-        })
+        }, showAlert, () => { location.href = '/cv'; });
     }
 
+    const showAlert = useAlert();
     const { cv } = useLoaderData();
     const [name, setName] = useState(cv.name);
     const [skills, setSkills] = useState(cv.skills_json);
     const [newSkill, setNewSkill] = useState('');
-    useEffect(() => {
-        setNewSkill('');
-    }, [skills]);
+    useEffect(() => { setNewSkill(''); }, [skills]);
     return (<>
         <TextField label="Name" required variant="outlined" onChange={event => { setName(event.target.value) }} value={name} />
         <Box>
@@ -58,7 +46,6 @@ export default function EditCv() {//TODO: fix too many requests to /prol/cv
             "No skills" } </Box>
             <TextField label="New skill" required onChange={event => { setNewSkill(event.target.value); }} value={newSkill}/>
             <Button onClick={() => {
-                console.log(skills)
                 if (!newSkill || skills.find(e => e === newSkill)) return;
                 setSkills(skills.concat([newSkill]));
             }}>Add skill</Button>

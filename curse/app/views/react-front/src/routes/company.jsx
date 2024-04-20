@@ -1,9 +1,9 @@
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
+import { fetchForLoader } from '../constants';
 
 export async function loader({ params }) {
-    const info = await (await fetch(`/bour/info?id=${params.companyId}`)).json();
+    const info = await fetchForLoader(`/bour/info?id=${params.companyId}`);
     return { info };
 }
 export default function CompanyInfo() {

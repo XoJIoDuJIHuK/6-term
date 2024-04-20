@@ -1,7 +1,8 @@
 import { createRouter, defineEventHandler, getCookie, getQuery, setResponseStatus, readBody } from "h3";
 import { login, updatePersonal, register, changePassword, createReview, ClientError } from '../utilFunctions.mjs';
-import { BOURGEOISIE, PROLETARIAT, RESPONSES, CVS, VACANCIES, REVIEWS } from "../models.mjs";
+import { BOURGEOISIE, PROLETARIAT, RESPONSES, CVS, VACANCIES, REVIEWS, ACCOUNT_DROP_REQUESTS } from "../models.mjs";
 import { Op } from 'sequelize';
+// import { experiences } from "../views/react-front/src/constants";
 
 export const proletariatRouter = createRouter()
 	.post('/login', defineEventHandler(async event => {
@@ -16,8 +17,19 @@ export const proletariatRouter = createRouter()
 			if (result.count === 0) {
 				throw new ClientError();
 			}
-			return result.rows[0];
+			const user = result.rows[0];
+			return {
+				id: user.id,
+				name: user.name,
+				experience: user.experience_json,
+				education: user.education_json,
+				email: user.email,
+				dropRequestPending: (await ACCOUNT_DROP_REQUESTS.findAndCountAll({ where: { 
+					isCompany: 'N', account_id: user.id 
+				} })).count > 0
+			};
 		} catch (err) {
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
 	}))
@@ -27,8 +39,22 @@ export const proletariatRouter = createRouter()
 	.patch('/password', defineEventHandler(async event => {
 		return await changePassword(event, 'regular');
 	}))
-	.post('/review', defineEventHandler(async event => {
+	.put('/review', defineEventHandler(async event => {
 		return await createReview(event, PROLETARIAT, BOURGEOISIE);
+	}))
+	.delete('/review', defineEventHandler(async event => {
+		try {
+			const { id } = getQuery(event);
+            const user = (await PROLETARIAT.findOne({ where: { login: getCookie(event, 'username') } }));
+            const searchCondition = { id, p_subject: user.id };
+            if ((await REVIEWS.findAndCountAll({ where: searchCondition })) === 0) {
+                throw new Error('no such review');
+            }
+            return await REVIEWS.destroy({ where: searchCondition });
+		} catch (err) {
+			setResponseStatus(event, err.code ?? 400);
+			return err;
+		}
 	}))
 	.get('/cv', defineEventHandler(async event => {
 		try {
@@ -40,8 +66,7 @@ export const proletariatRouter = createRouter()
 					applicant
 				}});
 				if (matchingCvs.length === 0) {
-					setResponseStatus(event, 404);
-					return { message: 'not found' };
+					throw new ClientError();
 				} else {
 					return matchingCvs[0];
 				}
@@ -72,7 +97,7 @@ export const proletariatRouter = createRouter()
 				return await CVS.findAll({ where: { applicant }});
 			}
 		} catch (err) {
-			setResponseStatus(400);
+			setResponseStatus(err.status ?? 400);
 			return err;
 		}
 	}))
@@ -86,7 +111,7 @@ export const proletariatRouter = createRouter()
 				applicant
 			}})).count > 0;
 			if (cvExists) {
-				throw new Error('name is taken');
+				throw new ClientError('Название занято');
 			}
 			await CVS.create({
 				name,
@@ -94,9 +119,9 @@ export const proletariatRouter = createRouter()
 				skills_json: skills
 			});
 			const cv = await CVS.findOne({ where: { applicant, name }});
-			return { id: cv.id };
+			return { message: 'Резюме обновлено', id: cv.id };
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
 	}))
@@ -106,13 +131,14 @@ export const proletariatRouter = createRouter()
 			const { id, name, skills } = await readBody(event);
 			const existingCv = await CVS.findOne({where: {id, applicant: user.id}});
 			if (!existingCv) {
-				throw new Error('name is taken');
+				throw new ClientError('Название занято');
 			}
 			existingCv.name = name;
 			existingCv.skills_json = skills;
 			existingCv.save();
+			return { message: 'Резюме обновлено' };
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
 	}))
@@ -122,7 +148,7 @@ export const proletariatRouter = createRouter()
 			const { name } = await readBody(event);
 			const cvExists = (await CVS.findOne({where: {name, applicant: user.id}})).count > 0;
 			if (cvExists) {
-				throw new Error('no such cv');
+				throw new ClientError('Такого резюме не существует');
 			}
 			CVS.destroy({
 				where: {
@@ -130,6 +156,7 @@ export const proletariatRouter = createRouter()
 					applicant: user.id
 				}
 			});
+			return { message: 'Резюме удалено' };
 		} catch (err) {
 			setResponseStatus(event, 400);
 			return err;
@@ -152,7 +179,7 @@ export const proletariatRouter = createRouter()
 			}})).map(e => +e.id);
 			return cvIds.length > 0 ? await mapResponses(cvIds) : [];
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
 	}))
@@ -162,15 +189,15 @@ export const proletariatRouter = createRouter()
 			await checkCvExistance(event);
 			const searchCondition = { cv, vacancy };
 			if (!(await VACANCIES.findByPk(vacancy)).active) {
-				throw new Error('vacancy is not available');
+				throw new ClientError('Вакансия недоступна');
 			}
 			const responseExists = (await RESPONSES.findAndCountAll({where: searchCondition})).count > 0;
 			if (responseExists) {
-				throw new Error('response exists');
+				throw new ClientError('response exists');
 			}
-			return { id: (await RESPONSES.create({ ...searchCondition, status: 'W' })).id };
+			return { message: 'Отклик опубликован', id: (await RESPONSES.create({ ...searchCondition, status: 'W' })).id };
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
 	}))
@@ -183,25 +210,30 @@ export const proletariatRouter = createRouter()
 			if (!responseExists) {
 				throw new Error('response exists');
 			}
-			RESPONSES.destroy({where: searchCondition});
+			await RESPONSES.destroy({where: searchCondition});
+			return { message: 'Отклик удалён' };
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
 	}))
-	.delete('/review', defineEventHandler(async event => {
-        try {
-            const { id } = getQuery(event);
-            const user = (await PROLETARIAT.findOne({ where: { login: getCookie(event, 'username') } }));
-            const searchCondition = { id, p_subject: user.id };
-            if ((await REVIEWS.findAndCountAll({ where: searchCondition })) === 0) {
-                throw new Error('no such review');
-            }
-            return await REVIEWS.destroy({ where: searchCondition });
-        } catch (err) {
-            return err;
-        }
-    }));
+	.put('/drop-request', defineEventHandler(async event => {
+		try {
+			const user = await PROLETARIAT.findOne({ where: { login: getCookie(event, 'username') } });
+			const searchCondition = {
+				isCompany: 'N',
+				account_id: user.id
+			};
+			if ((await ACCOUNT_DROP_REQUESTS.findAndCountAll({ where: searchCondition })).count > 0) {
+				throw new ClientError('request already exists', 400);
+			}
+			const body = await readBody(event);
+			return { message: 'Запрос отправлен', id: (await ACCOUNT_DROP_REQUESTS.create({ ...searchCondition, commentary: body.commentary })).id };
+		} catch (err) {
+			setResponseStatus(event, err.code ?? 400);
+			return err;
+		}
+	}));
 
 async function checkCvExistance(event) {
 	const cvExists = (await CVS.findAndCountAll({where: {

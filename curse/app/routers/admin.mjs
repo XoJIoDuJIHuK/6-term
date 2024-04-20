@@ -2,69 +2,100 @@ import { createRouter, defineEventHandler, sendRedirect, setResponseStatus, getQ
 import { isAdmin } from '../auth.mjs';
 import { getModel, sendMail } from '../utilFunctions.mjs';
 import ejs from 'ejs';
-import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, ACCOUT_DROP_REQUESTS } from "../models.mjs";
+import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, ACCOUNT_DROP_REQUESTS, TOKENS } from "../models.mjs";
 
 export const adminRouter = createRouter()
-	.get('/promotion_requests', defineEventHandler(async event => {
-		return await ejs.renderFile('./views/admin/promotion_requests.html');
+	.get('/personal', defineEventHandler(async event => {
+		return { message: 'nothing to see here' };
 	}))
-	.get('/drop_requests', defineEventHandler(async event => {
-		return await ejs.renderFile('./views/admin/drop_requests.html');
+	.get('/promotion-requests', defineEventHandler(async event => {
+		try {
+			const requests = (await PROMOTION_REQUESTS.findAll({ include: {
+				model: BOURGEOISIE,
+				attributes: ['name']
+			}})).map(r => { return {
+				id: r.id,
+				company_name: r.BOURGEOISIE.name,
+				proof: r.proof
+			} });
+			return requests;
+		} catch (err) {
+			setResponseStatus(event, err.code ?? 400);
+			return err;
+		}
+	}))
+	.get('/drop-requests', defineEventHandler(async event => {
+		try {
+			const requests = await ACCOUNT_DROP_REQUESTS.findAll();
+			return requests;
+		} catch (err) {
+			setResponseStatus(event, err.code ?? 400);
+			return err;
+		}
 	}))
 	.patch('/promote', defineEventHandler(async event => {
 		try {
 			const { requestId } = getQuery(event);
-			const request = await PROMOTION_REQUESTS.findByPk(requestId);
+			const request = await PROMOTION_REQUESTS.findByPk(+requestId);
 			if (!request) {
 				throw new Error('no such request');
 			}
 			const companyId = request.dataValues.company_id;
+			await PROMOTION_REQUESTS.destroy({ where: {id: request.id}});
 			await BOURGEOISIE.update({approved: true}, {where: {id: companyId}});
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
-		return 'approved';
+		return { message: 'Компания подтверждена' };
 	}))
 	.delete('/promote', defineEventHandler(async event => {
 		try {
 			const { requestId } = getQuery(event);
-			const request = await PROMOTION_REQUESTS.findByPk({where: {id: requestId}});
+			const request = await PROMOTION_REQUESTS.findByPk(+requestId);
 			await PROMOTION_REQUESTS.destroy({ where: {id: request.id}});
 			const company = await BOURGEOISIE.findByPk(request.company_id);
 			await sendMail(company.email, 'xd');
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
-		return 'successfully refused promotion';
+		return { message: 'Запрос на подтверждение отклонён' };
 	}))
-	.delete('/drop_user', defineEventHandler(async event => {
+	.delete('/drop-user', defineEventHandler(async event => {
 		const query = getQuery(event);
-		const id = +query.id;
-		const userType = query.userType;
+		const id = +query.requestId;
 		try {
-			const model = getModel(userType);
-			const userExists = (await model.findAndCountAll({where:{id}})).count > 0;
+			const request = await ACCOUNT_DROP_REQUESTS.findByPk(id);
+			const model = request.isCompany === 'Y' ? BOURGEOISIE : PROLETARIAT;
+			const userExists = (await model.findAndCountAll({ where: { id: request.account_id } })).count > 0;
 			if (!userExists) {
 				throw new Error('no such user');
 			}
-			await model.destroy({where:{id}});
+			await TOKENS.destroy({ where: (request.isCompany === 'Y' ? {owner_b:request.account_id} : {owner_p: request.account_id}) });
+			await model.destroy({ where: { id: request.account_id } });
+			await ACCOUNT_DROP_REQUESTS.destroy({ where: { id: request.id } });
+			sendMail(email, 'your drop account request was satisfied');
+			return { message: 'Учётная запись успешно удалена' };
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
-		return 'deleted';
 	}))
-	.post('/drop_user', defineEventHandler(async event => {
+	.post('/drop-user', defineEventHandler(async event => {
 		try {
 			const requestId = +getQuery(event).requestId;
-			const request = await ACCOUT_DROP_REQUESTS.findByPk(requestId);
+			const request = await ACCOUNT_DROP_REQUESTS.findByPk(requestId);
 			const model = request.isCompany ? BOURGEOISIE : PROLETARIAT;
 			const user = model.findByPk(request.account_id);
-			await sendMail(user.email, 'xd');
+			await ACCOUNT_DROP_REQUESTS.destroy({ where: { id: requestId } });
+			sendMail(user.email, 'your drop account request was refused');
+			return { message: 'Запрос на удаление успешно отклонён' };
 		} catch (err) {
-			setResponseStatus(event, 400);
+			setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
+	}))
+	.delete('review', defineEventHandler(async event => {
+		
 	}));

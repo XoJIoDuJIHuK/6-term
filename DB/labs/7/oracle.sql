@@ -17,7 +17,7 @@ select "name", "month", round("count") as "count" from based_data model
 order by "name", "month";
 
 with based_data as (
-  select extract(year from commit_date), extract(month from commit_date) month, count(*) count
+  select extract(year from commit_date) year, extract(month from commit_date) month, count(*) count
   from STAFF s join TESTS t on t.tester = s.id 
     join COMMITS c on t.commit = c.id
   group by extract(year from commit_date), extract(month from commit_date)
@@ -33,8 +33,8 @@ match_recognize (
   one row per match
   pattern (growth fall growth)
   define
-    growth as (prev(count) < next(count)),
-    fall as (prev(count) > next(count))
+    growth as (count < next(count)),
+    fall as (next(count) < count)
 );
 
 select count(*) from tests

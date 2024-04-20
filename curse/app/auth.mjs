@@ -3,13 +3,13 @@ import { TOKENS, PROLETARIAT, BOURGEOISIE } from "./models.mjs";
 import fs from 'fs';
 import { setCookie, getCookie } from 'h3';
 import * as bcrypt from 'bcrypt';
-import { ClientError } from './utilFunctions.mjs';
+import { ClientError, log } from './utilFunctions.mjs';
 const { salt, refreshSecret, accessSecret } = JSON.parse(fs.readFileSync('./serverConfig.json'));
 
 export async function setNewToken(event, isAccess, username, userType) {
 	async function upsertToken(isAccess, username, expiresDate) {
 		const tokenType = isAccess ? 'A' : 'R';
-		const owner_p = userType === 'regular' ? 
+		const owner_p = (userType === 'regular' || userType === 'admin') ? 
 			(await PROLETARIAT.findOne({where: {login: username}})).id : null;
 		const owner_b = userType === 'company' ? 
 			(await BOURGEOISIE.findOne({where: {login: username}})).id : null;
@@ -35,7 +35,7 @@ export async function setNewToken(event, isAccess, username, userType) {
 
 	const secret = isAccess ? accessSecret : refreshSecret;
 	const cookieName = isAccess ? 'access_token' : 'refresh_token';
-	const seconds = isAccess ? (10 * 60) : (24 * 60 * 60);
+	const seconds = isAccess ? (10 * 60 * 10e4) : (24 * 60 * 60 * 10e4);
 	const token = jwt.sign({
 		username,
 		userType,
@@ -48,21 +48,21 @@ export async function setNewToken(event, isAccess, username, userType) {
 		sameSite: 'strict', 
 		expires: expiresDate
 	});
-	return token
+	return token;
 }
 export async function authorizeTokens(event, expectedUserType) {
 	async function validateRefreshToken() {
 		const decodedToken = jwt.verify(refreshToken, refreshSecret);
-		const existingToken = (await TOKENS.findOne({ where: { ...searchConditions, type: 'R' }})).value;
-		if (decodedToken.username !== username || refreshToken !== existingToken) {
-			throw new ClientError('refresh token invalid', 403);
+		const existingToken = (await TOKENS.findOne({ where: { ...searchConditions, type: 'R' } }));
+		if (!existingToken || decodedToken.username !== username || refreshToken !== existingToken.value) {
+			throw new ClientError('Неверный токен', 401);
 		}
 	}
 	async function validateAccessToken() {
 		try {
 			const decodedToken = jwt.verify(accessToken, accessSecret);
 			if (decodedToken.username !== username) {
-				throw new ClientError('usernames don\'t match', 403);
+				throw new ClientError('Логины не сходятся', 403);
 			}
 		} catch (err) {
 			if (err.name === 'TokenExpiredError' || err.message === 'jwt must be provided') {
@@ -87,12 +87,8 @@ export async function authorizeTokens(event, expectedUserType) {
 		searchConditions.owner_p = (await PROLETARIAT.findOne({ where: { login: username } })).dataValues.id;
 	}
 	if (refreshToken) {
-		try {
-			await validateRefreshToken();
-			await validateAccessToken();
-		} catch (err) {
-			return false;
-		}
+		await validateRefreshToken();
+		await validateAccessToken();
 	} else {
 		return false;
 	}
@@ -100,14 +96,10 @@ export async function authorizeTokens(event, expectedUserType) {
 }
 
 export async function validatePassword(username, password, model) {
-	const matchingRows = await model.findAndCountAll({
-		where: {
-			login: username
-		}
-	});
+	const matchingRows = await model.findAndCountAll({ where: { login: username } });
 	const user = matchingRows.rows[0];
 	if (matchingRows.count === 0 || !(await bcrypt.compare(password, user.password_hash))) {
-		throw new Error('wrong credentials');
+		throw new ClientError('wrong credentials', 400);
 	}
 	return user.login;
 }
@@ -116,6 +108,12 @@ export function encryptPassword(password) {
 }
 
 export async function isAdmin(event) {
-	const username = getCookie(event, 'username');
-	return (await PROLETARIAT.findAndCountAll({ where: { name: username, isAdmin: true } })).count === 1;
+	try {
+		const username = getCookie(event, 'username');
+		const user = (await PROLETARIAT.findOne({ where: { login: username } }));
+		return user.is_admin;
+	} catch (err) {
+		log('isAdmin (auth.mjs) error: ' + JSON.stringify(err));
+		return false;
+	}
 }

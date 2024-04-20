@@ -90,14 +90,14 @@ let connection
 	try {
 		connection = await oracledb.getConnection({
 			user: 'SYS',
-			password: 'Oracle123',
-			connectString: '192.168.75.131/SEPDB',
+			password: 'Qwerty123',
+			connectString: 'localhost/SEPDB',
 			privilege: oracledb.SYSDBA
 		})	
-		// await printDevelopers()
-		// await printTesters()
-		await InsertCommits()
-		await InsertTests()
+		// await printDevelopers();
+		// await printTesters();
+		// await InsertCommits();
+		await InsertTests();
 	} catch (err) {
 		console.error("Error:", err)
 	} finally {
@@ -111,29 +111,3 @@ let connection
 		}
 	}
 })()
-
-// module.exports = {
-// 	STAFF,
-// 	ROLE,
-// 	TEST_DATA,
-// 	COMMITS,
-// 	TESTS,
-// 	sequelize,
-// 	GetSubordinates: async function(principalName) {
-// 		try {
-// 			const ret = (await sequelize.query(`EXEC GetSubordinatesByName @parentName = N'${principalName}'`))[0].map(e => e.NAME)
-// 			console.log(ret)
-// 		} catch (err) {
-// 			errorHandler(err)
-// 		}
-// 	},
-// 	GenerateGeoData,
-// 	InsertTestData: async function(jsonData) {
-// 		try {
-// 			const point = GenerateGeoData()
-// 			await sequelize.query(`INSERT INTO TEST_DATA (GEO_DATA, JSON_DATA) VALUES (geometry::STGeomFromText('POINT (${point.coordinates[0]} ${point.coordinates[1]})', 0), '${jsonData}')`)
-// 		} catch (err) {
-// 			errorHandler(err)
-// 		}
-// 	}
-// }

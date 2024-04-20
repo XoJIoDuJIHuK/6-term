@@ -1,4 +1,3 @@
-// const { Sequelize, Model, DataTypes, Op } = require('sequelize')
 import { Sequelize, Model, DataTypes } from "sequelize"
 // const sequelize = new Sequelize('xd', 'SA', 'Qwerty123', {
 // 	host: '192.168.75.131',
@@ -75,8 +74,8 @@ PROLETARIAT.init({
 	sequelize,
 	timestamps: false,
 	modelName: 'PROLETARIAT',
-	tableName: 'PROLETARIAT'
-})
+	tableName: 'PROLETARIAT',
+});
 
 class CVS extends Model {}
 CVS.init({
@@ -95,6 +94,7 @@ CVS.init({
 		references: {
 			model: 'PROLETARIAT',
 			key: 'id',
+			onDelete: 'CASCADE'
 		},
 	},
 	skills_json: {
@@ -111,8 +111,11 @@ CVS.init({
 	sequelize,
 	timestamps: false,
 	modelName: 'CVS',
-	tableName: 'CVS'
-})
+	tableName: 'CVS',
+});
+
+PROLETARIAT.hasMany(CVS, { foreignKey: 'applicant', sourceKey: 'id' });
+CVS.belongsTo(PROLETARIAT, { foreignKey: 'applicant', targetKey: 'id' });
 
 class BOURGEOISIE extends Model {}
 BOURGEOISIE.init({
@@ -156,7 +159,7 @@ BOURGEOISIE.init({
 	sequelize,
 	timestamps: false,
 	modelName: 'BOURGEOISIE',
-	tableName: 'BOURGEOISIE'
+	tableName: 'BOURGEOISIE',
 })
 
 class VACANCIES extends Model {}
@@ -181,6 +184,7 @@ VACANCIES.init({
 		references: {
 			model: 'BOURGEOISIE',
 			key: 'id',
+			onDelete: 'CASCADE'
 		},
 	},
 	active: {
@@ -245,7 +249,10 @@ VACANCIES.init({
 	timestamps: false,
 	modelName: 'VACANCIES',
 	tableName: 'VACANCIES',
-})
+});
+
+BOURGEOISIE.hasMany(VACANCIES,   { foreignKey: 'company', sourceKey: 'id' });
+VACANCIES.belongsTo(BOURGEOISIE, { foreignKey: 'company', targetKey: 'id' });
 
 class RESPONSES extends Model {}
 RESPONSES.init({
@@ -259,7 +266,8 @@ RESPONSES.init({
 		allowNull: false,
 		references: {
 			model: 'CVS',
-			key: 'id'
+			key: 'id',
+			onDelete: 'CASCADE'
 		}
 	},
 	vacancy: {
@@ -267,7 +275,8 @@ RESPONSES.init({
 		allowNull: false,
 		references: {
 			model: 'VACANCIES',
-			key: 'id'
+			key: 'id',
+			onDelete: 'CASCADE'
 		}
 	},
 	status: {
@@ -282,7 +291,12 @@ RESPONSES.init({
 	timestamps: false,
 	modelName: 'RESPONSES',
 	tableName: 'RESPONSES'
-})
+});
+
+RESPONSES.hasOne(VACANCIES,    { foreignKey: 'id', sourceKey: 'vacancy' });
+VACANCIES.belongsTo(RESPONSES, { foreignKey: 'id', targetKey: 'vacancy' });
+RESPONSES.hasOne(CVS,    { foreignKey: 'id', sourceKey: 'cv' });
+CVS.belongsTo(RESPONSES, { foreignKey: 'id', targetKey: 'cv' });
 
 class REVIEWS extends Model {}
 REVIEWS.init({
@@ -293,31 +307,15 @@ REVIEWS.init({
 	},
 	p_subject: {
 		type: DataTypes.INTEGER,
-		references: {
-			model: 'PROLETARIAT',
-			key: 'id'
-		}
 	},
 	b_subject: {
 		type: DataTypes.INTEGER,
-		references: {
-			model: 'BOURGEOISIE',
-			key: 'id'
-		}
 	},
 	b_object: {
 		type: DataTypes.INTEGER,
-		references: {
-			model: 'PROLETARIAT',
-			key: 'id'
-		}
 	},
 	p_object: {
 		type: DataTypes.INTEGER,
-		references: {
-			model: 'BOURGEOISIE',
-			key: 'id'
-		}
 	},
 	text: {
 		type: DataTypes.STRING(100),
@@ -337,6 +335,9 @@ REVIEWS.init({
 	tableName: 'REVIEWS'
 })
 
+BOURGEOISIE.hasMany(REVIEWS,    { foreignKey: 'b_subject', sourceKey: 'id' });
+REVIEWS.belongsTo(BOURGEOISIE, { foreignKey: 'b_subject', targetKey: 'id' });
+
 class PROMOTION_REQUESTS extends Model {}
 PROMOTION_REQUESTS.init({
 	id: {
@@ -353,7 +354,7 @@ PROMOTION_REQUESTS.init({
 		}
 	},
 	proof: {
-		type: DataTypes.STRING(4000000)
+		type: DataTypes.STRING(1000000)
 	}
 }, {
 	sequelize,
@@ -362,22 +363,20 @@ PROMOTION_REQUESTS.init({
 	tableName: 'PROMOTION_REQUESTS'
 });
 
-class ACCOUT_DROP_REQUESTS extends Model {}
-ACCOUT_DROP_REQUESTS.init({
+PROMOTION_REQUESTS.hasOne(BOURGEOISIE,    { foreignKey: 'id', sourceKey: 'company_id' });
+BOURGEOISIE.belongsTo(PROMOTION_REQUESTS, { foreignKey: 'id', targetKey: 'company_id' });
+
+class ACCOUNT_DROP_REQUESTS extends Model {}
+ACCOUNT_DROP_REQUESTS.init({
 	id: {
 		type: DataTypes.INTEGER,
 		primaryKey: true,
 		autoIncrement: true
 	},
 	isCompany: {
-		type: DataTypes.INTEGER,
+		type: DataTypes.CHAR(1),
 		allowNull: false,
-		get() {
-			return ACCOUT_DROP_REQUESTS.getDataValue('is_company') === 'Y';
-		},
-		set(value) {
-			this.setDataValue('is_company', value ? 'Y' : 'N');
-		}
+		validate: { isIn: [['Y', 'N']] }
 	},
 	account_id: {
 		type: DataTypes.INTEGER,
@@ -389,8 +388,8 @@ ACCOUT_DROP_REQUESTS.init({
 }, {
 	sequelize,
 	timestamps: false,
-	modelName: 'ACCOUT_DROP_REQUESTS',
-	tableName: 'ACCOUT_DROP_REQUESTS'
+	modelName: 'ACCOUNT_DROP_REQUESTS',
+	tableName: 'ACCOUNT_DROP_REQUESTS'
 });
 
 class TOKENS extends Model {}
@@ -406,14 +405,16 @@ TOKENS.init({
 		type: DataTypes.INTEGER,
 		references: {
 			model: 'PROLETARIAT',
-			key: 'id'
+			key: 'id',
+			onDelete: 'CASCADE'
 		}
 	},
 	owner_b: {
 		type: DataTypes.INTEGER,
 		references: {
 			model: 'BOURGEOISIE',
-			key: 'id'
+			key: 'id',
+			onDelete: 'CASCADE'
 		}
 	},
 	value: {
@@ -431,8 +432,16 @@ TOKENS.init({
 	tableName: 'TOKENS'
 })
 
+async function GetRating(userType, userId) {
+	const result = (await sequelize.query('select GetAverageRating(:userType, :userId);', { replacements: { userType, userId } }))
+		[0][0].getaveragerating;
+	return result;
+}
+
+class 
+
 sequelize.sync({ 
-	alter: true
+	// alter: true,
 	// force: true 
 })
 export {
@@ -443,6 +452,7 @@ export {
 	RESPONSES,
 	REVIEWS,
 	PROMOTION_REQUESTS,
-	ACCOUT_DROP_REQUESTS,
-	TOKENS
+	ACCOUNT_DROP_REQUESTS,
+	TOKENS,
+	GetRating
 }

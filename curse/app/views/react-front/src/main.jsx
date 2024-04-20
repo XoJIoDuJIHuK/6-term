@@ -21,6 +21,12 @@ import OutcomingResponses, { loader as outcomingResponseLoader } from './routes/
 import IncomingResponses, { loader as incomingResponseLoader } from './routes/incomingResponses';
 import Sign from './routes/sign';
 import Logout from './routes/logout';
+import Reviews, { loader as reviewsLoader } from './routes/reviews';
+import PublicCompanies, { loader as publicCompaniesLoader } from './routes/publicCompanies';
+import CreateReview, { loader as createReviewLoader } from './routes/createReview';
+import PromotionRequests, { loader as PromotionRequestsLoader } from './routes/promotionRequests';
+import DropRequests, { loader as dropRequestsLoader } from './routes/dropRequests';
+import { AlertProvider } from './components/useAlert';
 
 const router = createBrowserRouter([
   {
@@ -79,7 +85,32 @@ const router = createBrowserRouter([
         loader: companyInfoLoader
       },
       {
-        path: '/logout',
+        path: 'publicCompanies',
+        element: <PublicCompanies />,
+        loader: publicCompaniesLoader
+      },
+      {
+        path: 'reviews/:userType/:userId',
+        element: <Reviews />,
+        loader: reviewsLoader
+      },
+      {
+        path: 'createReview',
+        element: <CreateReview />,
+        loader: createReviewLoader
+      },
+      {
+        path: 'promotion-requests',
+        element: <PromotionRequests />,
+        loader: PromotionRequestsLoader
+      },
+      {
+        path: 'drop-requests',
+        element: <DropRequests />,
+        loader: dropRequestsLoader
+      },
+      {
+        path: 'signout',
         element: <Logout/>
       }
     ],
@@ -94,7 +125,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <CookiesProvider defaultSetOptions={{ path:'/' }}>
-      <RouterProvider router={router} />
+      <AlertProvider>
+        <RouterProvider router={router} />
+      </AlertProvider>
     </CookiesProvider>
   </React.StrictMode>
 );
