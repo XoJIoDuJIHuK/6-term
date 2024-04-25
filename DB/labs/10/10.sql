@@ -15,5 +15,8 @@ create table lob_table (
     FOTO BLOB,
     PDF BFILE
 ) tablespace lob_tdb;
+select * from lob_table;
 
-insert into lob_table values (BFILENAME('dfile_dir', '1.jpg'), bfilename('dfile_dir', '1.pdf'));
+insert into lob_table values (BFILENAME('DFILE_DIR', '1.jpg'), bfilename('DFILE_DIR', '1.pdf'));
+insert into lob_table values (BFILENAME('DFILE_DIR', '2.jpg'), bfilename('DFILE_DIR', '2.pdf'));
+insert into lob_table values (BFILENAME('DFILE_DIR', '3.jpg'), bfilename('DFILE_DIR', '1.pdf'));

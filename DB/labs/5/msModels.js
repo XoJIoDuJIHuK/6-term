@@ -1,6 +1,6 @@
 const { Sequelize, Model, DataTypes } = require('sequelize')
 const sequelize = new Sequelize('SEPDB', 'SA', 'Qwerty123', {
-	host: '192.168.75.131',
+	host: 'dbuntu',
 	dialect: 'mssql',
 	pool: {
 		max: 10,

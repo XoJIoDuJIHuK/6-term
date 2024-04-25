@@ -14,7 +14,7 @@ async function renameTesters() {
 		}
 	})).map(e => e.dataValues.NAME).filter(e => regex.test(e))
 	for (let name of testers) {
-		STAFF.update({ NAME: `tester${name.slice(3)}` }, {
+		STAFF.update({ NAME: `tester${name.slice(3)}`, ROLE: 5 }, {
 			where: {
 				NAME: name
 			}

@@ -9,7 +9,7 @@ CREATE TABLE ROLES (
 );
 go
 
-drop table STAFF;
+-- drop table STAFF;
 CREATE TABLE STAFF (
     NODE HIERARCHYID PRIMARY KEY CLUSTERED,
     LEVEL AS NODE.GetLevel() PERSISTED,
@@ -18,7 +18,7 @@ CREATE TABLE STAFF (
     CONSTRAINT FK_STAFF_ROLE FOREIGN KEY (ROLE) REFERENCES ROLES(ID)
 );
 go
-select * from staff;
+-- select * from staff;
 
 CREATE TABLE TEST_DATA (
     ID INT IDENTITY(1,1) PRIMARY KEY,
@@ -27,7 +27,7 @@ CREATE TABLE TEST_DATA (
 );
 go
 
-drop table COMMITS;
+-- drop table COMMITS;
 CREATE TABLE COMMITS (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     DEVELOPER HIERARCHYID NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE COMMITS (
 );
 go
 
-drop table TESTS;
+-- drop table TESTS;
 CREATE TABLE TESTS (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     TESTER HIERARCHYID NOT NULL,
@@ -150,8 +150,17 @@ insert STAFF (NODE, NAME, ROLE) values (hierarchyid::GetRoot(), N'Big Boss', 1);
 delete staff where name like 'tester%';
 
 declare @manager HIERARCHYID, @root HIERARCHYID;
-set @manager = (select node from staff where name = N'tester_manager1');
 set @root = (select node from staff where name = N'Big Boss');
+set @manager = (select node from staff where name = N'dev_manager1');
+INSERT INTO STAFF (NODE, NAME, ROLE) VALUES (@root.GetDescendant(@manager, NULL), 
+    N'dev_manager1', 3);
+set @manager = (select node from staff where name = N'dev_manager1');
+INSERT INTO STAFF (NODE, NAME, ROLE) VALUES (@root.GetDescendant(@manager, NULL), 
+    N'dev_manager2', 3);
+set @manager = (select node from staff where name = N'dev_manager2');
+INSERT INTO STAFF (NODE, NAME, ROLE) VALUES (@root.GetDescendant(@manager, NULL), 
+    N'tester_manager1', 3);
+set @manager = (select node from staff where name = N'tester_manager1');
 INSERT INTO STAFF (NODE, NAME, ROLE) VALUES (@root.GetDescendant(@manager, NULL), 
     N'tester_manager2', 3);
 

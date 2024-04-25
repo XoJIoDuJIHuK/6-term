@@ -1,0 +1,16 @@
+CREATE FUNCTION dbo.ExportDataByDateRange
+(
+    @StartDate DATETIME,
+    @EndDate DATETIME
+)
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT s.NODE, s.NAME, s.ROLE, c.COMMIT_DATE
+    FROM STAFF AS s
+    INNER JOIN COMMITS AS c ON s.NODE = c.DEVELOPER
+    WHERE c.COMMIT_DATE BETWEEN @StartDate AND @EndDate
+);
+go
+SELECT * FROM ExportDataByDateRange('2023-01-01', '2024-02-01');
