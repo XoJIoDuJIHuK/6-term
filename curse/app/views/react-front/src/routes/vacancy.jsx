@@ -59,21 +59,37 @@ export default function Vacancy() {
 
     const [cookies] = useCookies();
     const { vacancy, company, cvs } = useLoaderData();
+    console.log(vacancy)
+    const [vacancyState, setVacancy] = useState(vacancy)
+
+    const isSecure = location.protocol === "https:";
+    const url = (isSecure ? "wss://" : "ws://") + location.host + "/_ws";
+    const wsConnection = new WebSocket(url);
+    wsConnection.addEventListener('message', event => {
+        const changedVacancy = event.data ? JSON.parse(event.data) : null;
+        if (!changedVacancy || !changedVacancy.active) {
+            alert('Вакансия больше не доступна');
+            location.href = '/';
+        }
+        console.log(changedVacancy)
+        setVacancy({ ...changedVacancy, company: vacancyState.company });
+    })
+
     const [dialogIsOpen, setDialogOpen] = useState(false);
     const showAlert = useAlert();
     return (<Box>
-        <Typography variant='h3'>{ vacancy.name }</Typography>
+        <Typography variant='h3'>{ vacancyState.name }</Typography>
         <Typography variant='h4'><NavLink to={`/company/${company.id}`}>{ company.name }</NavLink></Typography>
-        <Typography variant='h5'>{ vacancy.release_date }</Typography>
-        <Typography variant='h5'>{ vacancy.region || 'Регион не указан' }</Typography>
-        <Typography variant='h5'>{ experiences[vacancy.experience - 1] }</Typography>
-        <Typography variant='h5'>{ schedules[vacancy.schedule - 1] }</Typography>
-        <Box>{ vacancy.min_salary ? <>От { vacancy.min_salary }{ vacancy.max_salary ? <>до { vacancy.max_salary }</> : ' рублей' }</> : 
-            vacancy.max_salary ? <>До { vacancy.max_salary } рублей</> : 'З/п не указана'}</Box>
-        <Box>{ vacancy.min_hours_per_day ? <>От { vacancy.min_hours_per_day }{ vacancy.max_hours_per_day ? 
-            <> до { vacancy.max_hours_per_day } часов в день</> : ' часов в день' }</> : vacancy.max_hours_per_day ? 
-            <>До { vacancy.max_hours_per_day } часов в день</> : 'Количество рабочих часов не указано'}</Box>
-        <Box>{ vacancy.description }</Box>
+        <Typography variant='h5'>{ vacancyState.release_date }</Typography>
+        <Typography variant='h5'>{ vacancyState.region || 'Регион не указан' }</Typography>
+        <Typography variant='h5'>{ experiences[vacancyState.experience] }</Typography>
+        <Typography variant='h5'>{ schedules[vacancyState.schedule - 1] }</Typography>
+        <Box>{ vacancyState.min_salary ? <>От { vacancyState.min_salary }{ vacancyState.max_salary ? <>до { vacancyState.max_salary }</> : ' рублей' }</> : 
+            vacancyState.max_salary ? <>До { vacancyState.max_salary } рублей</> : 'З/п не указана'}</Box>
+        <Box>{ vacancyState.min_hours_per_day ? <>От { vacancyState.min_hours_per_day }{ vacancyState.max_hours_per_day ? 
+            <> до { vacancyState.max_hours_per_day } часов в день</> : ' часов в день' }</> : vacancyState.max_hours_per_day ? 
+            <>До { vacancyState.max_hours_per_day } часов в день</> : 'Количество рабочих часов не указано'}</Box>
+        <Box>{ vacancyState.description }</Box>
         { (cookies.user_type === 'regular') ? responsePart({ open: dialogIsOpen }) : <></> }
     </Box>);
 }

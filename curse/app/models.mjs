@@ -307,15 +307,35 @@ REVIEWS.init({
 	},
 	p_subject: {
 		type: DataTypes.INTEGER,
+		references: {
+			model: 'PROLETARIAT',
+			key: 'id',
+			onDelete: 'CASCADE'
+		}
 	},
 	b_subject: {
 		type: DataTypes.INTEGER,
+		references: {
+			model: 'BOURGEOISIE',
+			key: 'id',
+			onDelete: 'CASCADE'
+		}
 	},
 	b_object: {
 		type: DataTypes.INTEGER,
+		references: {
+			model: 'BOURGEOISIE',
+			key: 'id',
+			onDelete: 'CASCADE'
+		}
 	},
 	p_object: {
 		type: DataTypes.INTEGER,
+		references: {
+			model: 'PROLETARIAT',
+			key: 'id',
+			onDelete: 'CASCADE'
+		}
 	},
 	text: {
 		type: DataTypes.STRING(100),
@@ -327,6 +347,12 @@ REVIEWS.init({
 			min: 1,
 			max: 5
 		}
+	},
+	reported: {
+		type: DataTypes.CHAR(1),
+		allowNull: false,
+		defaultValue: 'N',
+		validate: { isIn: [['Y', 'N']] }
 	}
 }, {
 	sequelize,
@@ -335,8 +361,11 @@ REVIEWS.init({
 	tableName: 'REVIEWS'
 })
 
-BOURGEOISIE.hasMany(REVIEWS,    { foreignKey: 'b_subject', sourceKey: 'id' });
-REVIEWS.belongsTo(BOURGEOISIE, { foreignKey: 'b_subject', targetKey: 'id' });
+REVIEWS.belongsTo(PROLETARIAT, { foreignKey: 'p_object' });
+REVIEWS.belongsTo(PROLETARIAT, { foreignKey: 'p_subject' });
+REVIEWS.belongsTo(BOURGEOISIE, { foreignKey: 'b_object' });
+REVIEWS.belongsTo(BOURGEOISIE, { foreignKey: 'b_subject' });
+
 
 class PROMOTION_REQUESTS extends Model {}
 PROMOTION_REQUESTS.init({
@@ -438,7 +467,51 @@ async function GetRating(userType, userId) {
 	return result;
 }
 
-class 
+class BLACK_LIST extends Model {};
+BLACK_LIST.init({
+	id: {
+		type: DataTypes.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
+	},
+	p_subject: {
+		type: DataTypes.INTEGER,
+		references: {
+			model: 'PROLETARIAT',
+			key: 'id',
+			onDelete: 'CASCADE'
+		}
+	},
+	p_object: {
+		type: DataTypes.INTEGER,
+		references: {
+			model: 'PROLETARIAT',
+			key: 'id',
+			onDelete: 'CASCADE'
+		}
+	},
+	b_subject: {
+		type: DataTypes.INTEGER,
+		references: {
+			model: 'BOURGEOISIE',
+			key: 'id',
+			onDelete: 'CASCADE'
+		}
+	},
+	b_object: {
+		type: DataTypes.INTEGER,
+		references: {
+			model: 'BOURGEOISIE',
+			key: 'id',
+			onDelete: 'CASCADE'
+		}
+	}
+}, {
+	timestamps: false,
+	sequelize,
+	modelName: 'BLACK_LIST',
+	tableName: 'BLACK_LIST'
+})
 
 sequelize.sync({ 
 	// alter: true,
@@ -454,5 +527,7 @@ export {
 	PROMOTION_REQUESTS,
 	ACCOUNT_DROP_REQUESTS,
 	TOKENS,
-	GetRating
+	BLACK_LIST,
+	GetRating,
+	sequelize
 }

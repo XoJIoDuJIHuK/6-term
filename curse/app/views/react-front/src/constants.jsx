@@ -1,3 +1,8 @@
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import PendingIcon from '@mui/icons-material/Pending';
+import { Box, Pagination } from '@mui/material';
+
 export const schedules = ['Вахта', 'Полный день', 'Частичная занятость', 'Проектная занятость', 'Стажировка'];
 export const experiences = ['Не важно', 'Без опыта', '1-3 года', '3-6 лет', '6+ лет'];
 export const userTypeDict = {
@@ -48,4 +53,24 @@ export async function fetchWithResult(path, options, showAlert, onSuccess, onErr
         showAlert(err.message, 'error');
         if (onError) onError(err);
     });
+}
+export function getStatusIcon(status) {
+    return {
+        'X': <ThumbDownIcon sx={{color:"red"}} />,
+        'Y': <ThumbUpIcon sx={{color:"green"}} />,
+        'W': <PendingIcon sx={{color:"orange"}} />
+    }[status]
+}
+
+export function getQueryMap(request) {
+    const url = new URL(request.url);
+    return { query: Object.fromEntries(url.searchParams.entries()), searchParams: url.searchParams };
+}
+
+export function CustomPagination(query, totalElements, callback) {
+    return (<Box sx={{display: 'flex', justifyContent: 'center', width: '100%'}}>
+    <Pagination count={Math.ceil(totalElements / 20 || 1)}
+     page={Math.floor((query.offset ?? 0) / 20) + 1}
+      onChange={callback}/>
+  </Box>);
 }

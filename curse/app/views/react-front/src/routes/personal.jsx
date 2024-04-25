@@ -79,6 +79,24 @@ export default function Personal() {
     }
     function CompanyInformation() {
         return (<Box>
+            Алярм! При установке иконки страница перезагружается
+            <img width={60} height={60} src={`/avatars/${userData.id}.jpg`} onError={(e) => { console.log(e); e.target.src='/avatars/default.jpg'; }} />
+            <Button variant='contained' component='label'>
+                    Выбрать иконку <input type='file' hidden onChange={e => {
+                        const file = e.target.files[0];
+                        if (file.size > 1e6) {
+                            showAlert('Файл слишком большой: Больше 1МБ', 'error');
+                            return;
+                        }
+                        if (['jpg', 'jpeg'].indexOf(file.name.split('.').pop()) === -1) {
+                            showAlert('Рзрешены только жпеги', 'error');
+                            return;
+                        }
+                        fetchWithResult('/bour/icon', { method: 'PUT', body: file }, showAlert, () => {
+                            location.reload();
+                        })
+                    }}/>
+                </Button>
             <TextField label="Описание" required variant="outlined" onChange={e => { setNewValue('description', e) }}  value={userData.secription} />
             { userData.promotionRequestPending ? <Box>Запрос на подтверждение компании обрабатывается</Box> : 
                 <Box>{ userData.approved === 'Y' ? "Approved" : <Box sx={{
@@ -114,16 +132,15 @@ export default function Personal() {
     function saveData() {
         fetchWithResult(`/${userTypeDict[cookies.user_type]}/personal`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
-        }, showAlert, () => { location.reload(); });
+        }, showAlert);
     }
 
     const { user } = useLoaderData();
     const [userData, setUserData] = useState(user);
     const [proof, setProof] = useState('');
+    const [avatar, setAvatar] = useState('');
     const [commentary, setCommentary] = useState('');
     const [cookies] = useCookies(['user_type']);
     const userType = cookies.user_type;

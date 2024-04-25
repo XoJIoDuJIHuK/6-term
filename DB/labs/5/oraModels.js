@@ -91,7 +91,7 @@ let connection
 		connection = await oracledb.getConnection({
 			user: 'SYS',
 			password: 'Qwerty123',
-			connectString: 'localhost/SEPDB',
+			connectString: '192.168.75.133/SEPDB',
 			privilege: oracledb.SYSDBA
 		})	
 		// await printDevelopers();

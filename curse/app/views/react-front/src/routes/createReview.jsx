@@ -1,6 +1,6 @@
 import { fetchForLoader, fetchWithResult, getCookie } from '../constants';
 import { useLoaderData } from 'react-router-dom';
-import { Box, Select, MenuItem, InputLabel, TextField, Button } from '@mui/material';
+import { Box, Select, MenuItem, InputLabel, TextField, Button, Rating } from '@mui/material';
 import { useState } from 'react';
 import { useAlert } from '../components/useAlert';
 
@@ -55,7 +55,7 @@ export default function CreateReview() {
             </Box>
             <Box>
                 <TextField label='Text' value={text} onChange={e => { setText(e.target.value); }} />
-                <TextField label='Rating' value={rating} onChange={e => { setRating(e.target.value); }} />
+                <Rating value={rating} onChange={e => { setRating(e.target.value); }} />
             </Box>
             <Button onClick={sendReview}>Отправить</Button>
         </Box>

@@ -1,14 +1,13 @@
-import { useLoaderData, NavLink } from "react-router-dom";
-import { fetchForLoader } from "../constants";
-import { Box, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
+import { useLoaderData } from "react-router-dom";
+import { CustomPagination, fetchForLoader, getQueryMap } from "../constants";
+import { Box, TextField, FormControl, InputLabel, Select, MenuItem, Button, Paper } from '@mui/material';
 import { useState } from "react";
 import { experiences, schedules } from "../constants";
 
 export async function loader({ request }) {
-  const url = new URL(request.url);
-  const query = Object.fromEntries(url.searchParams.entries());
-  const vacancies = await fetchForLoader(`/public-vacancies?${url.searchParams}`);
-  return { vacancies, query };
+  const { query, searchParams } = getQueryMap(request);
+  const { data, totalElements } = await fetchForLoader(`/public-vacancies?${searchParams}`);
+  return { vacancies: data, query, totalElements };
 }
 
 export default function Index() {
@@ -20,11 +19,14 @@ export default function Index() {
     console.log(value)
     if (!Number.isNaN(value) && Number.isInteger(value) && value >= 0) setFilterProperty(key, value);
   }
+  function getNewHref(query) {
+    return `/?${(new URLSearchParams(query)).toString()}`
+  }
 
-  const { vacancies, query } = useLoaderData();
+  const { vacancies, query, totalElements } = useLoaderData();
+  console.log(query);
   const [filter, setFilter] = useState(query);
-  return (
-    <Box sx={{
+  return (<Box sx={{
       display: 'flex',
       justifyContent: 'space-between'
     }}>
@@ -69,34 +71,28 @@ export default function Index() {
             </FormControl>
         </Box>
         <Button onClick={() => {location.href=`/`}}>Сбросить фильтры</Button>
-        <Button onClick={() => {location.href=`/?${(new URLSearchParams(filter)).toString()}`}}>Применить</Button>
+        <Button onClick={() => {location.href=getNewHref(filter)}}>Применить</Button>
       </Box>
-      <Box sx={{width: '100%'}}>
-        {vacancies.length > 0 ? (
-          <ul>
-            {vacancies.map((vacancy) => (
-              <li key={vacancy.id}>
-                <NavLink
-                  to={`vacancy/${vacancy.id}`}
-                  className={({ isActive, isPending }) =>
-                    isActive
-                      ? "active"
-                      : isPending
-                      ? "pending"
-                      : ""
-                  }
-                >
-                  {vacancy.name}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>
-            <i>No vacancies</i>
-          </p>
-        )}
+      <Box sx={{
+        width: '100%',
+        padding: '10px'
+      }}>
+        <Box sx={{
+          display: 'flex',
+          height: '100%',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }}>
+          <Box>{vacancies.length > 0 ? vacancies.map(vacancy => 
+            <Paper key={vacancy.id} onClick={() => { location.href = `vacancy/${vacancy.id}`; }}>
+                {vacancy.name}
+            </Paper>) : 'No vacancies' 
+          }</Box>
+          {CustomPagination(query, totalElements, (e, value) => {
+            query.offset = (value - 1) * 20;
+            location.href = getNewHref(query) 
+          })}
+        </Box>
       </Box>
-    </Box>
-  );
+  </Box>);
 }

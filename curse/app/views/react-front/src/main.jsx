@@ -27,6 +27,8 @@ import CreateReview, { loader as createReviewLoader } from './routes/createRevie
 import PromotionRequests, { loader as PromotionRequestsLoader } from './routes/promotionRequests';
 import DropRequests, { loader as dropRequestsLoader } from './routes/dropRequests';
 import { AlertProvider } from './components/useAlert';
+import Reports, { loader as reportsLoader } from './routes/reports';
+import BlackList, { loader as blackListLoader } from './routes/blackList';
 
 const router = createBrowserRouter([
   {
@@ -108,6 +110,16 @@ const router = createBrowserRouter([
         path: 'drop-requests',
         element: <DropRequests />,
         loader: dropRequestsLoader
+      },
+      {
+        path: 'reports',
+        element: <Reports />,
+        loader: reportsLoader
+      },
+      {
+        path: 'black-list',
+        element: <BlackList />,
+        loader: blackListLoader
       },
       {
         path: 'signout',

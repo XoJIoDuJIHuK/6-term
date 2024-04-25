@@ -12,10 +12,16 @@ begin
     return avg_value;
 end;
 $$ LANGUAGE PLPGSQL;
-
-
-select * from "public"."RESPONSES" where vacancy in (1,6);
 select GetAverageRating('R', 3);
+
+select * from "REVIEWS" r join "PROLETARIAT" p on r.p_subject = p.id or r.p_object = p.id;
+select * from "REVIEWS" r join "BOURGEOISIE" b on r.b_subject = b.id or r.b_object = b.id;
+select r.id as id, r.text as text, r.p_subject as p_subject, p.id as prolId, p.name as prolName, b.id as bourId, b.name as bourName  
+from "REVIEWS" r join "PROLETARIAT" p on r.p_subject = p.id or r.p_object = p.id join "BOURGEOISIE" b on r.b_subject = b.id or r.b_object = b.id where r.reported = 'Y';
+
+select n.id as id, n.p_subject as p_subject, n.b_subject as b_subject, p.name as prol_name, b.name as bour_name
+from "BLACK_LIST" n join "PROLETARIAT" p on n.p_subject = p.id or n.p_object = p.id join "BOURGEOISIE" b on n.b_subject = b.id or n.b_object = b.id;
+
 
 select * from "PROLETARIAT";
 select * from "CVS";
@@ -26,6 +32,7 @@ select * from "REVIEWS";
 select * from "PROMOTION_REQUESTS";
 select * from "ACCOUNT_DROP_REQUESTS";
 select * from "TOKENS";
+select * from "BLACK_LIST";
 
 drop table "PROLETARIAT";
 drop table "CVS";
@@ -36,8 +43,10 @@ drop table "REVIEWS";
 drop table "PROMOTION_REQUESTS";
 drop table "ACCOUNT_DROP_REQUESTS";
 drop table "TOKENS";
+drop table "BLACK_LIST";
 
 delete from "BOURGEOISIE";
 delete from "ACCOUNT_DROP_REQUESTS";
 delete from "REVIEWS";
 delete from "TOKENS";
+delete from "BLACK_LIST";

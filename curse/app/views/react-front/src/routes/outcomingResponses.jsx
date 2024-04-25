@@ -1,21 +1,25 @@
 import { useLoaderData } from 'react-router-dom';
-import { Box, Button } from '@mui/material';
-import { fetchForLoader, fetchWithResult } from '../constants';
+import { Box, Button, Paper } from '@mui/material';
+import { CustomPagination, fetchForLoader, fetchWithResult, getQueryMap, getStatusIcon } from '../constants';
 import { useAlert } from '../components/useAlert';
 
-export async function loader() {
+export async function loader({ request }) {
+    const { query } = getQueryMap(request);
     const cvs = await (await fetch('/prol/cv')).json();
-    const responses = await fetchForLoader('/prol/responses');
+    const { responses, totalElements } = await fetchForLoader('/prol/responses');
     console.log(cvs, responses);
-    return { cvs, responses };
+    return { cvs, responses, query, totalElements };
 }
 
 export default function OutcomingResponses() {
     const showAlert = useAlert();
     function Response(response) {
         const cv = cvs.find(cv => cv.id === response.cv);
-        return (<>
-            <Box>{ response.vacancyName } - { cv.name }<Button onClick={() => {
+        return (<Paper elevation={3} className='response'>
+            <Box>{getStatusIcon(response.status)}</Box>
+            <Box className='cell'>{ response.vacancyName }</Box>
+            <Box className='cell'>{ cv.name }</Box>
+            <Button onClick={() => {
                 fetchWithResult('/prol/responses', {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
@@ -24,10 +28,15 @@ export default function OutcomingResponses() {
                         vacancyId: response.vacancy
                     })
                 }, showAlert, () => { location.href = '/outcoming-responses'; });
-            }}>Отозвать</Button></Box>
-        </>)
+            }}>Отозвать</Button></Paper>)
     }
 
-    const { cvs, responses } = useLoaderData();
-    return (<>{ responses.length > 0 ? responses.map(r => Response(r)) : <div>No Responses</div> }</>)
+    const { cvs, responses, query, totalElements } = useLoaderData();
+    return (<Box id='general-wrapper'>
+        <Box>{ responses.length > 0 ? responses.map(r => Response(r)) : 'Нет откликов' }</Box>
+        {CustomPagination(query, totalElements, (e, value) => {
+            query.offset = (value - 1) * 20;
+            location.href = `/outcoming-responses?offset=${query.offset}`
+        })}
+    </Box>)
 }

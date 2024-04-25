@@ -5,7 +5,7 @@ create table answers (
     constraint test_data_fk foreign key (test_data) references test_data(id)
 ) tablespace db_tbs;
 
-insert into answers (test_data, answer) values (3, 'xdb');
+insert into answers (test_data, answer) values (2, 'cdb');
 
 CREATE OR REPLACE TYPE answer_type AS OBJECT (
   id           NUMBER,

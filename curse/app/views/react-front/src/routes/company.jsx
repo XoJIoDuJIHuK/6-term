@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Paper, Typography } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
 import { fetchForLoader } from '../constants';
 
@@ -8,10 +8,15 @@ export async function loader({ params }) {
 }
 export default function CompanyInfo() {
     const { info } = useLoaderData();
-    return (<>
+    return (<Box id='general-wrapper'>
         <Box>
-            <Typography variant='h3'>{ info.name }</Typography>
-            <Box>{ info.description }</Box>
+            <Box>
+                <img width={60} height={60} src={`/avatars/${info.id}.jpg`} onError={(e) => { console.log(e); e.target.src='/avatars/default.jpg'; }} />
+                <Typography variant='h3'>{ info.name }</Typography>
+            </Box>
+            <Paper elevation={3} sx={{
+                padding: '5px'
+            }}>{ info.description || 'Нет описания' }</Paper>
         </Box>
-    </>)
+    </Box>);
 }

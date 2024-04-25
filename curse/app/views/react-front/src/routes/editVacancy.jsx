@@ -15,7 +15,7 @@ export default function EditVacancy() {//TODO: fix too many requests to /bour/va
             console.log(info)
             for (let key of ['min_salary', 'max_salary', 'min_hours_per_day', 'max_hours_per_day']) {
                 console.log(key, info[key])
-                if (info[key] && Number.isInteger(info[key]) && info[key] >= 0) return false;
+                if (info[key] && (!Number.isInteger(info[key]) && info[key] < 0)) return false;
                 if ((key === 'min_hours_per_day' || key === 'max_hours_per_day') && info[key] > 24) return false;
             }
             if (info.name.length === 0) return false;
