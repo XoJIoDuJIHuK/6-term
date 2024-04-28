@@ -3,7 +3,7 @@ import FilePresentIcon from '@mui/icons-material/FilePresent';
 import { useLoaderData } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useState } from 'react';
-import { fetchForLoader, fetchWithResult, getCookie, userTypeDict } from "../constants";
+import { IconComponent, fetchForLoader, fetchWithResult, getCookie, userTypeDict } from "../constants";
 import { useAlert } from '../components/useAlert';
 
 export async function loader() {
@@ -24,6 +24,7 @@ export default function Personal() {
         } else setUserData({ ...userData, [key]: event.target.value });
     }
     function addBlock(key) {
+        console.log(userData)
         const arr = userData[key].slice();
         const defaultObjects = {
             'experience': {
@@ -49,7 +50,7 @@ export default function Personal() {
     function RegularInformation() {
         return (<>
             <TextField label="Почта" onChange={e => { setNewValue('email', e) }} value={userData.email} />
-            <Typography variant="h5">Образование</Typography>
+            <Typography variant="h6">Образование</Typography>
             <Box>{ userData.education.length > 0 ? userData.education.map((element, index) => {
                 return <Box key={index}>
                     <TextField label="Место учёбы" required value={element.institution} onChange={e => { setNewValue('education', e, index, 'institution') }}/>
@@ -60,8 +61,9 @@ export default function Personal() {
                     </Box>
                     <Button onClick={() => { removeBlock('education', index); }}>Удалить блок</Button>
                 </Box>;
-            }) : "Необразованный. Быдло" }</Box>
+            }) : "Необразованный." }</Box>
             <Box><Button onClick={() => { addBlock('education'); }}>Добавить образование</Button></Box>
+            <Typography variant="h6">Опыт работы</Typography>
             <Box>{ userData.experience.length > 0 ? userData.experience.map((element, index) => {
                 return <Box key={index}>
                     <TextField label="Место работы" required value={element.place} onChange={e => { setNewValue('experience', e, index, 'place') }}/>
@@ -73,15 +75,16 @@ export default function Personal() {
                     <TextField label="Комментарий" required value={element.commentary} onChange={e => { setNewValue('experience', e, index, 'commentary') }}/>
                     <Button onClick={() => { removeBlock('experience', index); }}>Удалить блок</Button>
                 </Box>;
-            }) : "Безработный. Пидор" }</Box>
+            }) : "Неопытный." }</Box>
             <Box><Button onClick={() => { addBlock('experience'); }}>Добавить опыт работы</Button></Box>
         </>)
     }
     function CompanyInformation() {
         return (<Box>
-            Алярм! При установке иконки страница перезагружается
-            <img width={60} height={60} src={`/avatars/${userData.id}.jpg`} onError={(e) => { console.log(e); e.target.src='/avatars/default.jpg'; }} />
-            <Button variant='contained' component='label'>
+            <Box>
+                Внимание! При установке иконки страница перезагружается
+                { IconComponent(userData.id) }
+                <Button variant='contained' component='label'>
                     Выбрать иконку <input type='file' hidden onChange={e => {
                         const file = e.target.files[0];
                         if (file.size > 1e6) {
@@ -89,7 +92,7 @@ export default function Personal() {
                             return;
                         }
                         if (['jpg', 'jpeg'].indexOf(file.name.split('.').pop()) === -1) {
-                            showAlert('Рзрешены только жпеги', 'error');
+                            showAlert('Разрешены только жпеги', 'error');
                             return;
                         }
                         fetchWithResult('/bour/icon', { method: 'PUT', body: file }, showAlert, () => {
@@ -97,7 +100,10 @@ export default function Personal() {
                         })
                     }}/>
                 </Button>
-            <TextField label="Описание" required variant="outlined" onChange={e => { setNewValue('description', e) }}  value={userData.secription} />
+            </Box>
+            <Box><TextField sx={{width: '100%'}} multiline label="Описание" required variant="outlined" onChange={e => { 
+                setNewValue('description', e) 
+            }}  value={userData.secription} /></Box>
             { userData.promotionRequestPending ? <Box>Запрос на подтверждение компании обрабатывается</Box> : 
                 <Box>{ userData.approved === 'Y' ? "Approved" : <Box sx={{
                     display: 'flex',
@@ -126,7 +132,9 @@ export default function Personal() {
                     }}/>
                 </Button>
             </Box> }</Box> }
-            <TextField label="Email" required variant="outlined" onChange={e => { setNewValue('email', e) }}  value={userData.email} />
+            <Box><TextField label="Email" required variant="outlined" onChange={e => { 
+                setNewValue('email', e) 
+            }}  value={userData.email} /></Box>
         </Box>)
     }
     function saveData() {
@@ -140,7 +148,6 @@ export default function Personal() {
     const { user } = useLoaderData();
     const [userData, setUserData] = useState(user);
     const [proof, setProof] = useState('');
-    const [avatar, setAvatar] = useState('');
     const [commentary, setCommentary] = useState('');
     const [cookies] = useCookies(['user_type']);
     const userType = cookies.user_type;

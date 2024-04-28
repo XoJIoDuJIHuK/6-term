@@ -92,7 +92,6 @@ export function getModel(userType) {
 }
 export async function updatePersonal(event, expectedUserType) {
 	try {
-		console.log('НЕГРЫ ВСЕ ПИДОРАСЫ');
 		const id = getCookie(event, 'user_id');
 		const userType = getCookie(event, 'user_type');
 		if (expectedUserType !== userType) {

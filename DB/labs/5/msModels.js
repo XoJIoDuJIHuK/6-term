@@ -167,7 +167,11 @@ module.exports = {
 	InsertTestData: async function(jsonData) {
 		try {
 			const point = GenerateGeoData()
-			await sequelize.query(`INSERT INTO TEST_DATA (GEO_DATA, JSON_DATA) VALUES (geometry::STGeomFromText('POINT (${point.coordinates[0]} ${point.coordinates[1]})', 0), '${jsonData}')`)
+			// await sequelize.query
+			console.log
+			(
+				`INSERT INTO TEST_DATA (GEO_DATA, JSON_DATA) VALUES (geometry::STGeomFromText('POINT (${point.coordinates[0]} ${point.coordinates[1]})', 0), '${jsonData}')`
+			)
 		} catch (err) {
 			errorHandler(err)
 		}

@@ -202,8 +202,10 @@ form[action$="destroy"] button {
   margin-bottom: 10px;
 }
 
-.response .cell {
+.responce .cell {
   width: 100px;
+}
+.hide-overflow {
   text-overflow: ellipsis;
   text-wrap: nowrap;
   overflow: hidden;
@@ -222,4 +224,8 @@ form[action$="destroy"] button {
   margin-right: 5px;
   margin-bottom: 5px;
   font-size: 0.9rem;
+}
+
+.mui-input {
+  margin-top: 15px;
 }

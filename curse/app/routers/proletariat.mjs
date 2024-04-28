@@ -174,7 +174,13 @@ export const proletariatRouter = createRouter()
 			const cvIds = (await CVS.findAll({ where: { 
 				applicant: +getCookie(event, 'user_id')
 			}})).map(e => +e.id);
-			return cvIds.length > 0 ? await mapResponses(cvIds) : [];
+			const responses = cvIds.length > 0 ? await mapResponses(cvIds) : [];
+			return { 
+				responses, 
+				totalElements: (await RESPONSES.findAndCountAll({ where: {
+					cv: cvIds
+				} })).count 
+			};
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
 			return err;

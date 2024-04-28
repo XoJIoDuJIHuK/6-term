@@ -7,7 +7,6 @@ export async function loader({ request }) {
     const { query } = getQueryMap(request);
     const cvs = await (await fetch('/prol/cv')).json();
     const { responses, totalElements } = await fetchForLoader('/prol/responses');
-    console.log(cvs, responses);
     return { cvs, responses, query, totalElements };
 }
 
@@ -17,8 +16,8 @@ export default function OutcomingResponses() {
         const cv = cvs.find(cv => cv.id === response.cv);
         return (<Paper elevation={3} className='response'>
             <Box>{getStatusIcon(response.status)}</Box>
-            <Box className='cell'>{ response.vacancyName }</Box>
-            <Box className='cell'>{ cv.name }</Box>
+            <Box className='cell hide-overflow'>{ response.vacancyName }</Box>
+            <Box className='cell hide-overflow'>{ cv.name }</Box>
             <Button onClick={() => {
                 fetchWithResult('/prol/responses', {
                     method: 'DELETE',

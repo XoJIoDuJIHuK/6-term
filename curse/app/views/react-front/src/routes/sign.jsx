@@ -20,12 +20,9 @@ export default function Sign() {
         username, password
       })
     }, showAlert, d => {
-      console.log('signType', signType)
       if (signType === 'in') {
         localStorage.setItem('userName', d.name);
         window.location.href = '/';
-      } else {
-        console.log('registered');
       }
     })
   }
@@ -33,31 +30,31 @@ export default function Sign() {
     <div id='sign-wrapper'>
       <div className='row'>
         <div className={'cell' + (signType === 'in' ? ' selected' : '')} onClick={() => setSignType('in')}>
-          <label>Sign In</label>
+          <label>Вход</label>
         </div>
         <div className={'cell' + (signType === 'up' ? ' selected' : '')} onClick={() => setSignType('up')}>
-          <label>Sign Up</label>
+          <label>Регистрация</label>
         </div>
       </div>
       <div className='row'>
         <div className={'cell' + (userType === 'regular' ? ' selected' : '')} onClick={() => setUserType('regular')}>
-          <label>Regular</label>
+          <label>Соискатель</label>
         </div>
         <div className={'cell' + (userType === 'company' ? ' selected' : '')} onClick={() => setUserType('company')}>
-          <label>Company</label>
+          <label>Компания</label>
         </div>
       </div>
-      <label htmlFor="username">Username</label>
+      <label htmlFor="username">Логин</label>
       <div className='row'>
         <input type="text" value={username} onChange={e => setUsername(e.target.value)}/>
       </div>
-      <label htmlFor="password">Password</label>
+      <label htmlFor="password">Пароль</label>
       <div className='row'>
         <input type="password" value={password} onChange={e => setPassword(e.target.value)}/>
       </div>
       <div className='row'>
-        <div className='cell'><Button onClick={sign}>Sign {signType}</Button></div>
-        <div className='cell'><Button onClick={() => {window.location.href = '/'}}>Cancel</Button></div>
+        <div className='cell'><Button onClick={sign}>Подтвердить</Button></div>
+        <div className='cell'><Button onClick={() => {window.location.href = '/'}}>Отмена</Button></div>
       </div>
     </div>
   </>)

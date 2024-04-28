@@ -1,6 +1,6 @@
 import { NavLink, useLoaderData } from "react-router-dom";
 import { Box,Rating, Paper } from '@mui/material';
-import { CustomPagination, fetchForLoader, getQueryMap } from "../constants";
+import { CustomPagination, IconComponent, fetchForLoader, getQueryMap } from "../constants";
 
 export async function loader({ request }) {
     const query = getQueryMap(request);
@@ -13,14 +13,21 @@ export default function PublicCompanies() {
     return (<Box sx={{
         width: '100%'
     }} id='general-wrapper'>
-        <Box>{ companies.length > 0 ? companies.map(c => <Paper sx={{
+        <Box sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap'
+        }}>{ companies.length > 0 ? companies.map(c => <Paper sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '5px',
             width: 'max-content',
         }} elevation={3} key={c.id}>
-                <NavLink to={`/reviews/company/${c.id}`}>{ c.name }</NavLink>
+                { IconComponent(c.id) }
+                <Box sx={{margin: '5px'}}><NavLink to={`/reviews/company/${c.id}`}>{ c.name }</NavLink></Box>
                 {c.rating === null ? 'Нет отзывов': <Rating readOnly value={c.rating}/>}
             </Paper>)
          : 'Компаний не существует'}</Box>

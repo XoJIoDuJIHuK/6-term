@@ -4,6 +4,8 @@ import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, RESPONSES, REVIEWS, VACAN
 import { Op } from 'sequelize';
 import fs from 'fs';
 
+const numericVacancyFields = ['min_salary', 'max_salary', 'min_hours_per_day', 'max_hours_per_day'];
+
 export const bourgeoisieRouter = createRouter()
     .put('/register', defineEventHandler(async event => {
         await register(event, 'company');
@@ -151,7 +153,9 @@ export const bourgeoisieRouter = createRouter()
     }))
     .get('/responses', defineEventHandler(async event => {
         try {
-            const vacancies = await VACANCIES.findAll({ where: { company: +getCookie(event, 'user_id') } });
+            const vacancies = (await VACANCIES.findAll({ where: { 
+                company: +getCookie(event, 'user_id') 
+            } })).map(e => e.id);
             const responses = await RESPONSES.findAll({ include: [{
                 model: CVS,
                 attributes: ['id', 'name', 'skills_json'],
@@ -162,19 +166,21 @@ export const bourgeoisieRouter = createRouter()
             }, {
                 model: VACANCIES,
                 attributes: ['id', 'name', ]
-            }], where: { vacancy: vacancies.map(e => e.id) },
+            }], where: { vacancy: vacancies },
                 attributes: ['id', 'status'] });
-            return responses.map(r => { 
-                const cv = r.CV;
-                const applicant = r.CV.PROLETARIAT;
-                return {
-                id: r.id, status: r.status, vacancy: r.VACANCy.dataValues, cv: { id: cv.id, name: cv.name, skills: cv.skills_json, applicant: { 
-                    id: applicant.id,
-                    name: applicant.name,
-                    education: (typeof applicant.education_json === 'object') ? applicant.education_json : JSON.parse(applicant.education_json),
-                    experience: (typeof applicant.experience_json === 'object') ? applicant.experience_json : JSON.parse(applicant.experience_json)
-                } }
-            }});
+            return { responses: responses.map(r => { 
+                    const cv = r.CV;
+                    const applicant = r.CV.PROLETARIAT;
+                    return {
+                    id: r.id, status: r.status, vacancy: r.VACANCy.dataValues, cv: { id: cv.id, name: cv.name, skills: cv.skills_json, applicant: { 
+                        id: applicant.id,
+                        name: applicant.name,
+                        education: (typeof applicant.education_json === 'object') ? applicant.education_json : JSON.parse(applicant.education_json),
+                        experience: (typeof applicant.experience_json === 'object') ? applicant.experience_json : JSON.parse(applicant.experience_json)
+                    } }
+                }}),
+                totalElements: (await RESPONSES.findAndCountAll({ where: { vacancy: vacancies } })).count
+            }
         } catch (err) {
             setResponseStatus(event, err.code ?? 404);
             return err;
@@ -226,6 +232,7 @@ export const bourgeoisieRouter = createRouter()
                 throw new ClientError('Имя вакансии занято', 400);
             }
             validateVacancy(company, body);
+            nullifyFields(body);
             const vacancy = await VACANCIES.create(Object.assign(body, { company: company.id } ));
             return { message: 'Вакансия создана', id: vacancy.id };
         } catch (err) {
@@ -250,6 +257,7 @@ export const bourgeoisieRouter = createRouter()
                 await RESPONSES.destroy({ where: { vacancy: vacancy.id } });
             }
             validateVacancy(company, vacancy);
+            nullifyFields(vacancy);
             await VACANCIES.update(vacancy, { where: { id: vacancy.id, company: company.id } });
             vacancyEmitter.emit('changed', vacancy);
             return { message: 'Вакансия изменена' };
@@ -306,7 +314,7 @@ export const bourgeoisieRouter = createRouter()
 
 function validateVacancy(company, vacancy) {
     if (!vacancy.name || vacancy.name.length > 30) throw new ClientError('Неправильная длина названия вакансии', 400);
-    for (let key of ['min_salary', 'max_salary', 'min_hours_per_day', 'max_hours_per_day']) {
+    for (let key of numericVacancyFields) {
         if ((vacancy[key] && (!Number.isInteger(vacancy[key]) || vacancy[key] < 0)) || 
             ((key === 'min_hours_per_day' || key === 'max_hours_per_day') && vacancy[key] > 24)) 
             throw new ClientError(`Ошибка в поле ${key}`, 400);
@@ -316,4 +324,11 @@ function validateVacancy(company, vacancy) {
     if (!Number.isInteger(vacancy.schedule) || vacancy.schedule < 1 || vacancy.schedule > 5) throw new ClientError('Неверное значение графика', 400);
     if (!company.approved && vacancy.schedule !== 4) throw new ClientError('Компания пока не может размещать ничего, кроме заказов на фриланс', 400);
     if (vacancy.description && vacancy.description.length > 1000) throw new ClientError('Длишком длинное описание', 400);
+}
+function nullifyFields(vacancy) {
+    for (let key of numericVacancyFields) {
+        if (vacancy[key] === 0) {
+            vacancy[key] = null;
+        }
+    }
 }

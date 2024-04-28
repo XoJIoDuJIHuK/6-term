@@ -1,5 +1,5 @@
 import { useLoaderData } from "react-router-dom";
-import { CustomPagination, fetchForLoader, getQueryMap } from "../constants";
+import { CustomPagination, IconComponent, SalaryToString, fetchForLoader, getQueryMap } from "../constants";
 import { Box, TextField, FormControl, InputLabel, Select, MenuItem, Button, Paper } from '@mui/material';
 import { useState } from "react";
 import { experiences, schedules } from "../constants";
@@ -7,6 +7,7 @@ import { experiences, schedules } from "../constants";
 export async function loader({ request }) {
   const { query, searchParams } = getQueryMap(request);
   const { data, totalElements } = await fetchForLoader(`/public-vacancies?${searchParams}`);
+  console.log(data)
   return { vacancies: data, query, totalElements };
 }
 
@@ -16,38 +17,37 @@ export default function Index() {
   }
   function setNumeric(key, value) {
     value = +value;
-    console.log(value)
     if (!Number.isNaN(value) && Number.isInteger(value) && value >= 0) setFilterProperty(key, value);
   }
   function getNewHref(query) {
+    if (query.experience === 0) delete query.experience;
     return `/?${(new URLSearchParams(query)).toString()}`
   }
 
   const { vacancies, query, totalElements } = useLoaderData();
-  console.log(query);
   const [filter, setFilter] = useState(query);
   return (<Box sx={{
       display: 'flex',
       justifyContent: 'space-between'
     }}>
       <Box id="sidebar">
-        <Box><TextField label='Ключевое слово' onChange={e => {setFilterProperty('text', e.target.value)}} value={filter.text ?? ''}/></Box>
+        <Box><TextField size='small' label='Ключевое слово' onChange={e => {setFilterProperty('text', e.target.value)}} value={filter.text ?? ''}/></Box>
         <Box sx={{
           display: 'flex',
           flexDirection: 'column'
         }}>
           <Box>
             Зарплата
-            <TextField label='От' onChange={e => {setNumeric('min_salary', e.target.value)}} value={filter.min_salary ?? ''}/>
-            <TextField label='До' onChange={e => {setNumeric('max_salary', e.target.value)}} value={filter.max_salary ?? ''}/>
+            <TextField size='small' label='От' onChange={e => {setNumeric('min_salary', e.target.value)}} value={filter.min_salary ?? ''}/>
+            <TextField size='small' label='До' onChange={e => {setNumeric('max_salary', e.target.value)}} value={filter.max_salary ?? ''}/>
           </Box>
           <Box>
             Часов в день
-            <TextField label='От' onChange={e => {setNumeric('min_hours_per_day', e.target.value)}} value={filter.min_hours_per_day ?? ''}/>
-            <TextField label='До' onChange={e => {setNumeric('max_hours_per_day', e.target.value)}} value={filter.max_hours_per_day ?? ''}/>
+            <TextField size='small' label='От' onChange={e => {setNumeric('min_hours_per_day', e.target.value)}} value={filter.min_hours_per_day ?? ''}/>
+            <TextField size='small' label='До' onChange={e => {setNumeric('max_hours_per_day', e.target.value)}} value={filter.max_hours_per_day ?? ''}/>
           </Box>
           <Box>
-            <TextField label='Регион' onChange={e => {setFilterProperty('region', e.target.value)}} value={filter.region ?? ''}/>
+            <TextField size='small' label='Регион' onChange={e => {setFilterProperty('region', e.target.value)}} value={filter.region ?? ''}/>
           </Box>
           <FormControl variant="outlined" sx={{width: '100%'}}>
                 <InputLabel id="experience-label">Опыт</InputLabel>
@@ -56,7 +56,7 @@ export default function Index() {
                     id="experience-select"
                     value={filter.experience}
                     onChange={e => { setFilterProperty('experience', e.target.value); }}>
-                    { experiences.map((exp, index) => <MenuItem key={index + 1} value={index + 1}>{ exp }</MenuItem>) }
+                    { experiences.map((exp, index) => <MenuItem key={index} value={index}>{ exp }</MenuItem>) }
                 </Select>
             </FormControl>
             <FormControl variant="outlined" sx={{width: '100%'}}>
@@ -84,8 +84,17 @@ export default function Index() {
           justifyContent: 'space-between'
         }}>
           <Box>{vacancies.length > 0 ? vacancies.map(vacancy => 
-            <Paper key={vacancy.id} onClick={() => { location.href = `vacancy/${vacancy.id}`; }}>
-                {vacancy.name}
+            <Paper sx={{
+              padding: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }} key={vacancy.id} onClick={() => { location.href = `vacancy/${vacancy.id}`; }}>
+                <Box sx={{width: '100%', display: 'flex', flexWrap: 'nowrap', alignItems: 'center'}}>
+                  { IconComponent(vacancy.company, 40, 40) }
+                  <Box sx={{marginLeft: '20px'}}>{vacancy.name}</Box>
+                </Box>
+                <Box sx={{width: '150px'}}>{ SalaryToString(vacancy) }</Box>
             </Paper>) : 'No vacancies' 
           }</Box>
           {CustomPagination(query, totalElements, (e, value) => {

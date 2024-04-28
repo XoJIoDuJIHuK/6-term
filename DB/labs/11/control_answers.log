@@ -1,0 +1,52 @@
+
+SQL*Loader: Release 19.0.0.0.0 - Production on Fri Apr 26 07:53:12 2024
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   D:\6-term\DB\labs\11\control_answers.ctl
+Data File:      D:\6-term\DB\labs\11\answers_oracle.csv
+  Bad File:     D:\6-term\DB\labs\11\answers_oracle.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     250 rows, maximum of 1048576 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table TABLE_ANSWERS, loaded from every logical record.
+Insert option in effect for this table: APPEND
+
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+COMMENTARY                          FIRST     *   ;       CHARACTER            
+    SQL string for column : "UPPER(:commentary)"
+RIGTH_FLOAT                          NEXT     *   ;       CHARACTER            
+    SQL string for column : "ROUND(:rigth_float,1)"
+UPDATE_DATE                          NEXT     *   ;       DATE dd/mm/yyyy      
+
+
+Table TABLE_ANSWERS:
+  5 Rows successfully loaded.
+  0 Rows not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 193500 bytes(250 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:             5
+Total logical records rejected:         0
+Total logical records discarded:        0
+
+Run began on Fri Apr 26 07:53:12 2024
+Run ended on Fri Apr 26 07:53:13 2024
+
+Elapsed time was:     00:00:00.42
+CPU time was:         00:00:00.09

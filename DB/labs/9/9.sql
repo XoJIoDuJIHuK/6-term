@@ -70,7 +70,7 @@ BEGIN
   -- insert into tests_9(tests_table_column) values (table_of_tests());
   commit;
   -- Выяснить, является ли членом коллекции К1 какой-то произвольный элемент
-  is_member := item_3 MEMBER OF table_xd;
+  is_member := item_4 MEMBER OF table_xd;
   if is_member then dbms_output.PUT_LINE('in table_xd'); else dbms_output.PUT_LINE('not in table_xd'); end if;
 END;
 
@@ -109,3 +109,6 @@ BEGIN
     dbms_output.PUT_LINE(v_tests(i).tests_table_column.count);
   end loop;
 end;
+
+-- is empty
+select TESTS_TABLE_COLUMN from TESTS_9 t where t.TESTS_TABLE_COLUMN is empty;

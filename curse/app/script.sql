@@ -1,7 +1,7 @@
 -- Active: 1712052565265@@192.168.75.131@5432
 select current_database();
-insert into "public"."PROLETARIAT" (name, login, password_hash, is_admin, education_json, experience_json) values ('Supreme Admin', 'adminxd', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'Y', '{}', '{}');
-insert into "public"."PROLETARIAT" (name, login, password_hash, is_admin, education_json, experience_json) values ('Ivan Ivanov', 'user2', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'N', '{}', '{}');
+insert into "public"."PROLETARIAT" (name, login, password_hash, is_admin, education_json, experience_json) values ('Supreme Admin', 'adminxd', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'Y', '[]', '[]');
+insert into "public"."PROLETARIAT" (name, login, password_hash, is_admin, education_json, experience_json) values ('Ivan Ivanov', 'user2', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'N', '[]', '[]');
 insert into "public"."BOURGEOISIE" (name, login, password_hash, approved) values ('EPAM', 'admincumpany', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', 'N');
 CREATE OR REPLACE FUNCTION GetAverageRating(userType char(1), user_id int) returns FLOAT as
 $$

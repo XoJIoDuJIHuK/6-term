@@ -1,0 +1,25 @@
+﻿@model RoleViewModel
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<h2>Delete role</h2>
+
+<form asp-action="DeleteRole" method="post">
+    <div class="form-group">
+        <label for="new-role">Role: </label>
+        <input class="form-control" name="roleId" id="new-role" type="text" placeholder="Enter role ID"/>
+    </div>
+    <button type="submit" class="btn btn-primary m-2">Delete</button>
+</form>
+<div>
+    <table class="table">
+        <tr><th scope="col">#</th><th scope="col">Id</th><th scope="col">Role Name</th></tr>
+        @{ var counter = 1; }
+        @foreach (var role in @Model.roleList)
+        {
+            <tr><td>@counter</td><td>@role.Id</td><td>@role.Name</td></tr>
+            counter++;
+        }
+    </table>
+</div>

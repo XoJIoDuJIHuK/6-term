@@ -1,0 +1,32 @@
+﻿@model UserRolesViewModel
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<h2>Remove role</h2>
+
+<form asp-action="RemoveRoleUser" method="post">
+    <div class="form-group">
+        <label for="userDataList" class="form-label">Users</label>
+        <input autocomplete="off" class="form-control" name="name" id="userDataList" placeholder="Type to search...">
+    </div>
+    <div class="form-group">
+        <label for="rolesDataList" class="form-label">Roles</label>
+        <input autocomplete="off" class="form-control" name="RoleName" id="rolesDataList" placeholder="Type to search...">
+    </div>
+     <div class="form-group">
+     <button class="m-2 btn btn-primary">Revoke</button>
+     </div>
+</form>
+
+<div>
+    <table class="table">
+        <tr><th scope="col">#</th><th scope="col">Name</th><th scope="col">Roles</th></tr>
+        @{ var counter = 1; }
+        @foreach (var userRoles in @Model.userRoles)
+        {
+            <tr><td>@counter</td><td>@userRoles.user.UserName</td><td>@userRoles.GetUserListAsString()</td></tr>
+            counter++;
+        }
+    </table>
+</div>

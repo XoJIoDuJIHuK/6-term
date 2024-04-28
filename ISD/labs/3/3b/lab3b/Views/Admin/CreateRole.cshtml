@@ -1,0 +1,25 @@
+﻿@model RoleViewModel
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<h2>Add role</h2>
+
+<form asp-action="CreateRole" method="post">
+    <div class="form-group">
+        <label for="new-role">Role: </label>
+        <input class="form-control" name="roleName" id="new-role" type="text" placeholder="Enter new role"/>
+    </div>
+    <button type="submit" class="btn btn-primary m-2">Add</button>
+</form>
+<div>
+    <table class="table">
+        <tr><th scope="col">#</th><th scope="col">Id</th><th scope="col">Name</th></tr>
+        @{ var counter = 1; }
+        @foreach (var role in @Model.roleList)
+        {
+            <tr><td>@counter</td><td>@role.Id</td><td>@role.Name</td></tr>
+            counter++;
+        }
+    </table>
+</div>

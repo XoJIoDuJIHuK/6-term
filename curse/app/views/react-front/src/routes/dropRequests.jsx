@@ -7,7 +7,6 @@ import { useAlert } from '../components/useAlert';
 export async function loader({ request }) {
     const { query } = getQueryMap(request);
     const { requests, totalElements } = await fetchForLoader('/admin/drop-requests');
-    console.log(requests)
     return { requests, query, totalElements };
 }
 

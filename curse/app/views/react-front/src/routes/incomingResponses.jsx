@@ -8,7 +8,6 @@ import { useAlert } from '../components/useAlert';
 export async function loader({ request }) {
     const { query } = getQueryMap(request);
     const { responses, totalElements } = await fetchForLoader('/bour/responses');
-    console.log(responses);
     return { responses, query, totalElements };
 }
 
@@ -49,7 +48,6 @@ export default function IncomingResponses() {
         })}</> : "Без опыта" }</Box>
     }
     function Education(educations) {
-        console.log('ed', educations)
         return <Box>{ educations.length > 0 ? <>Образование {educations.map((exp, index) => {
             return <Accordion key={index} expandIcon={<ExpandMoreIcon/>}>
                 <AccordionSummary>{ exp.institution }</AccordionSummary>
@@ -108,9 +106,9 @@ export default function IncomingResponses() {
                 responses.map(r => 
                 <Paper elevation={3} key={r.id} className='response'>
                     <Box>{getStatusIcon(r.status)}</Box>
-                    <Box className='cell'>{ r.vacancy.name }</Box>
-                    <Box className='cell'>{ r.cv.name }</Box>
-                    <Box className='cell'>{ r.cv.applicant.name }</Box>
+                    <Box className='cell hide-overflow'>{ r.vacancy.name }</Box>
+                    <Box className='cell hide-overflow'>{ r.cv.name }</Box>
+                    <Box className='cell hide-overflow'>{ r.cv.applicant.name }</Box>
                     <Button onClick={() => selectResponse(r.id)}>Просмотреть</Button>
                 </Paper>) : "No incoming responses. Loser. Post a vacancy or something"
             }</Box>

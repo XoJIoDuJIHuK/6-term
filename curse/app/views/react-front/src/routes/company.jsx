@@ -11,7 +11,7 @@ export default function CompanyInfo() {
     return (<Box id='general-wrapper'>
         <Box>
             <Box>
-                <img width={60} height={60} src={`/avatars/${info.id}.jpg`} onError={(e) => { console.log(e); e.target.src='/avatars/default.jpg'; }} />
+                <img width={60} height={60} src={`/avatars/${info.id}.jpg`} onError={(e) => { e.target.src='/avatars/default.jpg'; }} />
                 <Typography variant='h3'>{ info.name }</Typography>
             </Box>
             <Paper elevation={3} sx={{

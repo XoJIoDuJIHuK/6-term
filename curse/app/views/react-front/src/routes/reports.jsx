@@ -7,7 +7,6 @@ import { useAlert } from "../components/useAlert";
 export async function loader({ request }) {
     const query = getQueryMap(request);
     const { reports, totalElements } = await fetchForLoader(`/admin/reported-reviews`);
-    console.log(reports)
     return { reports, query, totalElements };
 }
 

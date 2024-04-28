@@ -1,0 +1,25 @@
+﻿@model UserViewModel
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<h2>Delete user</h2>
+
+<form asp-action="DeleteUser" method="post">
+    <div class="form-group">
+        <label for="del-user">User: </label>
+        <input class="form-control" name="userId" id="del-user" type="text" placeholder="Enter user ID"/>
+    </div>
+    <button type="submit" class="btn btn-primary m-2">Delete</button>
+</form>
+<div>
+    <table class="table">
+        <tr><th scope="col">#</th><th scope="col">Id</th><th scope="col">Name</th></tr>
+        @{ var counter = 1; }
+        @foreach (var user in @Model.userList)
+            {
+                <tr><td>@counter</td><td>@user.Id</td><td>@user.UserName</td></tr>
+                counter++;
+            }
+    </table>
+</div>

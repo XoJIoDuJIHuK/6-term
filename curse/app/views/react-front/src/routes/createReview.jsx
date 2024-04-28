@@ -20,7 +20,6 @@ export async function loader() {
 export default function CreateReview() {
     async function sendReview() {
         const userType = getCookie('user_type');
-        console.log(selectedObject.id, text, rating)
         fetchWithResult(`/${userType === 'company' ? 'bour' : 'prol'}/review`, {
             method: 'PUT',
             headers: {

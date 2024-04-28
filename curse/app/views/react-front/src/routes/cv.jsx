@@ -24,12 +24,22 @@ export default function CVs() {
     const showAlert = useAlert();
     const { cvs } = useLoaderData();
     return (<Box id='general-wrapper'>
-        <Button onClick={createCV}>Создать</Button>
-        <Box>
-        { cvs.length > 0 ? cvs.map(cv => <Paper key={cv.id} elevation={3}>
-            <NavLink to={`/cv/edit/${cv.id}`}>{ cv.name }</NavLink>
-        </Paper>) : 
-            'Нет резюме' }
+        <Box sx={{width: '100%'}}>
+            <Button onClick={createCV}>Создать</Button>
+            <Box sx={{
+                display: 'flex',
+                width: '100%',
+                justifyContent: 'left',
+                flexWrap: 'wrap'
+            }}>
+            { cvs.length > 0 ? cvs.map(cv => <Paper sx={{
+                display: 'flex',
+                padding: '10px'
+            }} key={cv.id} elevation={3}>
+                <NavLink to={`/cv/edit/${cv.id}`}>{ cv.name }</NavLink>
+            </Paper>) : 
+                'Нет резюме' }
+            </Box>
         </Box>
     </Box>)
 }

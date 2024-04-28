@@ -67,7 +67,6 @@ app.use(defineEventHandler(async event => {
     setResponseHeader(event, 'Content-Type', 'text/html');
     return fs.readFileSync('./views/react-front/dist/index.html');
 }));
-// createServer(toNodeListener(app)).listen(process.env.PORT || 5173);
 const server = createServer(toNodeListener(app));
 const { handleUpgrade } = wsAdapter({
     hooks: {

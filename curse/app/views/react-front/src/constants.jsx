@@ -27,8 +27,6 @@ export async function fetchForLoader(path) {
             location.href = '/signout';
         } else if (err.code === 403) {
             location.href = '/';
-        } else {
-            alert(err.code, err.message);
         }
     })
     .then(d => {
@@ -42,9 +40,7 @@ export async function fetchWithResult(path, options, showAlert, onSuccess, onErr
         else throw r.json();
     })
     .then(d => {
-        console.log(d)
         showAlert(d.message, 'success');
-        console.log('onSuccess', onSuccess);
         if (onSuccess) onSuccess(d); 
     })
     .catch(async err => { 
@@ -73,4 +69,15 @@ export function CustomPagination(query, totalElements, callback) {
      page={Math.floor((query.offset ?? 0) / 20) + 1}
       onChange={callback}/>
   </Box>);
+}
+
+export function IconComponent(id, width = 60, height = 60) {
+    return (<img width={width} height={height} src={`/avatars/${id}.jpg`} onError={(e) => { 
+        e.target.src='/avatars/default.jpg';
+    }} />);
+}
+
+export function SalaryToString(vacancy) {
+    return <Box>{ vacancy.min_salary ? <>От { vacancy.min_salary }{ vacancy.max_salary ? <>до { vacancy.max_salary }</> : ' рублей' }</> : 
+        vacancy.max_salary ? <>До { vacancy.max_salary } рублей</> : 'З/п не указана'}</Box>;
 }

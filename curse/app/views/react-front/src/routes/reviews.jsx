@@ -4,7 +4,6 @@ import { CustomPagination, fetchForLoader, fetchWithResult, getCookie, getQueryM
 import { useAlert } from '../components/useAlert';
 
 export async function loader({ params, request }) {
-    // console.log(location)
     const query = getQueryMap(request);
     const isCompany = params.userType === 'company';
     const { data, totalElements } = await fetchForLoader(`/${isCompany ? "company-reviews" : 
@@ -15,7 +14,6 @@ export async function loader({ params, request }) {
 export default function Reviews() {
     const showAlert = useAlert();
     const { id, name, rating, reviews, myReviewId, reviewAllowed, isCompany, query, totalElements } = useLoaderData();
-    console.log(location)
     const userType = getCookie('user_type');
     return (<Box id='general-wrapper'>
         <Box>
