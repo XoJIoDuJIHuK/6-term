@@ -1,0 +1,144 @@
+openapi: 3.0.0
+info:
+  title: Phone book
+  version: 1.0.0
+  description: All for the phone book
+servers:
+  - url: http://localhost:3000
+    description: Production server
+paths:
+  /TS:
+    get:
+      tags:
+        - TelephoneDirectory
+      summary: Get all contacts
+      description: |-
+        Provides information about the t-book contacts
+      operationId: GetServiceInfo
+      responses:
+        '200':
+          description: 'Successful response'
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/allContacts'
+    post:
+      tags:
+        - TelephoneDirectory
+      summary: Create a contact
+      description: |-
+        Create a new task. The user provides a Task document, which the server
+        uses as a basis and adds additional fields.
+      operationId: CreateTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/contactCreation'
+        required: true
+      responses:
+        '201':
+          description: 'Example of successful response'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/telephoneDirectoryInfoResponce'   
+    put:
+      tags:
+        - TelephoneDirectory
+      summary: Update a contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/contactUpdating'
+        required: true
+      responses:
+        '200':
+          description: 'Example of successful response'
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/telephoneDirectoryInfoResponce'
+    delete:
+      tags:
+        - TelephoneDirectory
+      summary: Delete a contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/contactDeleting'
+      responses:
+        '204':
+          description: 'Example of successful response'
+      
+components:
+  schemas:
+    allContacts:
+      type: array
+      items:
+        $ref: '#/components/schemas/telephoneDirectoryInfoResponce'
+          
+    telephoneDirectoryInfoResponce:
+      required:
+        - id
+        - name
+        - phoneNumber
+      type: object  
+      properties:
+        id:
+          type: integer
+          description: Task identifier assigned by the server.
+        name:
+          type: string
+          example: 'User'
+        phoneNumber: 
+          type: string
+          description: |-
+            Use a pattern: XXXXXXX, where X - number 
+          pattern: '^[0-9]{8}$'
+          example: '12345678'  
+    contactCreation:  
+      required:
+        - name
+        - phoneNumber
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'User'
+        phoneNumber:
+          type: string
+          description: |-
+            Use a pattern: XXXXXXX, where X - number 
+          example: '12345678'
+    contactUpdating:  
+      required: 
+        - id
+        - name
+        - phoneNumber
+      type: object
+      properties:
+        id: 
+          type: integer
+          description: 
+            Id of updating contacts
+        name:
+          type: string
+          example: 'User'
+        phoneNumber: 
+          type: string
+          description: |-
+            Use a pattern: XXXXXXXX, where X - number 
+          pattern: '^[0-9]{8}$'
+          example: '12345678'
+    contactDeleting:  
+      required: 
+        - id
+      type: object
+      properties:
+        id: 
+          type: integer
+          description: 
+            Id of deleting contacts
