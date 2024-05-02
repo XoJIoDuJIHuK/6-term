@@ -7,7 +7,6 @@ import { experiences, schedules } from "../constants";
 export async function loader({ request }) {
   const { query, searchParams } = getQueryMap(request);
   const { data, totalElements } = await fetchForLoader(`/public-vacancies?${searchParams}`);
-  console.log(data)
   return { vacancies: data, query, totalElements };
 }
 
@@ -88,8 +87,9 @@ export default function Index() {
               padding: '10px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between'
-            }} key={vacancy.id} onClick={() => { location.href = `vacancy/${vacancy.id}`; }}>
+              justifyContent: 'space-between',
+              marginBottom: '10px'
+            }} elevation={3} key={vacancy.id} onClick={() => { location.href = `vacancy/${vacancy.id}`; }}>
                 <Box sx={{width: '100%', display: 'flex', flexWrap: 'nowrap', alignItems: 'center'}}>
                   { IconComponent(vacancy.company, 40, 40) }
                   <Box sx={{marginLeft: '20px'}}>{vacancy.name}</Box>

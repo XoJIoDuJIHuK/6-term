@@ -78,6 +78,6 @@ export function IconComponent(id, width = 60, height = 60) {
 }
 
 export function SalaryToString(vacancy) {
-    return <Box>{ vacancy.min_salary ? <>От { vacancy.min_salary }{ vacancy.max_salary ? <>до { vacancy.max_salary }</> : ' рублей' }</> : 
+    return <Box>{ vacancy.min_salary ? <>От { vacancy.min_salary }{ vacancy.max_salary ? <> до { vacancy.max_salary }</> : ' рублей' }</> : 
         vacancy.max_salary ? <>До { vacancy.max_salary } рублей</> : 'З/п не указана'}</Box>;
 }

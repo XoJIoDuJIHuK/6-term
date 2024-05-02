@@ -92,11 +92,11 @@ async function InsertTests() {
 	}
 }
 
-// renameTesters()
-// printDevelopers()
+renameTesters()
+printDevelopers()
 // printTesters()
 // GetSubordinates('dev_manager1')
 const jsonDataArr = ['{"xd":"kek"}', JSON.stringify({someData:[1,2,3]}), JSON.stringify(['mama', 'mia'])]
 // for (let jsonData of jsonDataArr) {InsertTestData(jsonData)}
 // InsertCommits()
-InsertTests()
+// InsertTests()

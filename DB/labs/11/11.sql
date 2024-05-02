@@ -1,3 +1,5 @@
+SELECT db_name();
+
 drop function ExportCommits;
 drop function ExportTests;
 go
@@ -10,7 +12,7 @@ CREATE FUNCTION ExportTests(@StartDate DATETIME, @EndDate DATETIME)
     where test_date BETWEEN @StartDate and @EndDate);
 go
 use sepdb;
-SELECT * FROM ExportTests('2023-01-01', '2024-02-01');
+SELECT * FROM ExportTests('2023-01-01', '2025-02-01');
 
 
 drop table table_tests;
@@ -43,3 +45,9 @@ VALUES
     ('skill issue', 0.9, '2024-04-23'),
     ('Keep practicing', 0.5, '2024-04-22'),
     ('kys', 0.95, '2024-04-21');
+
+delete from table_tests;
+delete from table_answers;
+
+SELECT * from table_tests;
+SELECT * from table_answers;

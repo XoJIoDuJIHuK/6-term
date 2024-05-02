@@ -7,8 +7,8 @@ import { useAlert } from '../components/useAlert';
 export async function loader() {
     const userType = getCookie('user_type');
     if (userType === 'regular') {
-        const list = await fetchForLoader('/public-companies?skipRating=true');
-        return { list };
+        const { companies } = await fetchForLoader('/public-companies?skipRating=true');
+        return { list: companies };
     } else if (userType === 'company') {
         const list = await fetchForLoader('/bour/applicants-list');
         return { list };
@@ -39,8 +39,8 @@ export default function CreateReview() {
     const [selectedObject, selectObject] = useState(list[0]);
     const [text, setText] = useState('');
     const [rating, setRating] = useState(0);
-    return (<>
-        <Box>
+    return (<Box id='general-wrapper'>
+        <Box sx={{display: 'flex', justifyContent: 'left'}}>
             <InputLabel id="object-label">Объект</InputLabel>
             <Box>
                 <Select
@@ -58,5 +58,5 @@ export default function CreateReview() {
             </Box>
             <Button onClick={sendReview}>Отправить</Button>
         </Box>
-    </>)
+    </Box>);
 }

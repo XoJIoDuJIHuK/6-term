@@ -6,12 +6,15 @@ import { deleteCookie, getCookie, setCookie, readBody, serveStatic, setResponseS
 const cookies = ['user_id', 'access_token', 'refresh_token', 'user_type'];//TODO separate
 import { BOURGEOISIE, PROLETARIAT, RESPONSES, REVIEWS, TOKENS, VACANCIES, CVS, BLACK_LIST } from "./models.mjs";
 import EventEmitter from 'node:events';
+import nodemailer from 'nodemailer';
+import smtpTransport from 'nodemailer-smtp-transport';
 
 export const publicDir ='D:/6-term/curse/app/views/react-front/dist'
+const config = JSON.parse(fs.readFileSync('./serverConfig.json'));
 
 export async function login(event, userType) {
 	try {
-		const { username, password } = await readBody(event);
+		const { username, password } = await readCredentials(event);
 		if (isLoggedIn(event)) {
 			throw new ClientError('Вход в учётную запись уже произведён', 401);
 		}
@@ -27,6 +30,7 @@ export async function login(event, userType) {
 	} catch (err) {
 		await logout(event);
 		setResponseStatus(event, 400);
+		delete err.statusCode;
 		return err;
 	}
 }
@@ -100,9 +104,10 @@ export async function updatePersonal(event, expectedUserType) {
 		const model = getModel(userType);
 		const data = await readBody(event);
 		const user = await model.findByPk(id);
-		if (emailIsValid(user.email) && !emailIsValid(data.email)) {
-			throw new ClientError('Нельзя менять правильное мыло на неправильное', 400);
+		if (!emailIsValid(data.email)) {
+			throw new ClientError('Мыло неправильное', 400);
 		}
+		const nameChanged = user.name !== data.name;
 		user.name = data.name;
 		user.email = data.email;
 		if (userType === 'company') {
@@ -112,7 +117,7 @@ export async function updatePersonal(event, expectedUserType) {
 			user.experience_json = data.experience;
 		}
 		await user.save();
-		return { message: 'Данные обновлены' };
+		return { message: 'Данные обновлены' + nameChanged ? '\nДля обновления имени перезайдите в учётную запись' : '', userName: user.name };
 	} catch (err) {
 		setResponseStatus(event, err.code ?? 400);
 		return err;
@@ -120,7 +125,7 @@ export async function updatePersonal(event, expectedUserType) {
 }
 export async function register(event, userType) {
 	try {
-		const { username, password } = await readBody(event);
+		const { username, password } = await readCredentials(event);
 		const { model, data } = userType === 'company' ? { model: BOURGEOISIE, data: {
 			login: username,
 			password_hash: encryptPassword(password),
@@ -147,7 +152,12 @@ export async function register(event, userType) {
 }
 export async function changePassword(event, userType) {
 	try {
-		const { oldPassword, newPassword } = await readBody(event);
+		let oldPassword, newPassword;
+		try {
+			({ oldPassword, newPassword } = await readBody(event));
+		} catch (err) {
+			throw new ClientError('Неверное значение одного из паролей')
+		}
 		const id = getCookie(event, 'user_id');
 		const model = getModel(userType);
 		const existingUser = await model.findByPk(id);
@@ -162,13 +172,31 @@ export async function changePassword(event, userType) {
 		return err;
 	}
 }
-export async function sendMail(to, content) {
-
+export function sendMail(to, subject, text) {
+	let options = {
+        service: 'mail.ru',
+        auth: {
+            user: config.mailUsername,
+            pass: config.mailPassword
+        }
+    }
+    nodemailer.createTransport(smtpTransport(options)).sendMail({
+        from: config.mailUsername, to, subject, text
+    }, function(error){
+        if (error) {
+            log('email sending error: ' + JSON.stringify(error));
+        }
+    });
 }
 export async function createReview(event, fromModel, toModel) {
 	try {
 		const fromId = +getCookie(event, 'user_id');
-		const { toId, text, rating } = await readBody(event);
+		let toId, text, rating;
+		try {
+			({ toId, text, rating } = await readBody(event));
+		} catch (err) {
+			throw new ClientError('Чего-то не хватает')
+		}
 		const from = { model: fromModel, id: fromId };
 		const to = { model: toModel, id: toId };
 
@@ -237,9 +265,12 @@ export function emailIsValid(email) {
 }
 
 export function getSelectLimit(event) {
+	return { limit: 20, offset: getOffset(event) ?? 0 };
+}
+export function getOffset(event) {
 	const query = getQuery(event);
-	const offset = query ? query.offset : 0
-	return { limit: 20, offset: offset ?? 0 };
+	const offset = query ? Number.isNaN(+query.offset) ? 0 : +query.offset : 0;
+	return offset;
 }
 
 class VacancyEmitter extends EventEmitter {};
@@ -248,3 +279,12 @@ export async function notifyAboutChanges(vacancy) {
 	vacancyEmitter.emit('changed', vacancy);
 }
 vacancyEmitter.on('changed', vacancy => { console.log('vacancy changed to ', vacancy) });
+
+async function readCredentials(event) {
+	const body = await readBody(event);
+	if (!body) throw new ClientError('Нет тела - нет логина', 400);
+	const username = body.username;
+	if (!username) throw new ClientError('Нет логина', 400);
+	const password = body.password;
+	return { username, password };
+}

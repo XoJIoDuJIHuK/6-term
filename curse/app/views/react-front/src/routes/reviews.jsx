@@ -8,17 +8,18 @@ export async function loader({ params, request }) {
     const isCompany = params.userType === 'company';
     const { data, totalElements } = await fetchForLoader(`/${isCompany ? "company-reviews" : 
         "bour/review"}?id=${params.userId}`);
-    return { ...data, isCompany, query, totalElements };
+    return { data, isCompany, query, totalElements };
 }
 
 export default function Reviews() {
     const showAlert = useAlert();
-    const { id, name, rating, reviews, myReviewId, reviewAllowed, isCompany, query, totalElements } = useLoaderData();
+    const { isCompany, query, data, totalElements } = useLoaderData();
+    const { id, name, rating, reviews, myReviewId, reviewAllowed } = data;
     const userType = getCookie('user_type');
     return (<Box id='general-wrapper'>
         <Box>
             <Box>Имя: { isCompany ? <NavLink to={`/company/${id}`}>{ name }</NavLink> : name }</Box>
-            <Box>{ rating === null ? "Нет оценок" : <Typography variant='h3'>{rating.toFixed(1)}</Typography> }</Box>
+            <Box>{ Number.isFinite(rating) ? <Typography variant='h3'>{rating.toFixed(1)}</Typography> : "Нет оценок" }</Box>
             { reviewAllowed ? 
                 <NavLink to={`/createReview`}>Оставить отзыв</NavLink> 
             : <></> }

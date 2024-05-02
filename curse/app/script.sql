@@ -1,7 +1,7 @@
 -- Active: 1712052565265@@192.168.75.131@5432
 select current_database();
 insert into "public"."PROLETARIAT" (name, login, password_hash, is_admin, education_json, experience_json) values ('Supreme Admin', 'adminxd', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'Y', '[]', '[]');
-insert into "public"."PROLETARIAT" (name, login, password_hash, is_admin, education_json, experience_json) values ('Ivan Ivanov', 'user2', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'N', '[]', '[]');
+insert into "public"."PROLETARIAT" (name, login, password_hash, is_admin, education_json, experience_json, email) values ('Ivan Ivanov', 'user1', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', N'N', '[]', '[]', 'tochilo.oleg@mail.ru');
 insert into "public"."BOURGEOISIE" (name, login, password_hash, approved) values ('EPAM', 'admincumpany', N'$2b$10$iujfXl.zABzRKFiRSkMl3.GH/MCgczusmhAq9V8Gi94KTd3jeRCd2', 'N');
 CREATE OR REPLACE FUNCTION GetAverageRating(userType char(1), user_id int) returns FLOAT as
 $$
@@ -45,7 +45,9 @@ drop table "ACCOUNT_DROP_REQUESTS";
 drop table "TOKENS";
 drop table "BLACK_LIST";
 
+delete from "PROLETARIAT";
 delete from "BOURGEOISIE";
+delete from "VACANCIES";
 delete from "ACCOUNT_DROP_REQUESTS";
 delete from "REVIEWS";
 delete from "TOKENS";

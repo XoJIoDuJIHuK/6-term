@@ -6,8 +6,8 @@ import { fetchForLoader, fetchWithResult, getStatusIcon, getQueryMap, CustomPagi
 import { useAlert } from '../components/useAlert';
 
 export async function loader({ request }) {
-    const { query } = getQueryMap(request);
-    const { responses, totalElements } = await fetchForLoader('/bour/responses');
+    const { query, searchParams } = getQueryMap(request);
+    const { responses, totalElements } = await fetchForLoader(`/bour/responses?${searchParams}`);
     return { responses, query, totalElements };
 }
 
@@ -110,7 +110,7 @@ export default function IncomingResponses() {
                     <Box className='cell hide-overflow'>{ r.cv.name }</Box>
                     <Box className='cell hide-overflow'>{ r.cv.applicant.name }</Box>
                     <Button onClick={() => selectResponse(r.id)}>Просмотреть</Button>
-                </Paper>) : "No incoming responses. Loser. Post a vacancy or something"
+                </Paper>) : "Откликов нет. Skill issue"
             }</Box>
             {CustomPagination(query, totalElements, (e, value) => {
             query.offset = (value - 1) * 20;

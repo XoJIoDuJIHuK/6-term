@@ -9,6 +9,7 @@ import { useAlert } from '../components/useAlert';
 export async function loader() {
     const userType = getCookie('user_type');
     if (!userType) location.href = '/';
+    if (userType === 'admin') return { user: undefined };
     const user = await fetchForLoader(`/${userTypeDict[userType]}/personal`);
     return { user };
 }
@@ -168,7 +169,7 @@ export default function Personal() {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({commentary})
-                }, showAlert)
+                }, showAlert, data => { localStorage.userName = data.userName; })
             }}>Удалить аккаунт</Button></Box> }
         </>}
     </Box>)

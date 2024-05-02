@@ -70,10 +70,10 @@ export default function EditVacancy() {//TODO: fix too many requests to /bour/va
                         }} value={info.max_salary ?? ''} />
                 </Box>
                 <Box>
-                    <TextField type="number" label="Минимум часов в неделю" variant="outlined" onChange={event => { 
+                    <TextField type="number" label="Минимум часов в день" variant="outlined" onChange={event => { 
                             setNumeric('min_hours_per_day', event.target.value); 
                         }} value={info.min_hours_per_day ?? ''} />
-                    <TextField type="number" label="Максимум часов в неделю" variant="outlined" onChange={event => { 
+                    <TextField type="number" label="Максимум часов в день" variant="outlined" onChange={event => { 
                             setNumeric('max_hours_per_day', event.target.value); 
                         }} value={info.max_hours_per_day ?? ''} />
                 </Box>

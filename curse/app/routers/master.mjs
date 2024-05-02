@@ -1,5 +1,5 @@
 import { createRouter, defineEventHandler, getQuery, getCookie, useBase, setResponseStatus } from "h3";
-import { ClientError, logout } from '../utilFunctions.mjs';
+import { ClientError, logout, getSelectLimit } from '../utilFunctions.mjs';
 import { adminRouter } from './admin.mjs';
 import { proletariatRouter } from './proletariat.mjs';
 import { bourgeoisieRouter } from './bourgeoisie.mjs';
@@ -26,10 +26,9 @@ const masterRouter = createRouter()
 			}
             const id = query.id;
 			if (id === undefined) {
-				const totalElements = (await VACANCIES.findAndCountAll({ where: { ...where, active: 'N' } })).count;
+				const totalElements = (await VACANCIES.findAndCountAll({ where: { ...where, active: 'Y' } })).count;
 				const data = await VACANCIES.findAll({
-					offset: Number.isFinite(+query.offset) ? +query.offset : 0,
-					limit: 20,
+					...getSelectLimit(event),
 					where: {
 						...where,
 						active: 'Y'
@@ -47,7 +46,7 @@ const masterRouter = createRouter()
 	.get('/public-companies', defineEventHandler(async event => {
 		const query = getQuery(event);
 		const totalElements = (await BOURGEOISIE.findAndCountAll()).count;
-		const companies = (await BOURGEOISIE.findAll({ attributes: ['id', 'name'] })).map(c => c.dataValues);
+		const companies = (await BOURGEOISIE.findAll({ attributes: ['id', 'name'], ...getSelectLimit(event) })).map(e => e.dataValues);
 		if (!query.skipRating) {
 			for (let company of companies) {
 				company.rating = await GetRating('C', company.id);
@@ -58,6 +57,7 @@ const masterRouter = createRouter()
 	.get('/company-reviews', defineEventHandler(async event => {
 		try {
 			const query = getQuery(event);
+			if (Number.isNaN(+query.id)) throw new ClientError();
 			const company = await BOURGEOISIE.findOne({ 
 				where: { id: query.id }, attributes: ['id', 'name'] 
 			});
@@ -66,7 +66,7 @@ const masterRouter = createRouter()
 			}
 			const totalElements = (await REVIEWS.findAndCountAll({ where: { b_object: company.id } })).count;
 			const reviews = (await REVIEWS.findAll({ 
-				where: { b_object: company.id }, attributes: ['id', 'text', 'rating', 'p_subject']
+				where: { b_object: company.id }, attributes: ['id', 'text', 'rating', 'p_subject'], ...getSelectLimit(event)
 			})).map(r => r.dataValues);
 			for (let review of reviews) {
 				review.author = (await PROLETARIAT.findByPk(review.p_subject)).name;
@@ -86,7 +86,6 @@ const masterRouter = createRouter()
 				name: company.name,
 				myReviewId: usersReviewId,
                 reviewAllowed,
-				
 				reviews,
 				rating: await GetRating('C', company.id)
 			}};
@@ -103,6 +102,7 @@ const masterRouter = createRouter()
 		}
 		try {
 			const { id } = getQuery(event);
+			if (Number.isNaN(+id)) throw new ClientError();
 			const review = await REVIEWS.findByPk(id);
 			if (review.b_subject && !reviewIsAvailable(event, review)) {
 				throw new ClientError('Откуда ты получил идентификатор этого отзыва?', 403);

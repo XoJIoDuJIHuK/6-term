@@ -26,7 +26,7 @@ export default function Reports() {
                     <Button onClick={() => { fetchWithResult(`/admin/ban?` + 
                         `senderUserType=${r.senderUserType}&senderId=${r.senderId}` + 
                         `&receiverId=${r.receiverId}`, 
-                    { method: 'PUT' }, showAlert) }}>Забанить</Button>
+                    { method: 'POST' }, showAlert) }}>Забанить</Button>
                 <Button onClick={() => { fetchWithResult(`/admin/review?id=${r.id}`, 
                     { method: 'POST' }, showAlert, () => { location.reload(); }) }}>Помиловать</Button>
             </Box>

@@ -1,7 +1,7 @@
 import { createRouter, defineEventHandler, readBody, getCookie, getQuery, setResponseStatus, getHeader } from "h3";
-import { login, updatePersonal, register, changePassword, createReview, sendMail, ClientError, publicDir, vacancyEmitter } from '../utilFunctions.mjs';
+import { login, getSelectLimit, updatePersonal, register, changePassword, createReview, sendMail, ClientError, publicDir, vacancyEmitter } from '../utilFunctions.mjs';
 import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, RESPONSES, REVIEWS, VACANCIES, CVS, GetRating, ACCOUNT_DROP_REQUESTS } from "../models.mjs";
-import { Op } from 'sequelize';
+import { Op, literal } from 'sequelize';
 import fs from 'fs';
 
 const numericVacancyFields = ['min_salary', 'max_salary', 'min_hours_per_day', 'max_hours_per_day'];
@@ -23,7 +23,7 @@ export const bourgeoisieRouter = createRouter()
         try {
             const id = +getCookie(event, 'user_id');
             const query = getQuery(event);
-            if (query.id === undefined) throw new ClientError();
+            if (Number.isNaN(+query.id)) throw new ClientError();
             else query.id = +query.id;
             const p_object = await PROLETARIAT.findByPk(query.id);
             const userApplied = (await RESPONSES.findAndCountAll({ include: [
@@ -33,17 +33,20 @@ export const bourgeoisieRouter = createRouter()
             if (!userApplied) {
                 throw new ClientError('Пользователь не подавался на ваши вакансии', 400);
             }
+            const totalElements = (await REVIEWS.findAndCountAll({ where: { p_object: p_object.id } })).count;
             const reviews = (await REVIEWS.findAll({
                 include: { model: BOURGEOISIE },
                 where: { p_object: p_object.id },
-                attributes: ['id', 'text', 'rating']
+                attributes: ['id', 'text', 'rating'],
+                ...getSelectLimit(event)
             })).map(r => {
                 return {
                     authorId: r.BOURGEOISIE.id,
                     author: r.BOURGEOISIE.name,
                     id: r.id,
                     rating: r.rating,
-                    text: r.text
+                    text: r.text,
+                    totalElements
                 }
             });
             const companysReview = reviews.find(r => r.authorId === id);
@@ -52,12 +55,14 @@ export const bourgeoisieRouter = createRouter()
                 { model: VACANCIES, where: { company: id } }
             ], where: { status: 'Y' } })).count > 0;
             return {
-                id: p_object.id,
-                name: p_object.name,
-                myReviewId: companysReview ? companysReview.id : undefined,
-                reviewAllowed,
-                reviews,
-                rating: await GetRating('R', p_object.id)
+                data: {
+                    id: p_object.id,
+                    name: p_object.name,
+                    myReviewId: companysReview ? companysReview.id : undefined,
+                    reviewAllowed,
+                    reviews,
+                    rating: await GetRating('R', p_object.id)
+                }, totalElements
             };
         } catch (err) {
             return err;
@@ -69,9 +74,10 @@ export const bourgeoisieRouter = createRouter()
     .delete('/review', defineEventHandler(async event => {
         try {
             const { id } = getQuery(event);
+            if (Number.isNaN(+query.id)) throw new ClientError();
             const searchCondition = { id, b_subject: +getCookie(event, 'user_id') };
             if ((await REVIEWS.findAndCountAll({ where: searchCondition })) === 0) {
-                throw new ClientError('no such review');
+                throw new ClientError('Нет такого отзыва');
             }
             await REVIEWS.destroy({ where: searchCondition });
             return { message: 'Отзыв удалён' };
@@ -82,27 +88,27 @@ export const bourgeoisieRouter = createRouter()
     }))
     .get('/applicants-list', defineEventHandler(async event => {
         try {
-            const applicants = (await RESPONSES.findAll({ include: [
+            const ids = (await RESPONSES.findAll({ include: [
                 {
                     model: CVS,
                     include: {
                         model: PROLETARIAT,
-                        attributes: ['id', 'name']
-                    }
+                        attributes: ['id']
+                    },
                 },
                 {
                     model: VACANCIES,
                     include: {
                         model: BOURGEOISIE,
-                        where: { id: +getCookie(event, 'user_id') }
-                    }
-                }//TODO: тут был пустой массив атрибутов, надо разобраться
-            ], where: { status: 'Y' } })).map(r => {
-                return {
-                    id: r.CV.PROLETARIAT.id,
-                    name: r.CV.PROLETARIAT.name
+                        where: { id: +getCookie(event, 'user_id') },
+                    },
+                    attributes: []
                 }
-            });
+            ], where: { status: 'Y' } })).map(r => r.CV.PROLETARIAT.id);
+            const applicants = [];
+            for (let id of new Set(ids)) {
+                applicants.push({ id, name: (await PROLETARIAT.findByPk(id)).name });
+            }
             return applicants;
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
@@ -116,7 +122,7 @@ export const bourgeoisieRouter = createRouter()
             return {
                 ...info.dataValues,
                 promotionRequestPending: (await PROMOTION_REQUESTS.findAndCountAll({ where: { company_id: info.id } })).count > 0,
-                dropRequestPending: (await ACCOUNT_DROP_REQUESTS.findAndCountAll({ where: { isCompany: 'Y', account_id: info.id } })).count > 0
+                dropRequestPending: (await ACCOUNT_DROP_REQUESTS.findAndCountAll({ where: { b_subject: info.id } })).count > 0
             }
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
@@ -142,6 +148,7 @@ export const bourgeoisieRouter = createRouter()
     .get('/info', defineEventHandler(async event => {
         try {
             const { id } = getQuery(event);
+            if (Number.isNaN(+id)) throw new ClientError();
             return {
                 ...(await BOURGEOISIE.findByPk(id, { attributes: ['id', 'name', 'description', 'email'] })).dataValues,
                 rating: GetRating('company', id)
@@ -167,7 +174,7 @@ export const bourgeoisieRouter = createRouter()
                 model: VACANCIES,
                 attributes: ['id', 'name', ]
             }], where: { vacancy: vacancies },
-                attributes: ['id', 'status'] });
+                attributes: ['id', 'status'], ...getSelectLimit(event) });
             return { responses: responses.map(r => { 
                     const cv = r.CV;
                     const applicant = r.CV.PROLETARIAT;
@@ -187,9 +194,25 @@ export const bourgeoisieRouter = createRouter()
         }
     }))
     .post('/responses', defineEventHandler(async event => {
+        function generateMailContent(newStatus, vacancyName) {
+            return newStatus === 'Y' ? [`Ваш отклик на вакансию ${vacancyName} был одобрен`, 'Поздравляем, возможно, с вами скоро свяжутся'] :
+                [`Ваш отклик на вакансию ${vacancyName} был отклонён`, 'Приятных выходных']
+        }
+
         try {
-            const { responseId, newStatus } = await readBody(event);
-            const response = await RESPONSES.findByPk(responseId);
+            let responseId, newStatus;
+            try {
+                ({ responseId, newStatus } = await readBody(event));
+            } catch (err) {
+                throw new ClientError();
+            }
+            const response = await RESPONSES.findOne({ where: { id: responseId }, include: {//TODO: check
+                model: VACANCIES,
+                include: {
+                    model: BOURGEOISIE,
+                    where: { id: +getCookie(event, 'user_id') }
+                }
+            } });
             if (!response) {
                 throw new ClientError('Такого отклика не существует');
             }
@@ -197,9 +220,8 @@ export const bourgeoisieRouter = createRouter()
             if (oldStatus !== 'W') throw new ClientError('Статус уже изменён, менять нельзя', 400);
             if (newStatus === 'W') throw new ClientError('Нельзя сбрасывать статус', 400);
             await RESPONSES.update({ status: newStatus }, { where: { id: responseId } });
-            const company = BOURGEOISIE.findByPk(+getCookie(event, 'user_id'));
             const applicant = await PROLETARIAT.findByPk((await CVS.findByPk(response.cv)).applicant);
-            sendMail(company.email, applicant.email, 'your response status changed');
+            sendMail(applicant.email, '', ...generateMailContent(newStatus, (await VACANCIES.findByPk(response.vacancy)).name));
             return { message: 'Статус изменён' };
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
@@ -213,8 +235,9 @@ export const bourgeoisieRouter = createRouter()
             const id = query.id;
             if (id === undefined) {
                 const totalElements = (await VACANCIES.findAndCountAll({ where: { company: companyId } })).count;
-                return { totalElements, vacancies: await VACANCIES.findAll({ where: { company: companyId } }) };
+                return { totalElements, vacancies: await VACANCIES.findAll({ where: { company: companyId }, ...getSelectLimit(event) }) };
             } else {
+                if (Number.isNaN(+id)) throw new ClientError();
                 return await VACANCIES.findOne({ where: { company: companyId, id }, rejectOnEmpty: true });
             }
         } catch (err) {
@@ -226,13 +249,16 @@ export const bourgeoisieRouter = createRouter()
         try {
             const body = await readBody(event);
             const company = await BOURGEOISIE.findByPk(+getCookie(event, 'user_id'));
+            validateVacancy(company, body);
+            nullifyFields(body);
+            if (!company.email){
+                throw new ClientError('Нельзя публиковать вакансии без электронной почты', 400);
+            }
             const vacancyExists = (await VACANCIES.findAndCountAll({ where: { company: company.id, 
                 name: body.name } })).count > 0;
             if (vacancyExists) {
                 throw new ClientError('Имя вакансии занято', 400);
             }
-            validateVacancy(company, body);
-            nullifyFields(body);
             const vacancy = await VACANCIES.create(Object.assign(body, { company: company.id } ));
             return { message: 'Вакансия создана', id: vacancy.id };
         } catch (err) {
@@ -244,6 +270,8 @@ export const bourgeoisieRouter = createRouter()
         try {
             const vacancy = await readBody(event);
             const company = await BOURGEOISIE.findByPk(+getCookie(event, 'user_id'));
+            validateVacancy(company, vacancy);
+            nullifyFields(vacancy);
             const vacancyExists = (await VACANCIES.findAndCountAll({ where: { id: vacancy.id, 
                 company: company.id } })).count > 0;
             if (!vacancyExists) {
@@ -256,8 +284,6 @@ export const bourgeoisieRouter = createRouter()
             if (!vacancy.active) {
                 await RESPONSES.destroy({ where: { vacancy: vacancy.id } });
             }
-            validateVacancy(company, vacancy);
-            nullifyFields(vacancy);
             await VACANCIES.update(vacancy, { where: { id: vacancy.id, company: company.id } });
             vacancyEmitter.emit('changed', vacancy);
             return { message: 'Вакансия изменена' };
@@ -269,15 +295,16 @@ export const bourgeoisieRouter = createRouter()
     .delete('/vacancy', defineEventHandler(async event => {
         try {
             const vacancy = await readBody(event);
-            const vacancyExists = (await VACANCIES.findAndCountAll({ where: { id: vacancy.id } })).count > 0;
+            const companyId = +getCookie(event, 'user_id');
+            const vacancyExists = (await VACANCIES.findAndCountAll({ where: { id: vacancy.id, company: companyId } })).count > 0;
             if (!vacancyExists) {
-                throw new ClientError('vacancy with such id doesn\'t exist');
+                throw new ClientError('Нет такой вакансии');
             }
-            await RESPONSES.destroy({ where: { vacancy: vacancy.id } });
-            await VACANCIES.destroy({ where: { id: vacancy.id, company: +getCookie(event, 'user_id') } });
+            await VACANCIES.destroy({ where: { id: vacancy.id } });
             vacancyEmitter.emit('changed', null);
             return { message: 'Вакансия удалена' };
         } catch (err) {
+            setResponseStatus(event, err.code ?? 400);
             return err;
         }
     }))
@@ -286,28 +313,28 @@ export const bourgeoisieRouter = createRouter()
             const company_id = +getCookie(event, 'user_id')
             const proof = await readBody(event);
             if (await PROMOTION_REQUESTS.findOne({ where: { company_id } })) {
-                throw new ClientError('request already exists', 409);
+                throw new ClientError('Запрос уже существует', 409);
             }
             await PROMOTION_REQUESTS.create({ company_id, proof });
             return { message: 'Запрос создан' };
         } catch (err) {
-            console.log(err)
+            setResponseStatus(event, err.code ?? 400);
             return err;
         }
     }))
     .put('/drop-request', defineEventHandler(async event => {
 		try {
 			const searchCondition = {
-				isCompany: 'Y',
-				account_id: +getCookie(event, 'user_id')
+				b_subject: +getCookie(event, 'user_id')
 			};
 			if ((await ACCOUNT_DROP_REQUESTS.findAndCountAll({ where: searchCondition })).count > 0) {
-				throw new ClientError('request already exists', 400);
+				throw new ClientError('Запрос уже существует', 400);
 			}
 			const body = await readBody(event);
 			await ACCOUNT_DROP_REQUESTS.create({ ...searchCondition, commentary: body.commentary });
             return { message: 'Запрос создан' };
 		} catch (err) {
+            setResponseStatus(event, err.code ?? 400);
 			return err;
 		}
 	}));

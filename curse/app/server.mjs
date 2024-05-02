@@ -1,19 +1,17 @@
-import { createServer } from "node:http";
-import { appendHeaders, createApp, defineEventHandler, setResponseHeader, toNodeListener, getCookie, setResponseStatus, defineWebSocketHandler } from "h3";
-export const app = createApp({debug: true});
+import { createServer } from "node:https";
+import { appendHeaders, createApp, defineEventHandler, setResponseHeader, toNodeListener, getCookie, 
+    setResponseStatus } from "h3";
 import { masterRouter } from './routers/master.mjs';
 import { ClientError, handleStatic, getModel, vacancyEmitter } from "./utilFunctions.mjs";
 import fs from 'fs';
 import { authorizeTokens, isAdmin } from "./auth.mjs";
 import wsAdapter from "crossws/adapters/node";
 
+export const app = createApp({debug: true});
 app.use(defineEventHandler(event => {
     appendHeaders(event, {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Expose-Headers': '*',
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Credentials': '*'
+        'Access-Control-Expose-Headers': '*'
     })
 }));
 app.use(defineEventHandler(async event => {
@@ -32,24 +30,31 @@ app.use(defineEventHandler(async event => {
     }
     const path = event.path.split('?')[0].split('/').slice(1);
     try {
+        const prolEndpoints = ['personal', 'review', 'cv', 'password', 'responses', 'drop-request'];
+        const bourEndpoints = ['personal', 'password', 'responses', 'vacancy', 'review', 'promotion-request', 
+            'applicants-list', 'icon', 'drop-request'];
+        const adminEndpoints = ['promotion-requests', 'drop-requests', 'promote', 'password', 'review', 'drop-user', 
+            'ban', 'reported-reviews'];
         if (['prol', 'bour', 'admin'].indexOf(path[0]) !== -1 ) {
             let protectedEndpoints;
             let expectedType;
             switch (path[0]) {
                 case 'prol':
-                    protectedEndpoints = ['personal', 'review', 'cv', 'password', 'responses'];
+                    protectedEndpoints = prolEndpoints;
                     expectedType = 'regular';
                     break;
                 case 'bour':
-                    protectedEndpoints = ['personal', 'password', 'responses', 'vacancy', 'review', 
-                        'promotion-request', 'applicants-list', 'icon'];
+                    protectedEndpoints = bourEndpoints;
                     expectedType = 'company';
                     break;
                 default:
-                    protectedEndpoints = ['promotion-requests', 'drop-requests', 'promote', 'personal', 
-                        'password', 'review', 'drop-user', 'ban', 'reported-reviews'];
+                    protectedEndpoints = adminEndpoints;
                     expectedType = 'admin';
                     break;
+            }
+            if (expectedType === 'regular' && getCookie(event, 'user_type') === 'admin' && 
+                adminEndpoints.indexOf(path[1]) === -1) {
+                throw new ClientError('Админу сюда нельзя', 403);
             }
             if (protectedEndpoints.indexOf(path[1]) !== -1) {
                 await checkAuthorization(expectedType);
@@ -67,7 +72,14 @@ app.use(defineEventHandler(async event => {
     setResponseHeader(event, 'Content-Type', 'text/html');
     return fs.readFileSync('./views/react-front/dist/index.html');
 }));
-const server = createServer(toNodeListener(app));
+
+const nodeApp = toNodeListener(app);
+const credentials = {
+    key: fs.readFileSync('../server.key'),
+    cert: fs.readFileSync('../server.crt')
+}
+
+const httpsServer = createServer(credentials, nodeApp);
 const { handleUpgrade } = wsAdapter({
     hooks: {
       async open(peer) {
@@ -91,5 +103,6 @@ const { handleUpgrade } = wsAdapter({
       },
     },
   });
-server.on('upgrade', handleUpgrade)
-server.listen(process.env.PORT || 3000);
+
+httpsServer.on('upgrade', handleUpgrade)
+httpsServer.listen(4433);

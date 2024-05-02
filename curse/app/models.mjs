@@ -1,14 +1,6 @@
 import { Sequelize, Model, DataTypes } from "sequelize"
-// const sequelize = new Sequelize('xd', 'SA', 'Qwerty123', {
-// 	host: '192.168.75.131',
-// 	dialect: 'mssql',
-// 	pool: {
-// 		max: 10,
-// 		min: 0
-// 	}
-// })
 const sequelize = new Sequelize('xd', 'postgres', 'mysecretpassword', {
-	host: '192.168.75.131',
+	host: 'ugabuntu',
 	dialect: 'postgres',
 	pool: {
 		max: 10,
@@ -67,8 +59,7 @@ PROLETARIAT.init({
 		}
 	},
 	email: {
-		type: DataTypes.STRING(30),
-		unique: true
+		type: DataTypes.STRING(30)
 	}
 }, {
 	sequelize,
@@ -94,7 +85,6 @@ CVS.init({
 		references: {
 			model: 'PROLETARIAT',
 			key: 'id',
-			onDelete: 'CASCADE'
 		},
 	},
 	skills_json: {
@@ -114,8 +104,8 @@ CVS.init({
 	tableName: 'CVS',
 });
 
-PROLETARIAT.hasMany(CVS, { foreignKey: 'applicant', sourceKey: 'id' });
-CVS.belongsTo(PROLETARIAT, { foreignKey: 'applicant', targetKey: 'id' });
+PROLETARIAT.hasMany(CVS, { foreignKey: 'applicant', sourceKey: 'id', onDelete: 'cascade' });
+CVS.belongsTo(PROLETARIAT, { foreignKey: 'applicant', targetKey: 'id', onDelete: 'cascade' });
 
 class BOURGEOISIE extends Model {}
 BOURGEOISIE.init({
@@ -153,7 +143,6 @@ BOURGEOISIE.init({
 	},
 	email: {
 		type: DataTypes.STRING(30),
-		unique: true
 	}
 }, {
 	sequelize,
@@ -172,7 +161,6 @@ VACANCIES.init({
 	name: {
 		type: DataTypes.STRING(30),
 		allowNull: false,
-		unique: true,
 	},
 	release_date: {
 		type: DataTypes.DATEONLY,
@@ -184,7 +172,6 @@ VACANCIES.init({
 		references: {
 			model: 'BOURGEOISIE',
 			key: 'id',
-			onDelete: 'CASCADE'
 		},
 	},
 	active: {
@@ -251,8 +238,8 @@ VACANCIES.init({
 	tableName: 'VACANCIES',
 });
 
-BOURGEOISIE.hasMany(VACANCIES,   { foreignKey: 'company', sourceKey: 'id' });
-VACANCIES.belongsTo(BOURGEOISIE, { foreignKey: 'company', targetKey: 'id' });
+BOURGEOISIE.hasMany(VACANCIES,   { foreignKey: 'company', sourceKey: 'id', onDelete: 'cascade' });
+VACANCIES.belongsTo(BOURGEOISIE, { foreignKey: 'company', targetKey: 'id', onDelete: 'cascade' });
 
 class RESPONSES extends Model {}
 RESPONSES.init({
@@ -267,7 +254,6 @@ RESPONSES.init({
 		references: {
 			model: 'CVS',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	vacancy: {
@@ -276,7 +262,6 @@ RESPONSES.init({
 		references: {
 			model: 'VACANCIES',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	status: {
@@ -293,10 +278,10 @@ RESPONSES.init({
 	tableName: 'RESPONSES'
 });
 
-RESPONSES.hasOne(VACANCIES,    { foreignKey: 'id', sourceKey: 'vacancy' });
-VACANCIES.belongsTo(RESPONSES, { foreignKey: 'id', targetKey: 'vacancy' });
-RESPONSES.hasOne(CVS,    { foreignKey: 'id', sourceKey: 'cv' });
-CVS.belongsTo(RESPONSES, { foreignKey: 'id', targetKey: 'cv' });
+VACANCIES.hasOne(RESPONSES, { foreignKey: 'vacancy', sourceKey: 'id', onDelete: 'cascade' });
+CVS.hasOne(RESPONSES, { foreignKey: 'cv', sourceKey: 'id', onDelete: 'cascade' });
+RESPONSES.belongsTo(CVS, { foreignKey: 'cv', sourceKey: 'id'});
+RESPONSES.belongsTo(VACANCIES, { foreignKey: 'vacancy', sourceKey: 'id'});
 
 class REVIEWS extends Model {}
 REVIEWS.init({
@@ -310,7 +295,6 @@ REVIEWS.init({
 		references: {
 			model: 'PROLETARIAT',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	b_subject: {
@@ -318,7 +302,6 @@ REVIEWS.init({
 		references: {
 			model: 'BOURGEOISIE',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	b_object: {
@@ -326,7 +309,6 @@ REVIEWS.init({
 		references: {
 			model: 'BOURGEOISIE',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	p_object: {
@@ -334,7 +316,6 @@ REVIEWS.init({
 		references: {
 			model: 'PROLETARIAT',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	text: {
@@ -361,10 +342,10 @@ REVIEWS.init({
 	tableName: 'REVIEWS'
 })
 
-REVIEWS.belongsTo(PROLETARIAT, { foreignKey: 'p_object' });
-REVIEWS.belongsTo(PROLETARIAT, { foreignKey: 'p_subject' });
-REVIEWS.belongsTo(BOURGEOISIE, { foreignKey: 'b_object' });
-REVIEWS.belongsTo(BOURGEOISIE, { foreignKey: 'b_subject' });
+REVIEWS.belongsTo(PROLETARIAT, { foreignKey: 'p_object', onDelete: 'cascade' });
+REVIEWS.belongsTo(PROLETARIAT, { foreignKey: 'p_subject', onDelete: 'cascade' });
+REVIEWS.belongsTo(BOURGEOISIE, { foreignKey: 'b_object', onDelete: 'cascade' });
+REVIEWS.belongsTo(BOURGEOISIE, { foreignKey: 'b_subject', onDelete: 'cascade' });
 
 
 class PROMOTION_REQUESTS extends Model {}
@@ -383,7 +364,7 @@ PROMOTION_REQUESTS.init({
 		}
 	},
 	proof: {
-		type: DataTypes.STRING(1000000)
+		type: DataTypes.STRING(125000)
 	}
 }, {
 	sequelize,
@@ -392,8 +373,8 @@ PROMOTION_REQUESTS.init({
 	tableName: 'PROMOTION_REQUESTS'
 });
 
-PROMOTION_REQUESTS.hasOne(BOURGEOISIE,    { foreignKey: 'id', sourceKey: 'company_id' });
-BOURGEOISIE.belongsTo(PROMOTION_REQUESTS, { foreignKey: 'id', targetKey: 'company_id' });
+BOURGEOISIE.hasOne(PROMOTION_REQUESTS,    { foreignKey: 'company_id', sourceKey: 'id', onDelete: 'cascade' });
+PROMOTION_REQUESTS.belongsTo(BOURGEOISIE,    { foreignKey: 'company_id', sourceKey: 'id' });
 
 class ACCOUNT_DROP_REQUESTS extends Model {}
 ACCOUNT_DROP_REQUESTS.init({
@@ -402,14 +383,19 @@ ACCOUNT_DROP_REQUESTS.init({
 		primaryKey: true,
 		autoIncrement: true
 	},
-	isCompany: {
-		type: DataTypes.CHAR(1),
-		allowNull: false,
-		validate: { isIn: [['Y', 'N']] }
-	},
-	account_id: {
+	p_subject: {
 		type: DataTypes.INTEGER,
-		allowNull: false
+		references: {
+			model: 'PROLETARIAT',
+			key: 'id',
+		}
+	},
+	b_subject: {
+		type: DataTypes.INTEGER,
+		references: {
+			model: 'BOURGEOISIE',
+			key: 'id',
+		}
 	},
 	commentary: {
 		type: DataTypes.STRING()
@@ -420,6 +406,8 @@ ACCOUNT_DROP_REQUESTS.init({
 	modelName: 'ACCOUNT_DROP_REQUESTS',
 	tableName: 'ACCOUNT_DROP_REQUESTS'
 });
+PROLETARIAT.hasOne(ACCOUNT_DROP_REQUESTS, { foreignKey: 'p_subject', sourceKey: 'id', onDelete: 'cascade' });
+BOURGEOISIE.hasOne(ACCOUNT_DROP_REQUESTS, { foreignKey: 'b_subject', sourceKey: 'id', onDelete: 'cascade' });
 
 class TOKENS extends Model {}
 TOKENS.init({
@@ -435,7 +423,6 @@ TOKENS.init({
 		references: {
 			model: 'PROLETARIAT',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	owner_b: {
@@ -443,15 +430,10 @@ TOKENS.init({
 		references: {
 			model: 'BOURGEOISIE',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	value: {
 		type: DataTypes.STRING(256),
-		allowNull: false
-	},
-	expires: {
-		type: DataTypes.DATE,
 		allowNull: false
 	}
 }, {
@@ -459,7 +441,9 @@ TOKENS.init({
 	timestamps: false,
 	modelName: 'TOKENS',
 	tableName: 'TOKENS'
-})
+});
+PROLETARIAT.hasOne(TOKENS, { foreignKey: 'owner_p', sourceKey: 'id', onDelete: 'cascade' });
+BOURGEOISIE.hasOne(TOKENS, { foreignKey: 'owner_b', sourceKey: 'id', onDelete: 'cascade' });
 
 async function GetRating(userType, userId) {
 	const result = (await sequelize.query('select GetAverageRating(:userType, :userId);', { replacements: { userType, userId } }))
@@ -479,7 +463,6 @@ BLACK_LIST.init({
 		references: {
 			model: 'PROLETARIAT',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	p_object: {
@@ -487,7 +470,6 @@ BLACK_LIST.init({
 		references: {
 			model: 'PROLETARIAT',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	b_subject: {
@@ -495,7 +477,6 @@ BLACK_LIST.init({
 		references: {
 			model: 'BOURGEOISIE',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	},
 	b_object: {
@@ -503,7 +484,6 @@ BLACK_LIST.init({
 		references: {
 			model: 'BOURGEOISIE',
 			key: 'id',
-			onDelete: 'CASCADE'
 		}
 	}
 }, {
@@ -511,12 +491,16 @@ BLACK_LIST.init({
 	sequelize,
 	modelName: 'BLACK_LIST',
 	tableName: 'BLACK_LIST'
-})
+});
+PROLETARIAT.hasMany(BLACK_LIST, { foreignKey: 'p_subject', sourceKey: 'id', onDelete: 'cascade' });
+BOURGEOISIE.hasMany(BLACK_LIST, { foreignKey: 'b_subject', sourceKey: 'id', onDelete: 'cascade' });
+PROLETARIAT.hasMany(BLACK_LIST, { foreignKey: 'p_object', sourceKey: 'id', onDelete: 'cascade' });
+BOURGEOISIE.hasMany(BLACK_LIST, { foreignKey: 'b_object', sourceKey: 'id', onDelete: 'cascade' });
 
 sequelize.sync({ 
 	// alter: true,
 	// force: true 
-})
+});
 export {
 	PROLETARIAT,
 	CVS,

@@ -32,7 +32,7 @@ function MyTabs() {
         <Tab label="Отклики" value="/incoming-responses" to="/incoming-responses" component={Link} />)
       break;
     default:
-      tabs.push(<Tab label="Sign" value="/sign" to="/sign" component={Link} />);
+      tabs.push(<Tab label="Вход" value="/sign" to="/sign" component={Link} />);
       break;
   }
   if (userType) {

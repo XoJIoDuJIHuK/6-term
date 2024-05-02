@@ -55,7 +55,7 @@ export default function Vacancies() {
     </Box>
     {CustomPagination(query, totalElements, (e, value) => {
       query.offset = (value - 1) * 20;
-      location.href = `/${location.pathname}?offset=${query.offset}`
+      location.href = `/vacancy?offset=${query.offset}`
     })}
   </Box>);
 }

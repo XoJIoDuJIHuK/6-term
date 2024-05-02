@@ -1,5 +1,5 @@
-import { Box, Typography, Button, Dialog, List, ListItem, ListItemText, ListItemButton, DialogTitle } from '@mui/material';
-import { experiences, schedules, getCookie, fetchForLoader, fetchWithResult, SalaryToString } from '../constants';
+import { Box, Typography, Button, Dialog, List, ListItem, ListItemText, ListItemButton, DialogTitle, Paper } from '@mui/material';
+import { experiences, schedules, getCookie, fetchForLoader, fetchWithResult, SalaryToString, IconComponent } from '../constants';
 import { NavLink, useLoaderData } from "react-router-dom";
 import { useCookies } from 'react-cookie';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ export async function loader({ params }) {
     const company = await fetchForLoader(`/bour/info?id=${vacancy.company}`);
     const userType = getCookie('user_type');
     const cvs = userType === 'regular' ? await fetchForLoader(`/prol/cv?vacancy=${vacancy.id}`) : [];
+    console.log(company)
     return { vacancy, company, cvs };
 }
 
@@ -74,18 +75,33 @@ export default function Vacancy() {
 
     const [dialogIsOpen, setDialogOpen] = useState(false);
     const showAlert = useAlert();
-    return (<Box>
-        <Typography variant='h3'>{ vacancyState.name }</Typography>
-        <Typography variant='h4'><NavLink to={`/company/${company.id}`}>{ company.name }</NavLink></Typography>
-        <Typography variant='h5'>{ vacancyState.release_date }</Typography>
-        <Typography variant='h5'>{ vacancyState.region || 'Регион не указан' }</Typography>
-        <Typography variant='h5'>{ experiences[vacancyState.experience] }</Typography>
-        <Typography variant='h5'>{ schedules[vacancyState.schedule - 1] }</Typography>
-        { SalaryToString(vacancyState) }
-        <Box>{ vacancyState.min_hours_per_day ? <>От { vacancyState.min_hours_per_day }{ vacancyState.max_hours_per_day ? 
-            <> до { vacancyState.max_hours_per_day } часов в день</> : ' часов в день' }</> : vacancyState.max_hours_per_day ? 
-            <>До { vacancyState.max_hours_per_day } часов в день</> : 'Количество рабочих часов не указано'}</Box>
-        <Box>{ vacancyState.description }</Box>
-        { (cookies.user_type === 'regular') ? responsePart(dialogIsOpen) : <></> }
+    return (<Box id='general-wrapper'>
+        <Box sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'left'
+        }}>
+            <Paper elevation={3} sx={{width: '100%', padding: '10px', display: 'flex', flexDirection: 'row', alignItems: 'center', 
+                justifyContent: 'space-between', marginBottom: '10px'}}>
+                <Box sx={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: 's100%'}}>
+                    { IconComponent(company.id) }
+                    <Typography variant='h3'>{ vacancyState.name }</Typography>
+                </Box>
+                <Typography variant='h4'><NavLink to={`/company/${company.id}`}>{ company.name }</NavLink></Typography>
+            </Paper>
+            <Paper elevation={3} sx={{padding: '10px', marginBottom: '10px'}}>
+                <Typography variant='h5'>{ vacancyState.release_date }</Typography>
+                <Typography variant='h5'>{ vacancyState.region || 'Регион не указан' }</Typography>
+                <Typography variant='h5'>{ experiences[vacancyState.experience] }</Typography>
+                <Typography variant='h5'>{ schedules[vacancyState.schedule - 1] }</Typography>
+                { SalaryToString(vacancyState) }
+                <Box>{ vacancyState.min_hours_per_day ? <>От { vacancyState.min_hours_per_day }{ vacancyState.max_hours_per_day ? 
+                    <> до { vacancyState.max_hours_per_day } часов в день</> : ' часов в день' }</> : vacancyState.max_hours_per_day ? 
+                    <>До { vacancyState.max_hours_per_day } часов в день</> : 'Количество рабочих часов не указано'}</Box>
+            </Paper>
+            <Paper elevation={3} sx={{padding: '10px', marginBottom: '10px'}}>{ vacancyState.description || 'Нет описания' }</Paper>
+            { (cookies.user_type === 'regular') ? responsePart(dialogIsOpen) : <></> }
+        </Box>
     </Box>);
 }

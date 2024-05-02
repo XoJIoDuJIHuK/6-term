@@ -21,10 +21,8 @@ export default function PromotionRequests() {
     const { requests, query, totalElements } = useLoaderData();
     return (<Box id='general-wrapper'>
         <Box>{ requests.length > 0 ? requests.map(r => <Accordion key={r.id}>
-            <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-            >{ r.company_name }</AccordionSummary>
-            <AccordionDetails>{ r.proof }</AccordionDetails>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>{ r.company_name }</AccordionSummary>
+            <AccordionDetails>{ r.proof || 'Вложения нет' }</AccordionDetails>
             <AccordionActions>
             <Button onClick={() => {sendRequest(false, r.id)}}>Отказать</Button>
             <Button onClick={() => {sendRequest(true, r.id)}}>Принять</Button>
@@ -33,7 +31,7 @@ export default function PromotionRequests() {
         : 'Нет запросов'}</Box>
         {CustomPagination(query, totalElements, (e, value) => {
             query.offset = (value - 1) * 20;
-            location.href = `/black-list?offset=${query.offset}`
+            location.href = `/promotion-requests?offset=${query.offset}`
         })}
     </Box>)
 }
