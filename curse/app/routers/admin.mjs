@@ -1,5 +1,5 @@
 import { createRouter, defineEventHandler, setResponseStatus, getQuery } from "h3";
-import { ClientError, getOffset, getSelectLimit, sendMail } from '../utilFunctions.mjs';
+import { ClientError, getOffset, getSelectLimit, sendMail, changePassword } from '../utilFunctions.mjs';
 import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, ACCOUNT_DROP_REQUESTS, TOKENS, REVIEWS, BLACK_LIST, sequelize } from "../models.mjs";
 
 export const adminRouter = createRouter()
@@ -20,6 +20,9 @@ export const adminRouter = createRouter()
 			return err;
 		}
 	}))
+	.patch('/password', defineEventHandler(async event => {
+        return await changePassword(event, 'admin');
+    }))
 	.get('/drop-requests', defineEventHandler(async event => {
 		try {
 			const totalElements = (await ACCOUNT_DROP_REQUESTS.findAndCountAll()).count;
@@ -174,13 +177,13 @@ export const adminRouter = createRouter()
 		}
 	}))
 	.get('/ban', defineEventHandler(async event => {
-		const totalElements = (await BLACK_LIST.findAndCountAll()).count;//TODO: check for receiver names
+		const totalElements = (await BLACK_LIST.findAndCountAll()).count;
 		const [result] = await sequelize.query(`select n.id as id, n.p_subject as p_subject, n.b_subject as b_subject, p.name as prol_name, ` +
 			` b.name as bour_name from "BLACK_LIST" n join "PROLETARIAT" p on n.p_subject = p.id or n.p_object = p.id join "BOURGEOISIE" b on ` +
 			`n.b_subject = b.id or n.b_object = b.id limit 20 offset ${getOffset(event)};`);
 		return { list: result, totalElements };
 	}))
-	.post('/ban', defineEventHandler(async event => {//TODO: check if post method works
+	.post('/ban', defineEventHandler(async event => {
 		try {
 			const { senderUserType, senderId, receiverId } = getQuery(event);
 			if (!senderUserType || !senderId || !receiverId) throw new ClientError();

@@ -1,4 +1,4 @@
-import { Box, TextField, Button, Typography } from '@mui/material';
+import { Box, TextField, Button, Typography, Dialog, DialogTitle } from '@mui/material';
 import FilePresentIcon from '@mui/icons-material/FilePresent';
 import { useLoaderData } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
@@ -106,7 +106,7 @@ export default function Personal() {
                 setNewValue('description', e) 
             }}  value={userData.secription} /></Box>
             { userData.promotionRequestPending ? <Box>Запрос на подтверждение компании обрабатывается</Box> : 
-                <Box>{ userData.approved === 'Y' ? "Approved" : <Box sx={{
+                <Box>{ userData.approved === 'Y' ? "Компания подтверждена" : <Box sx={{
                     display: 'flex',
                     width: '400px',
                     alignItems: 'center',
@@ -151,9 +151,38 @@ export default function Personal() {
     const [proof, setProof] = useState('');
     const [commentary, setCommentary] = useState('');
     const [cookies] = useCookies(['user_type']);
+    const [open, setDialogOpen] = useState(false);
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const userType = cookies.user_type;
     const showAlert = useAlert();
     return (<Box id='general-wrapper'>
+        <Box>
+            <Button onClick={() => { setDialogOpen(true); }}>Сменить пароль</Button>
+            <Dialog open={open}>
+                <DialogTitle>Смена пароля</DialogTitle>
+                <Box>
+                    <TextField label="Старый пароль" value={oldPassword} onChange={e => { setOldPassword(e); }}/>
+                </Box>
+                <Box>
+                    <TextField label="Новый пароль" value={newPassword} onChange={e => { setNewPassword(e); }}/>
+                </Box>
+                <Button onClick={() => {
+                    if (!oldPassword || !newPassword) {
+                        showAlert('Нужно ввести оба пароля', 'error');
+                        return;
+                    }
+                    if (oldPassword === newPassword) {
+                        showAlert('Пароли не могут совпадать', 'error');
+                        return;
+                    }
+                    fetchWithResult(`/${userTypeDict[userType]}/password`, 
+                    { method: "PATCH", headers: { "Content-Type": "application/json", 
+                    body: JSON.stringify({ newPassword, oldPassword }) } }, showAlert, 
+                    () => { setDialogOpen(false); });
+                }}>Жми меня</Button>
+            </Dialog>
+        </Box>
         { userType === 'admin' ? <></> : <TextField label="Имя" required variant="outlined" 
             onChange={e => { setNewValue('name', e) }} value={userData.name} /> }
         { userType === 'regular' ? RegularInformation() : userType === 'company' ? 

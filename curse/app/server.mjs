@@ -16,8 +16,9 @@ app.use(defineEventHandler(event => {
 }));
 app.use(defineEventHandler(async event => {
     async function checkAuthorization(userType) {
+        const userId = +getCookie(event, 'user_id');
         const model = getModel(userType);
-        if (!(await model.findByPk(getCookie(event, 'user_id')) ||
+        if (Number.isNaN(userId) || !(await model.findByPk(userId) || 
             getCookie(event, 'user_type') !== userType)) {
             throw new ClientError('Не авторизован', 401);
         }

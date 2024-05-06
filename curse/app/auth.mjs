@@ -107,7 +107,7 @@ export function encryptPassword(password) {
 
 export async function isAdmin(event) {
 	try {
-		const id = getCookie(event, 'user_id');
+		const id = +getCookie(event, 'user_id');
 		const user = await PROLETARIAT.findByPk(id);
 		return user.is_admin;
 	} catch (err) {

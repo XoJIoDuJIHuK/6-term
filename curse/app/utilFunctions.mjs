@@ -126,6 +126,9 @@ export async function updatePersonal(event, expectedUserType) {
 export async function register(event, userType) {
 	try {
 		const { username, password } = await readCredentials(event);
+		if (!password.length) {
+			throw new ClientError('Введите нормальный пароль', 400);
+		}
 		const { model, data } = userType === 'company' ? { model: BOURGEOISIE, data: {
 			login: username,
 			password_hash: encryptPassword(password),
@@ -157,6 +160,12 @@ export async function changePassword(event, userType) {
 			({ oldPassword, newPassword } = await readBody(event));
 		} catch (err) {
 			throw new ClientError('Неверное значение одного из паролей')
+		}
+		if (!oldPassword.length || !newPassword.length) {
+			throw new ClientError('Один из паролей пустой', 400);
+		}
+		if (oldPassword === newPassword) {
+			throw new ClientError('Новые пароль не может равняться старому', 400);
 		}
 		const id = getCookie(event, 'user_id');
 		const model = getModel(userType);

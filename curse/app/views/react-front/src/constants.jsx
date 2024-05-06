@@ -15,18 +15,28 @@ export function getCookie(name) {
     const cookie = cookies.find(c => c.startsWith(`${name}=`));
     return cookie ? cookie.split('=').pop() : undefined;
 }
+function serverReturnedJson(r) {
+    console.log(r.headers.get('content-type'));
+    return r.headers.get('content-type') === 'application/json';
+}
 export async function fetchForLoader(path) {
     return fetch(path).then(r => {
-        if (r.ok) return r.json();
+        if (r.ok) {
+            if (!serverReturnedJson(r)) {
+                throw Error('Сервер вернул неправильные данные');
+            }
+            return r.json();
+        }
         else throw r.json();
     })
     .catch(async err => {
         err = await err;
-        console.log(err);
         if (err.code === 401) {
             location.href = '/signout';
         } else if (err.code === 403) {
             location.href = '/';
+        } else {
+            throw err;
         }
     })
     .then(d => {
@@ -36,7 +46,12 @@ export async function fetchForLoader(path) {
 export async function fetchWithResult(path, options, showAlert, onSuccess, onError) {
     fetch(path, options)
     .then(r => {
-        if (r.ok) return r.json();
+        if (r.ok) {
+            if (!serverReturnedJson(r)) {
+                throw Error('Сервер вернул неправильные данные');
+            }
+            return r.json();
+        }
         else throw r.json();
     })
     .then(d => {

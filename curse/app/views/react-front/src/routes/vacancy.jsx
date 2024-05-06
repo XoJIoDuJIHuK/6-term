@@ -35,24 +35,24 @@ export default function Vacancy() {
         return (<>
             <Button onClick={openDialog}>Откликнуться</Button>
             <Dialog onClose={closeDialog} open={open}>
-            <DialogTitle>Set backup account</DialogTitle>
-            <List sx={{ pt: 0 }}>
-                { cvs.length > 0 ? cvs.map((cv) => (
-                <ListItem disableGutters key={cv.id}>
-                    <ListItemButton onClick={() => makeResponse(cv)}>
-                        <ListItemText primary={cv.name} />
-                    </ListItemButton>
-                </ListItem>
-                )) : "Нет доступных резюме" }
-                <ListItem disableGutters>
-                <ListItemButton
-                    autoFocus
-                    onClick={() => { location.href = '/cv'; }}
-                >
-                    <ListItemText primary="Перейти к резюме" />
-                </ListItemButton>
-                </ListItem>
-            </List>
+                <DialogTitle>Set backup account</DialogTitle>
+                <List sx={{ pt: 0 }}>
+                    { cvs.length > 0 ? cvs.map((cv) => (
+                    <ListItem disableGutters key={cv.id}>
+                        <ListItemButton onClick={() => makeResponse(cv)}>
+                            <ListItemText primary={cv.name} />
+                        </ListItemButton>
+                    </ListItem>
+                    )) : "Нет доступных резюме" }
+                    <ListItem disableGutters>
+                        <ListItemButton
+                            autoFocus
+                            onClick={() => { location.href = '/cv'; }}
+                        >
+                            <ListItemText primary="Перейти к резюме" />
+                        </ListItemButton>
+                    </ListItem>
+                </List>
             </Dialog>
         </>)
     }
@@ -71,6 +71,7 @@ export default function Vacancy() {
             location.href = '/';
         }
         setVacancy({ ...changedVacancy, company: vacancyState.company });
+        showAlert('Вакансия была обновлена', 'info');
     })
 
     const [dialogIsOpen, setDialogOpen] = useState(false);

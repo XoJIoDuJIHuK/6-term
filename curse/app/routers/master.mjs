@@ -40,7 +40,7 @@ const masterRouter = createRouter()
 			}
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 404);
-			return err;
+			return new ClientError(err.message, err.code ?? 404);
 		}
 	}))
 	.get('/public-companies', defineEventHandler(async event => {

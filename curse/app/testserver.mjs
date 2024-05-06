@@ -15,7 +15,9 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
         } else {
           responseBody = await response.text();
         }
-        console.log(method, uri, response.status, responseBody);
+        if (response.status !== 200) {
+          console.log(method, uri, response.status, responseBody);
+        }
       }
     }
   }
