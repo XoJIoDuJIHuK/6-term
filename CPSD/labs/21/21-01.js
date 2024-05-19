@@ -9,10 +9,6 @@ dotenv.config();
 const app = express();
 
 const client = createClient(process.env.WEBDAV_URL, {
-    // authType: AuthType.Token,
-    token: {
-        access_token: process.env.WEBDAV_TOKEN
-    },
     username: process.env.WEBDAV_USERNAME, 
     password: process.env.WEBDAV_PASSWORD
 });

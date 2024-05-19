@@ -2,6 +2,8 @@ import { createRouter, defineEventHandler, getCookie, getQuery, setResponseStatu
 import { login, updatePersonal, register, changePassword, createReview, ClientError, emailIsValid, getSelectLimit } from '../utilFunctions.mjs';
 import { BOURGEOISIE, PROLETARIAT, RESPONSES, CVS, VACANCIES, REVIEWS, ACCOUNT_DROP_REQUESTS } from "../models.mjs";
 import { Op } from 'sequelize';
+import jwt from 'jsonwebtoken';
+import { setNewToken, validatePassword, encryptPassword, accessSecret, refreshSecret } from '../auth.mjs';
 
 export const proletariatRouter = createRouter()
 	.post('/login', defineEventHandler(async event => {
@@ -12,7 +14,8 @@ export const proletariatRouter = createRouter()
 	}))
 	.get('/personal', defineEventHandler(async event => {
 		try {
-			const result = await PROLETARIAT.findAndCountAll({ where: { id: +getCookie(event, 'user_id') } });
+			const accessToken = getCookie(event, 'access_token');
+			const result = await PROLETARIAT.findAndCountAll({ where: { id: jwt.verify(accessToken, accessSecret).id } });
 			if (result.count === 0) {
 				throw new ClientError();
 			}
@@ -27,7 +30,7 @@ export const proletariatRouter = createRouter()
 			};
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.post('/personal', defineEventHandler(async event => {
@@ -50,7 +53,7 @@ export const proletariatRouter = createRouter()
             return await REVIEWS.destroy({ where: searchCondition });
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.get('/cv', defineEventHandler(async event => {
@@ -97,7 +100,7 @@ export const proletariatRouter = createRouter()
 			}
 		} catch (err) {
 			setResponseStatus(err.status ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.put('/cv', defineEventHandler(async event => {
@@ -120,6 +123,7 @@ export const proletariatRouter = createRouter()
 			if (cvExists) {
 				throw new ClientError('Название занято');
 			}
+			validateCv({ name, skills });
 			await CVS.create({
 				name,
 				applicant: user.id,
@@ -129,7 +133,7 @@ export const proletariatRouter = createRouter()
 			return { message: 'Резюме создано', id: cv.id };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.post('/cv', defineEventHandler(async event => {
@@ -147,13 +151,14 @@ export const proletariatRouter = createRouter()
 			if (existingCv.name !== name && await CVS.findOne({ where: { name } })) {
 				throw new ClientError('Название занято', 400);
 			}
+			validateCv({ name, skills });
 			existingCv.name = name;
 			existingCv.skills_json = skills;
 			existingCv.save();
 			return { message: 'Резюме обновлено' };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.delete('/cv', defineEventHandler(async event => {
@@ -173,7 +178,7 @@ export const proletariatRouter = createRouter()
 			return { message: 'Резюме удалено' };
 		} catch (err) {
 			setResponseStatus(event, 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.get('/responses', defineEventHandler(async event => {
@@ -200,7 +205,7 @@ export const proletariatRouter = createRouter()
 			};
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.put('/responses', defineEventHandler(async event => {
@@ -227,7 +232,7 @@ export const proletariatRouter = createRouter()
 			return { message: 'Отклик опубликован', id: (await RESPONSES.create({ ...searchCondition, status: 'W' })).id };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.delete('/responses', defineEventHandler(async event => {
@@ -248,7 +253,7 @@ export const proletariatRouter = createRouter()
 			return { message: 'Отклик удалён' };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.put('/drop-request', defineEventHandler(async event => {
@@ -264,7 +269,7 @@ export const proletariatRouter = createRouter()
 				commentary: body.commentary })).id };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}));
 
@@ -275,5 +280,11 @@ async function checkCvExistance(event, cvId) {
 	}})).count > 0;
 	if (!cvExists) {
 		throw new ClientError('Нет такого резюме');
+	}
+}
+
+function validateCv(cv) {
+	if (!cv.name || cv.name.length > 30) {
+		throw new ClientError('Неправильное название резюме', 400);
 	}
 }

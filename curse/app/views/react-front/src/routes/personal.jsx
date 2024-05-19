@@ -162,10 +162,10 @@ export default function Personal() {
             <Dialog open={open}>
                 <DialogTitle>Смена пароля</DialogTitle>
                 <Box>
-                    <TextField label="Старый пароль" value={oldPassword} onChange={e => { setOldPassword(e); }}/>
+                    <TextField label="Старый пароль" value={oldPassword} onChange={e => { setOldPassword(e.target.value); }}/>
                 </Box>
                 <Box>
-                    <TextField label="Новый пароль" value={newPassword} onChange={e => { setNewPassword(e); }}/>
+                    <TextField label="Новый пароль" value={newPassword} onChange={e => { setNewPassword(e.target.value); }}/>
                 </Box>
                 <Button onClick={() => {
                     if (!oldPassword || !newPassword) {
@@ -177,8 +177,8 @@ export default function Personal() {
                         return;
                     }
                     fetchWithResult(`/${userTypeDict[userType]}/password`, 
-                    { method: "PATCH", headers: { "Content-Type": "application/json", 
-                    body: JSON.stringify({ newPassword, oldPassword }) } }, showAlert, 
+                    { method: "PATCH", headers: { "Content-Type": "application/json" }, 
+                    body: JSON.stringify({ newPassword, oldPassword }) }, showAlert, 
                     () => { setDialogOpen(false); });
                 }}>Жми меня</Button>
             </Dialog>

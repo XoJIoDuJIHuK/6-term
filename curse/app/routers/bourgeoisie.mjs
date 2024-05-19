@@ -3,6 +3,7 @@ import { login, getSelectLimit, updatePersonal, register, changePassword, create
 import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, RESPONSES, REVIEWS, VACANCIES, CVS, GetRating, ACCOUNT_DROP_REQUESTS } from "../models.mjs";
 import { Op, literal } from 'sequelize';
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
 
 const numericVacancyFields = ['min_salary', 'max_salary', 'min_hours_per_day', 'max_hours_per_day'];
 
@@ -65,7 +66,8 @@ export const bourgeoisieRouter = createRouter()
                 }, totalElements
             };
         } catch (err) {
-            return err;
+            setResponseStatus(event, err.code ?? 400);
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .put('/review', defineEventHandler(async event => {
@@ -83,7 +85,7 @@ export const bourgeoisieRouter = createRouter()
             return { message: 'Отзыв удалён' };
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .get('/applicants-list', defineEventHandler(async event => {
@@ -112,7 +114,7 @@ export const bourgeoisieRouter = createRouter()
             return applicants;
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .get('/personal', defineEventHandler(async event => {
@@ -126,7 +128,7 @@ export const bourgeoisieRouter = createRouter()
             }
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .put('/icon', defineEventHandler(async event => {
@@ -142,7 +144,7 @@ export const bourgeoisieRouter = createRouter()
             return { message: 'Иконка обновлена' };
         } catch (err) {
             setResponseStatus(err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .get('/info', defineEventHandler(async event => {
@@ -155,7 +157,7 @@ export const bourgeoisieRouter = createRouter()
             }
         } catch (err) {
             setResponseStatus(event, err.code ?? 404);
-            return err;
+            return new ClientError(err.message, err.code ?? 404);
         }
     }))
     .get('/responses', defineEventHandler(async event => {
@@ -190,7 +192,7 @@ export const bourgeoisieRouter = createRouter()
             }
         } catch (err) {
             setResponseStatus(event, err.code ?? 404);
-            return err;
+            return new ClientError(err.message, err.code ?? 404);
         }
     }))
     .post('/responses', defineEventHandler(async event => {
@@ -225,7 +227,7 @@ export const bourgeoisieRouter = createRouter()
             return { message: 'Статус изменён' };
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .get('/vacancy', defineEventHandler(async event => {
@@ -242,7 +244,7 @@ export const bourgeoisieRouter = createRouter()
             }
         } catch (err) {
             setResponseStatus(event, err.code ?? 404);
-            return err;
+            return new ClientError(err.message, err.code ?? 404);
         }
     }))
     .put('/vacancy', defineEventHandler(async event => {
@@ -263,7 +265,7 @@ export const bourgeoisieRouter = createRouter()
             return { message: 'Вакансия создана', id: vacancy.id };
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .post('/vacancy', defineEventHandler(async event => {
@@ -289,7 +291,7 @@ export const bourgeoisieRouter = createRouter()
             return { message: 'Вакансия изменена' };
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .delete('/vacancy', defineEventHandler(async event => {
@@ -305,7 +307,7 @@ export const bourgeoisieRouter = createRouter()
             return { message: 'Вакансия удалена' };
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .put('/promotion-request', defineEventHandler(async event => {
@@ -319,7 +321,7 @@ export const bourgeoisieRouter = createRouter()
             return { message: 'Запрос создан' };
         } catch (err) {
             setResponseStatus(event, err.code ?? 400);
-            return err;
+            return new ClientError(err.message, err.code ?? 400);
         }
     }))
     .put('/drop-request', defineEventHandler(async event => {
@@ -335,7 +337,7 @@ export const bourgeoisieRouter = createRouter()
             return { message: 'Запрос создан' };
 		} catch (err) {
             setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}));
 

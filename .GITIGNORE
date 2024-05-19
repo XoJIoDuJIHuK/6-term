@@ -3,3 +3,4 @@ ASIS/phpMyAdmin-5.2.1-all-languages/
 ASIS/PuTTY
 curse/redis
 node_modules
+.env

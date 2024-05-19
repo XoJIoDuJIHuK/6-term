@@ -1,4 +1,5 @@
 import { Sequelize, Model, DataTypes } from "sequelize"
+import { ClientError } from "./utilFunctions.mjs";
 const sequelize = new Sequelize('xd', 'postgres', 'mysecretpassword', {
 	host: 'ugabuntu',
 	dialect: 'postgres',
@@ -45,17 +46,21 @@ PROLETARIAT.init({
 			return JSON.parse(this.getDataValue('education_json'))
 		},
 		set(value) {
-			this.setDataValue('education_json', JSON.stringify(value))
+			const json_value = JSON.stringify(value);
+			if (json_value.length > 200) throw new ClientError('Слишком образованный. Убери что-нибудь', 400);
+			this.setDataValue('education_json', json_value);
 		}
 	},
 	experience_json: {
 		allowNull: false,
 		type: DataTypes.STRING(500),
 		get() {
-			return JSON.parse(this.getDataValue('experience_json'))
+			return JSON.parse(this.getDataValue('experience_json'));
 		},
 		set(value) {
-			this.setDataValue('experience_json', JSON.stringify(value))
+			const json_value = JSON.stringify(value);
+			if (json_value.length > 500) throw new ClientError('Слишком опытный. Убери что-нибудь', 400);
+			this.setDataValue('experience_json', json_value);
 		}
 	},
 	email: {
@@ -91,10 +96,12 @@ CVS.init({
 		allowNull: false,
 		type: DataTypes.STRING(100),
 		get() {
-			return JSON.parse(this.getDataValue('skills_json'))
+			return JSON.parse(this.getDataValue('skills_json'));
 		},
 		set(value) {
-			this.setDataValue('skills_json', JSON.stringify(value))
+			const json_value = JSON.stringify(value);
+			if (json_value.length > 100) throw new ClientError('Слишком много навыков. Убери что-нибудь', 400);
+			this.setDataValue('skills_json', json_value);
 		}
 	}
 }, {
@@ -411,13 +418,13 @@ BOURGEOISIE.hasOne(ACCOUNT_DROP_REQUESTS, { foreignKey: 'b_subject', sourceKey: 
 
 class TOKENS extends Model {}
 TOKENS.init({
-	type: {
-		type: DataTypes.CHAR(1),
-		allowNull: false,
-		validate: {
-			isIn: [['A', 'R']]
-		}
-	},
+	// type: {
+	// 	type: DataTypes.CHAR(1),
+	// 	allowNull: false,
+	// 	validate: {
+	// 		isIn: [['A', 'R']]
+	// 	}
+	// },
 	owner_p: {
 		type: DataTypes.INTEGER,
 		references: {

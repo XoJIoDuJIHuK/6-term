@@ -4,8 +4,9 @@ import { appendHeaders, createApp, defineEventHandler, setResponseHeader, toNode
 import { masterRouter } from './routers/master.mjs';
 import { ClientError, handleStatic, getModel, vacancyEmitter } from "./utilFunctions.mjs";
 import fs from 'fs';
-import { authorizeTokens, isAdmin } from "./auth.mjs";
+import { authorizeTokens, isAdmin, refreshSecret, accessSecret } from "./auth.mjs";
 import wsAdapter from "crossws/adapters/node";
+import jwt from 'jsonwebtoken';
 
 export const app = createApp({debug: true});
 app.use(defineEventHandler(event => {
@@ -16,10 +17,10 @@ app.use(defineEventHandler(event => {
 }));
 app.use(defineEventHandler(async event => {
     async function checkAuthorization(userType) {
-        const userId = +getCookie(event, 'user_id');
+        const decodedToken = jwt.verify(getCookie(event, 'refresh_token'), refreshSecret);
+        const userId = decodedToken.id;
         const model = getModel(userType);
-        if (Number.isNaN(userId) || !(await model.findByPk(userId) || 
-            getCookie(event, 'user_type') !== userType)) {
+        if (!(await model.findByPk(userId)) || decodedToken.userType !== userType) {
             throw new ClientError('Не авторизован', 401);
         }
         await authorizeTokens(event, userType);
@@ -53,7 +54,9 @@ app.use(defineEventHandler(async event => {
                     expectedType = 'admin';
                     break;
             }
-            if (expectedType === 'regular' && getCookie(event, 'user_type') === 'admin' && 
+            const access_token = getCookie(event, 'access_token')
+            if (expectedType === 'regular' && access_token &&
+                jwt.verify(access_token, accessSecret).userType === 'admin' && 
                 adminEndpoints.indexOf(path[1]) === -1) {
                 throw new ClientError('Админу сюда нельзя', 403);
             }
@@ -64,7 +67,7 @@ app.use(defineEventHandler(async event => {
         }
     } catch (err) {
         setResponseStatus(event, err.code ?? 400);
-        return err;
+        return new ClientError(err.message, err.code ?? 400);
     }
 }));
 app.use(masterRouter);

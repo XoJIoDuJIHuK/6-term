@@ -1,1 +1,1 @@
-isAdmin (auth.mjs) error: {}
+isAdmin (auth.mjs) error: {"name":"JsonWebTokenError","message":"jwt must be provided"}

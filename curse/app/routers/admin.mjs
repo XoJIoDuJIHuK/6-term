@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import { createRouter, defineEventHandler, setResponseStatus, getQuery } from "h3";
 import { ClientError, getOffset, getSelectLimit, sendMail, changePassword } from '../utilFunctions.mjs';
 import { BOURGEOISIE, PROLETARIAT, PROMOTION_REQUESTS, ACCOUNT_DROP_REQUESTS, TOKENS, REVIEWS, BLACK_LIST, sequelize } from "../models.mjs";
@@ -17,7 +18,7 @@ export const adminRouter = createRouter()
 			return { requests, totalElements };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.patch('/password', defineEventHandler(async event => {
@@ -30,7 +31,7 @@ export const adminRouter = createRouter()
 			return { requests, totalElements };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.patch('/promote', defineEventHandler(async event => {
@@ -50,7 +51,7 @@ export const adminRouter = createRouter()
 			}
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 		return { message: 'Компания подтверждена' };
 	}))
@@ -70,7 +71,7 @@ export const adminRouter = createRouter()
 			}
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 		return { message: 'Запрос на подтверждение отклонён' };
 	}))
@@ -97,7 +98,7 @@ export const adminRouter = createRouter()
 			return { message: 'Учётная запись успешно удалена' };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.post('/drop-user', defineEventHandler(async event => {
@@ -118,7 +119,7 @@ export const adminRouter = createRouter()
 			return { message: 'Запрос на удаление успешно отклонён' };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.get('/reported-reviews', defineEventHandler(async event => {
@@ -142,8 +143,8 @@ export const adminRouter = createRouter()
 					text: r.text
 			}})};
 		} catch (err) {
-			console.log('error', err)
-			return err;
+			setResponseStatus(event, err.code ?? 404);
+			return new ClientError(err.message, err.code ?? 404);
 		}
 	}))
 	.post('/review', defineEventHandler(async event => {
@@ -158,7 +159,7 @@ export const adminRouter = createRouter()
 			return { message: 'Жалоба удалена' };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.delete('/review', defineEventHandler(async event => {
@@ -173,7 +174,7 @@ export const adminRouter = createRouter()
 			return { message: 'Отзыв удалён' };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.get('/ban', defineEventHandler(async event => {
@@ -209,7 +210,7 @@ export const adminRouter = createRouter()
 			return { message: 'Запись в чёрный список добавлена' };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}))
 	.delete('/ban', defineEventHandler(async event => {
@@ -231,6 +232,6 @@ export const adminRouter = createRouter()
 			return { message: 'Запись удалена из чёрного списка' };
 		} catch (err) {
 			setResponseStatus(event, err.code ?? 400);
-			return err;
+			return new ClientError(err.message, err.code ?? 400);
 		}
 	}));

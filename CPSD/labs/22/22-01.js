@@ -3,8 +3,10 @@ const cron = require('node-cron');
 const axios = require('axios');
 const sqlite3 = require('sqlite3').verbose()
 const db = new sqlite3.Database('subscribers.db');
-const bot = new Telegraf('6945470233:AAFFHPdrdBWwhrTYylEj6dw7rHNfA_VuRyE');
 const weatherAPIKey = '830172a06879c2fab7e302c5a3dc0909';
+const dotenv = require('dotenv');
+dotenv.config();
+const bot = new Telegraf(process.env.BOT_KEY);
 
 db.serialize(() => {
     db.run(`
@@ -17,20 +19,15 @@ db.serialize(() => {
 bot.start((ctx) => ctx.reply('Привет! Я бот, который отправляет случайные факты. Используйте команду /subscribe для подписки на ежедневные факты.'));
 
 bot.hears(/привет/i, (ctx) => {
-    ctx.replyWithSticker('CAACAgIAAxkBAAEE8K9mJ9plHSFOOw_83wQr5SB88SDiwAAC-RAAAhz6yUuaM5DK0jWSkjQE');
+    ctx.replyWithSticker('CAACAgIAAxkBAAM-ZjRo4mjMEBsBLbzyE1Tv9fYJH6QAAjQPAAImbSFKphC4ZVoeXco0BA');
 });
 
 bot.hears(/пока/i, (ctx) => {
-    ctx.replyWithSticker('CAACAgIAAxkBAAEE8KdmJ9npbNXIHOOQshJJ8EwP2qpyEAACuUAAApF3EUsEB18kdo9RAAE0BA');
-});
-
-bot.hears(/не\s+смешно/i, (ctx) => {
-    ctx.replyWithSticker('CAACAgIAAxkBAAEE8KNmJ9jMA9UC0mHssDFsu_UjlPV4gwACXUwAAiUDMEmKFXfUT19szTQE');
+    ctx.replyWithSticker('CAACAgIAAxkBAANAZjRpF_ZLH5kc6CemxX8kCQRWv3QAAmIOAAJL9hhK6kAixk7ZLNg0BA');
 });
 
 bot.hears(/^(?!\/\w+)/, (ctx) => {
-    const messageText = ctx.message.text;
-    ctx.reply(`Вы написали: ${messageText}`);
+    ctx.replyWithSticker('CAACAgIAAxkBAANBZjRpKwUAAaO0mrhZt6MjxCpPj8WNAAIgHAAC1Gc5Sl-f_P6TxQMuNAQ');
 });
 
 bot.command('subscribe', (ctx) => {
@@ -154,10 +151,6 @@ bot.command('cat', async (ctx) => {
         console.error('Error fetching cat image:', error);
         ctx.reply('Извините, не удалось получить изображение кота.');
     }
-});
-
-bot.command('besyanya', async (ctx) => {
-    ctx.replyWithSticker('CAACAgIAAxkBAAEE8P5mJ-ZRcdwk260BgNBuD2ZNdO_sbQACzEEAAhwRqElVslhfKH4jCTQE');
 });
 
 

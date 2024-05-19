@@ -5,8 +5,10 @@ import { proletariatRouter } from './proletariat.mjs';
 import { bourgeoisieRouter } from './bourgeoisie.mjs';
 import { BOURGEOISIE, REVIEWS, VACANCIES, GetRating, PROLETARIAT } from "../models.mjs";
 import { Op } from "sequelize";
-import { authorizeTokens } from "../auth.mjs";
-const filterOptions = ['min_salary', 'max_salary', 'region', 'schedule', 'experience', 'min_hours_per_day', 'max_hours_per_day'];
+import { authorizeTokens, setNewToken, validateRefreshToken, refreshSecret, accessSecret } from "../auth.mjs";
+import jwt from 'jsonwebtoken';
+
+const filterOptions = ['region', 'schedule', 'experience'];
 
 const masterRouter = createRouter()
 	.get('/public-vacancies', defineEventHandler(async event => {
@@ -23,6 +25,18 @@ const masterRouter = createRouter()
 					{name: {[Op.iLike]: `%${query.text}%`}}, 
 					{description: {[Op.iLike]: `%${query.text}%`}}
 				]
+			}
+			if (query.min_salary) {
+				where.min_salary = { [Op.gte]: query.min_salary };
+			}
+			if (query.max_salary) {
+				where.max_salary = { [Op.lte]: query.max_salary };
+			}
+			if (query.min_hours_per_day) {
+				where.min_hours_per_day = { [Op.gte]: query.min_hours_per_day };
+			}
+			if (query.max_hours_per_day) {
+				where.max_hours_per_day = { [Op.lte]: query.max_hours_per_day };
 			}
             const id = query.id;
 			if (id === undefined) {
@@ -74,11 +88,15 @@ const masterRouter = createRouter()
 
 			let usersReviewId;
 			let reviewAllowed = false;
-			const userType = getCookie(event, 'user_type');
-			if (userType === 'regular') {
-				const usersReview = await REVIEWS.findOne({ where: { p_subject: +getCookie(event, 'user_id'), b_object: company.id } });
-				if (usersReview) usersReviewId = usersReview.id;
-				else reviewAllowed = true;
+			const access_token = getCookie(event, 'access_token')
+			if (access_token) {
+				const decodedToken = jwt.verify(access_token, accessSecret);
+				if (decodedToken.userType === 'regular') {
+					const usersReview = await REVIEWS.findOne({ where: { p_subject: decodedToken.id, 
+						b_object: company.id } });
+					if (usersReview) usersReviewId = usersReview.id;
+					else reviewAllowed = true;
+				}
 			}
 
 			return { totalElements, data: {
@@ -96,7 +114,7 @@ const masterRouter = createRouter()
 	}))
 	.put('/report-review', defineEventHandler(async event => {
 		async function reviewIsAvailable(event, review) {
-			const userId = +getCookie(event, 'user_id');
+			const userId = jwt.verify(getCookie(event, 'access_token')).id;
 			const userExists = (await BOURGEOISIE.findAndCountAll({ where: { id: userId } })).count;
 			return await authorizeTokens(event, 'company') && userId && userExists && userId === review.b_subject;
 		}
@@ -121,6 +139,26 @@ const masterRouter = createRouter()
 	.get('/logout', defineEventHandler(async event => {
 		await logout(event);
 		return { message: 'what kind of message did you expect?' };
+	}))
+	.get('/refresh', defineEventHandler(async event => {
+		const refreshToken = getCookie(event, 'refresh_token');
+		const decodedToken = jwt.verify(refreshToken, refreshSecret);
+		const userType = decodedToken.userType;
+		const id = decodedToken.id;
+		const searchConditions = {};
+		if (userType === 'company') {
+			searchConditions.owner_b = id;
+		} else {
+			searchConditions.owner_p = id;
+		}
+		try {
+			await validateRefreshToken(refreshToken, searchConditions);
+		} catch (err) {
+			return new ClientError('Токен инвалид', 401);
+		}
+		await setNewToken(event, true, id, userType);
+		await setNewToken(event, false, id, userType);
+		return { message: 'JWT set' };
 	}));
 
 masterRouter.use('/admin/**',  useBase('/admin/', adminRouter.handler));

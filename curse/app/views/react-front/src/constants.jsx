@@ -16,7 +16,6 @@ export function getCookie(name) {
     return cookie ? cookie.split('=').pop() : undefined;
 }
 function serverReturnedJson(r) {
-    console.log(r.headers.get('content-type'));
     return r.headers.get('content-type') === 'application/json';
 }
 export async function fetchForLoader(path) {
@@ -34,6 +33,7 @@ export async function fetchForLoader(path) {
         if (err.code === 401) {
             location.href = '/signout';
         } else if (err.code === 403) {
+            await fetch('/refresh');
             location.href = '/';
         } else {
             throw err;
@@ -56,10 +56,15 @@ export async function fetchWithResult(path, options, showAlert, onSuccess, onErr
     })
     .then(d => {
         showAlert(d.message, 'success');
-        if (onSuccess) onSuccess(d); 
+        if (onSuccess) onSuccess(d);
+        return true; 
     })
-    .catch(async err => { 
+    .catch(async err => {
         err = await err;
+        if (err.code === 401) location.href = '/signout';
+        if (err.code === 403) {
+            await fetch('/refresh');
+        }
         console.log(err);
         showAlert(err.message, 'error');
         if (onError) onError(err);

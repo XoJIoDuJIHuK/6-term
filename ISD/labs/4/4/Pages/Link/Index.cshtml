@@ -1,0 +1,185 @@
+﻿@page
+@model UWSR.Pages.Lnk.IndexModel
+@using UWSR.Utils
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>--UWSR--</h1>
+@if (ViewData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @ViewData["Message"]
+    </div>
+}
+@if (ViewData["MessageError"] != null)
+{
+    <div class="alert alert-success">
+        @ViewData["MessageError"]
+    </div>
+}
+<p>
+   
+    @if (Security.CheckIsAdmin(this.HttpContext))
+    {
+        <form method="post" asp-page-handler="Logout">
+            <button type="submit" class="btn btn-warning" style="width: 140px; height: 30px; margin-bottom: 10px">Режим клиента</button>
+        </form>
+
+
+        <button type="button" class="btn btn-success mr-2" onclick="toggleCreateForm()">Создать</button>
+
+        <div class="row" id="createLinkForm" style="display: none;">
+            <div class="col-md-4">
+                <form method="post" asp-page-handler="CreateLink">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="CreateLink.Url" class="control-label"></label>
+                        <input asp-for="CreateLink.Url" class="form-control" />
+                        <span asp-validation-for="CreateLink.Url" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="CreateLink.Description" class="control-label"></label>
+                        <input asp-for="CreateLink.Description" class="form-control" />
+                        <span asp-validation-for="CreateLink.Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <form id="secretForm" method="post" asp-page-handler="CheckSecretWord" style="display: none;">
+            <input type="hidden" name="secretWord" value="Lenovo Legion 5 15ARH05H" />
+            <button type="submit">Submit</button>
+        </form>
+    }
+
+</p>
+<div>
+    <button type="button" class="btn btn-success mr-2" onclick="toggleFindForm()">Фильтр тегов</button>
+    <div id="findLinksForm" style="display: none;">
+        <form method="post" asp-page-handler="GetFilterLinks">
+            <input type="text" asp-for="LinksFindText" value="@Model.LinksFindText" placeholder="Теги через запятую" />
+            <button type="submit">Фильтровать</button>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Link[0].Url)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Link[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Link[0].Minus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Link[0].Plus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.FindLinks) {
+    <div style="display:flex, flex:table-column">
+        <tr>
+            <td>
+                <a href="@item.Url">
+                @Html.DisplayFor(modelItem => item.Url)
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Minus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Plus)
+            </td>
+            <td>
+                    @if (Security.CheckIsAdmin(this.HttpContext))
+                    {
+                        <div class="d-flex align-items-center">
+                            <form method="post" asp-page-handler="DeleteLink">
+                                <input type="hidden" name="linkId" value="@item.Id" />
+                                <input type="submit" value="Удалить" class="btn btn-danger mr-2" />
+                            </form>
+
+                            <button type="button" class="btn btn-success mr-2" onclick="toggleEditForm('@item.Id')">Изменить</button>
+                            
+                        </div>
+                        <div class="row" id="editForm_@item.Id" style="display: none;">
+                            <div class="col-md-4">
+                                <form method="post" asp-page-handler="EditLink">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" name="linkId" value="@item.Id" />
+                                    <div class="form-group">
+                                        <label asp-for="EditLink.Url" class="control-label"></label>
+                                        <input asp-for="EditLink.Url" class="form-control" value="@item.Url" style="width: 200px" />
+                                        <span asp-validation-for="EditLink.Url" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="EditLink.Description" class="control-label"></label>
+                                        <input asp-for="EditLink.Description" class="form-control" value="@item.Description" style="width: 200px"/>
+                                        <span asp-validation-for="EditLink.Description" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="submit" value="Сохранить" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                    <a asp-page="./AllLinkCommetns" asp-route-id="@item.Id">AllInfo</a>
+            </td>
+        </tr>
+    </div>
+
+}
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        document.addEventListener('keydown', function (event) {
+            if (event.ctrlKey && event.keyCode == 77) {
+                //alert('Ctrl+M was pressed!');
+                document.getElementById('secretForm').submit();
+            }
+        });
+        function toggleEditForm(linkId) {
+            var editForm = document.getElementById('editForm_' + linkId);
+            if (editForm.style.display === 'none') {
+                editForm.style.display = 'block';
+            } else {
+                editForm.style.display = 'none';
+            }
+        }
+        function toggleFindForm() {
+            var form = document.getElementById('findLinksForm');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+        function toggleCreateForm() {
+            var form = document.getElementById('createLinkForm');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+    </script>
+}

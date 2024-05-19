@@ -6,7 +6,7 @@ export default function Root() {
   return (
     <>
       <div id="topbar">
-        <h1>JobHunter</h1>
+        <h1>BuckHunt</h1>
         <TabsRouter/>
       </div>
       <div 

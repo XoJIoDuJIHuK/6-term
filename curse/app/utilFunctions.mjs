@@ -1,13 +1,14 @@
-import { setNewToken, validatePassword, encryptPassword } from './auth.mjs';
+import { setNewToken, validatePassword, encryptPassword, accessSecret, refreshSecret } from './auth.mjs';
 import { stat, readFile } from "node:fs/promises";
 import { join } from "pathe";
 import fs from 'fs';
 import { deleteCookie, getCookie, setCookie, readBody, serveStatic, setResponseStatus, getQuery } from "h3";
-const cookies = ['user_id', 'access_token', 'refresh_token', 'user_type'];//TODO separate
+const cookies = ['user_id', 'access_token', 'refresh_token', 'user_type'];
 import { BOURGEOISIE, PROLETARIAT, RESPONSES, REVIEWS, TOKENS, VACANCIES, CVS, BLACK_LIST } from "./models.mjs";
 import EventEmitter from 'node:events';
 import nodemailer from 'nodemailer';
 import smtpTransport from 'nodemailer-smtp-transport';
+import jwt from 'jsonwebtoken';
 
 export const publicDir ='D:/6-term/curse/app/views/react-front/dist'
 const config = JSON.parse(fs.readFileSync('./serverConfig.json'));
@@ -24,8 +25,10 @@ export async function login(event, userType) {
 			userType = 'admin';
 		}
 		setCookie(event, 'user_type', userType, { sameSite: 'strict' });
-		await setNewToken(event, false, id, userType);
-		await setNewToken(event, true,  id, userType);
+		const accessToken = await setNewToken(event, true,  id, userType);
+		console.log(accessToken);
+		const refreshToken = await setNewToken(event, false, id, userType);
+		console.log(refreshToken);
 		return { message: 'Вход успешен', name };
 	} catch (err) {
 		await logout(event);
@@ -67,8 +70,8 @@ export function isLoggedIn(event) {
 	return false
 }
 export async function logout(event) {
-	const id = getCookie(event, 'user_id');
-	const userType = getCookie(event, 'user_type');
+	const id = +getCookie(event, 'user_id');
+	const userType = +getCookie(event, 'user_type');
 	if (id && userType) {
 		const user = await getModel(userType).findByPk(id);
 		if (user) {
@@ -96,19 +99,30 @@ export function getModel(userType) {
 }
 export async function updatePersonal(event, expectedUserType) {
 	try {
-		const id = getCookie(event, 'user_id');
-		const userType = getCookie(event, 'user_type');
+		const { id, userType } = jwt.verify(getCookie(event, 'access_token'), accessSecret);
 		if (expectedUserType !== userType) {
 			throw new ClientError('Инвалид тип пользователя', 400);
 		}
 		const model = getModel(userType);
 		const data = await readBody(event);
+		if (userType === 'regular') {
+			for (let key of ['experience', 'education']) {
+				for (let value of data[key]) {
+					const since = value.period[0];
+					const to = value.period[1];
+					if (since !== null && to !== null && Date(since) >= Date(to)) {
+						throw new ClientError('Даты не угу', 400);
+					}
+				}
+			}
+		}
 		const user = await model.findByPk(id);
 		if (!emailIsValid(data.email)) {
 			throw new ClientError('Мыло неправильное', 400);
 		}
 		const nameChanged = user.name !== data.name;
 		user.name = data.name;
+		if (data.name > 70) throw new ClientError('Слишком длинное имя', 400);
 		user.email = data.email;
 		if (userType === 'company') {
 			user.description = data.description;
@@ -167,7 +181,7 @@ export async function changePassword(event, userType) {
 		if (oldPassword === newPassword) {
 			throw new ClientError('Новые пароль не может равняться старому', 400);
 		}
-		const id = getCookie(event, 'user_id');
+		const id = jwt.verify(getCookie(event, 'access_token'), accessSecret).id;
 		const model = getModel(userType);
 		const existingUser = await model.findByPk(id);
 		if (!existingUser || existingUser.password_hash !== encryptPassword(oldPassword)) {
@@ -270,7 +284,7 @@ export function log(message) {
 
 export function emailIsValid(email) {
 	const emailRegex = /^[a-z0-9]+(\.[a-z0-9]+)*@[a-z]{2,64}\.[a-z]{2,64}$/;
-	return email && emailRegex.test(email.toLowerCase());
+	return email && email.length <= 30 && emailRegex.test(email.toLowerCase());
 }
 
 export function getSelectLimit(event) {
@@ -295,5 +309,11 @@ async function readCredentials(event) {
 	const username = body.username;
 	if (!username) throw new ClientError('Нет логина', 400);
 	const password = body.password;
+	if (username !== username + '' || password !== password + '') {
+		throw new ClientError('Логин и пароль должны быть строками', 400);
+	}
+	if (username.length > 20) {
+		throw new ClientError('Превышена длина логина', 400);
+	}
 	return { username, password };
 }
