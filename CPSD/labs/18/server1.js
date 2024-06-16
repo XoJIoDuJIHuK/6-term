@@ -3,6 +3,9 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
 
+const { HttpsProxyAgent } = require('https-proxy-agent');
+const proxyAgent = new HttpsProxyAgent('http://localhost:8080');
+
 const app = express();
 app.use(session({
   // secret: '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',
@@ -18,7 +21,10 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: '611994598954-o41q57100h0j3vigd4q7e5afep657i7r.apps.googleusercontent.com',
     clientSecret: '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',
-    callbackURL: 'http://localhost:3000/auth/google/callback'
+    callbackURL: 'http://localhost:3000/auth/google/callback',
+    passReqToCallback: true,
+    proxy: true,
+    customHeaders: { 'x-proxy-agent': proxyAgent }
   },
   function(accessToken, refreshToken, profile, done) {
     return done(null, profile);

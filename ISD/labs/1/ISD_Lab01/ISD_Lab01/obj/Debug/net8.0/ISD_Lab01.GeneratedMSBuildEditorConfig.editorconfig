@@ -17,15 +17,15 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ISD_Lab01
 build_property.RootNamespace = ISD_Lab01
-build_property.ProjectDir = D:\6sem\ISD\labs\1\ISD_Lab01\ISD_Lab01\
+build_property.ProjectDir = D:\6-term\ISD\labs\1\ISD_Lab01\ISD_Lab01\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\6sem\ISD\labs\1\ISD_Lab01\ISD_Lab01
+build_property.MSBuildProjectDirectory = D:\6-term\ISD\labs\1\ISD_Lab01\ISD_Lab01
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/6sem/ISD/labs/1/ISD_Lab01/ISD_Lab01/Views/Form/GetResult.cshtml]
+[D:/6-term/ISD/labs/1/ISD_Lab01/ISD_Lab01/Views/Form/GetResult.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRm9ybVxHZXRSZXN1bHQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

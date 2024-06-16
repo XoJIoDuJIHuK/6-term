@@ -130,3 +130,8 @@ console.log(cipheredTritemius)
 console.log(decipheredTritemius)
 buildHistogram(cipheredTritemius)
 buildHistogram(decipheredTritemius)
+
+// cipher tritemius time:  0.20490000000000208
+// decipher tritemius time:  0.2775000000000034
+// cipher caesar time:  0.8758999999999943
+// decipher caesar time:  1.2616000000000014

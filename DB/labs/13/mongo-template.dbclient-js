@@ -1,0 +1,100 @@
+-- Active: 1716396401994@@127.0.0.1@27017@Lab13
+
+// Добавить данные в коллекции. Изменить и обновить несколько элементов коллекций.
+db('Lab13').collection('tests').insertMany([
+  {
+    got_answer: "Да",
+    success_rate: 88.25,
+    test_date: new Date("2023-03-15")
+  },
+  {
+    got_answer: "Нет", 
+    success_rate: 92.45,
+    test_date: new Date("2023-04-20")
+  },
+  {
+    got_answer: "Частично",
+    success_rate: 78.90,
+    test_date: new Date("2023-05-10")
+  }
+]);
+db('Lab13').collection('tests').updateOne(
+  { got_answer: "Частично" },
+  { $set: { success_rate: 82.50 }}
+);
+db('Lab13').collection('tests').updateMany(
+  { success_rate: { $lt: 90 } },
+  { $set: { test_date: new Date("2023-06-01") }}
+);
+
+
+db('Lab13').collection('answers').insertMany([
+  {
+    commentary: "Хорошо выполнено",
+    rigth_float: 91.75,
+    update_date: new Date("2023-04-01")
+  },
+  {
+    commentary: "Можно улучшить",
+    rigth_float: 84.60,
+    update_date: new Date("2023-05-15")
+  },
+  {
+    commentary: "Отличный результат",
+    rigth_float: 95.30,
+    update_date: new Date("2023-06-10")
+  }
+]);
+db('Lab13').collection('answers').updateOne(
+  { commentary: "Можно улучшить" },
+  { $set: { rigth_float: 87.80 }}
+);
+
+db('Lab13').collection('answers').updateMany(
+  { rigth_float: { $gt: 90 } },
+  { $set: { update_date: new Date("2023-07-01") }}
+);
+
+// 4.	Произвести выборку элементов, используя условные операции, операторы работы с массивами, операторы $exists, $type, $regex.
+db('Lab13').collection('tests').find({success_rate: { $gt: 90 }}).toArray();
+db('Lab13').collection('tests').find({ test_date: { $gt: new Date("2022-05-01") }}).toArray();
+db('Lab13').collection('answers').find({ commentary: { $regex: /ч/gm }}).toArray();
+db('Lab13').collection('answers').find({ commentary: { $exists: true }}).toArray();
+db('Lab13').collection('tests').find({ success_rate: { $type: "number" }}).toArray();
+
+// 5.	Произвести выборку элементов в своей базе данных, используя проекции
+db('Lab13').collection('tests').find({}).project({ got_answer: 1, success_rate: 1, _id: 0 }).toArray();
+db('Lab13').collection('answers').find({}).project({ commentary: 1, rigth_float: 1, _id: 0 }).toArray();
+
+// 6.	С помощью функции count() получить число всех элементов любой коллекции, а также число элементов с заданным фильтром.
+// ВСТАВЛЯТЬ В MONGOSH
+db.tests.countDocuments();
+db.tests.countDocuments({ success_rate: { $gt: 90 }});
+
+// 7.	Продемонстрировать использование методов limit() и skip().
+db('Lab13').collection('tests').find().skip(2).limit(3).toArray();
+
+// 8.	Создать запросы с функцией distinct().
+// ВСТАВЛЯТЬ В MONGOSH
+db('Lab13').collection('tests').distinct("success_rate")
+
+// 9.	Используя метод aggregate(), продемонстрировать работу агрегатных операций. 
+db('Lab13').collection('answers').aggregate([
+  { $group: { _id: "$commentary", total_answers: { $sum: 1 }}},
+  { $sort: { total_answers: -1 }}
+]).toArray();
+db('Lab13').collection('answers').aggregate([
+  { $group: { _id: "$commentary", avg_score: { $avg: "$rigth_float" }}},
+  { $sort: { avg_score: -1 }}
+]).toArray();
+
+// 10.	Продемонстрировать использование пустого и непустого фильтра в секции match, группировку по нескольким ключам.
+db('Lab13').collection('tests').aggregate([
+  { $match: {} },
+  { $group: { _id: { test_date: "$test_date", success_rate: "$success_rate" }, total_tests: { $sum: 1 }}}
+]).toArray();
+// Фильтрация по непустому фильтру - выборка тестов с успешностью больше 80%
+db('Lab13').collection('tests').aggregate([
+  { $match: { success_rate: { $gt: 80 }}},
+  { $group: { _id: { test_date: "$test_date", success_rate: "$success_rate" }, total_tests: { $sum: 1 }}}
+]).toArray();

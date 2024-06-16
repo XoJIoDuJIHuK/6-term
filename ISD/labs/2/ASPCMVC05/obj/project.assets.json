@@ -8,19 +8,19 @@
     "net8.0": []
   },
   "packageFolders": {
-    "/home/xojiodujihuk/.nuget/packages/": {}
+    "C:\\Users\\XoJIo\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC05/ASPCMVC05.csproj",
+      "projectUniqueName": "D:\\6-term\\ISD\\labs\\2\\ASPCMVC05\\ASPCMVC05.csproj",
       "projectName": "ASPCMVC05",
-      "projectPath": "/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC05/ASPCMVC05.csproj",
-      "packagesPath": "/home/xojiodujihuk/.nuget/packages/",
-      "outputPath": "/home/xojiodujihuk/6-term/ISD/labs/2/ASPCMVC05/obj/",
+      "projectPath": "D:\\6-term\\ISD\\labs\\2\\ASPCMVC05\\ASPCMVC05.csproj",
+      "packagesPath": "C:\\Users\\XoJIo\\.nuget\\packages\\",
+      "outputPath": "D:\\6-term\\ISD\\labs\\2\\ASPCMVC05\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/xojiodujihuk/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\XoJIo\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -38,6 +38,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -62,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

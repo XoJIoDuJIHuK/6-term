@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "d:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\lab3b.csproj": {}
+    "D:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\lab3b.csproj": {}
   },
   "projects": {
-    "d:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\lab3b.csproj": {
+    "D:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\lab3b.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\lab3b.csproj",
+        "projectUniqueName": "D:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\lab3b.csproj",
         "projectName": "lab3b",
-        "projectPath": "d:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\lab3b.csproj",
-        "packagesPath": "C:\\Users\\XoJIoDuJIHuK\\.nuget\\packages\\",
-        "outputPath": "d:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\obj\\",
+        "projectPath": "D:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\lab3b.csproj",
+        "packagesPath": "C:\\Users\\XoJIo\\.nuget\\packages\\",
+        "outputPath": "D:\\6-term\\ISD\\labs\\3\\3b\\lab3b\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\XoJIoDuJIHuK\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\XoJIo\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net8.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -40,8 +40,8 @@
         }
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": {
               "target": "Package",
@@ -81,24 +81,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -107,7 +89,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

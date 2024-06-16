@@ -10,11 +10,11 @@
         "projectUniqueName": "D:\\6-term\\ISD\\labs\\3\\3a\\3a.csproj",
         "projectName": "3a",
         "projectPath": "D:\\6-term\\ISD\\labs\\3\\3a\\3a.csproj",
-        "packagesPath": "C:\\Users\\XoJIoDuJIHuK\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\XoJIo\\.nuget\\packages\\",
         "outputPath": "D:\\6-term\\ISD\\labs\\3\\3a\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\XoJIoDuJIHuK\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\XoJIo\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -61,7 +61,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

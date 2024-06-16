@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\Task4\\Task4.csproj": {}
+    "d:\\6-term\\ISD\\labs\\1\\ISD_Lab01\\Task4\\Task4.csproj": {}
   },
   "projects": {
-    "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\Task4\\Task4.csproj": {
+    "d:\\6-term\\ISD\\labs\\1\\ISD_Lab01\\Task4\\Task4.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\Task4\\Task4.csproj",
+        "projectUniqueName": "d:\\6-term\\ISD\\labs\\1\\ISD_Lab01\\Task4\\Task4.csproj",
         "projectName": "Task4",
-        "projectPath": "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\Task4\\Task4.csproj",
-        "packagesPath": "C:\\Users\\XoJIoDuJIHuK\\.nuget\\packages\\",
-        "outputPath": "D:\\6sem\\ISD\\labs\\1\\ISD_Lab01\\Task4\\obj\\",
+        "projectPath": "d:\\6-term\\ISD\\labs\\1\\ISD_Lab01\\Task4\\Task4.csproj",
+        "packagesPath": "C:\\Users\\XoJIo\\.nuget\\packages\\",
+        "outputPath": "d:\\6-term\\ISD\\labs\\1\\ISD_Lab01\\Task4\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\XoJIoDuJIHuK\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\XoJIo\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0-windows"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -34,6 +32,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -58,7 +61,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

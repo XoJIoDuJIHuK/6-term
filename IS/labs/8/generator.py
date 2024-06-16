@@ -24,7 +24,7 @@ calculate_button = tk.Button(root, text="Следующий", command=render_cip
 calculate_button.pack()
 result_label = tk.Label(root, text="")
 result_label.pack()
-# root.mainloop()
+root.mainloop()
 
 # rsa - e взаимно простое с (p-1)(q-1), n = pq, xi-1^emodn
 # bbs - p === q === 3mod4 xi-1^2modn, берётся младший бит

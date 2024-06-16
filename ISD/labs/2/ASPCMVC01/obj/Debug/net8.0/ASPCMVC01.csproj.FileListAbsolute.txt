@@ -59,3 +59,34 @@
 /run/media/xojiodujihuk/DISC D/6-term/ISD/labs/2/ASPCMVC01/obj/Debug/net8.0/ASPCMVC01.pdb
 /run/media/xojiodujihuk/DISC D/6-term/ISD/labs/2/ASPCMVC01/obj/Debug/net8.0/ASPCMVC01.genruntimeconfig.cache
 /run/media/xojiodujihuk/DISC D/6-term/ISD/labs/2/ASPCMVC01/obj/Debug/net8.0/ref/ASPCMVC01.dll
+d:\6-term\ISD\labs\2\ASPCMVC01\bin\Debug\net8.0\appsettings.Development.json
+d:\6-term\ISD\labs\2\ASPCMVC01\bin\Debug\net8.0\appsettings.json
+d:\6-term\ISD\labs\2\ASPCMVC01\bin\Debug\net8.0\ASPCMVC01.staticwebassets.runtime.json
+d:\6-term\ISD\labs\2\ASPCMVC01\bin\Debug\net8.0\ASPCMVC01.exe
+d:\6-term\ISD\labs\2\ASPCMVC01\bin\Debug\net8.0\ASPCMVC01.deps.json
+d:\6-term\ISD\labs\2\ASPCMVC01\bin\Debug\net8.0\ASPCMVC01.runtimeconfig.json
+d:\6-term\ISD\labs\2\ASPCMVC01\bin\Debug\net8.0\ASPCMVC01.dll
+d:\6-term\ISD\labs\2\ASPCMVC01\bin\Debug\net8.0\ASPCMVC01.pdb
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.GeneratedMSBuildEditorConfig.editorconfig
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.AssemblyInfoInputs.cache
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.AssemblyInfo.cs
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.csproj.CoreCompileInputs.cache
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.MvcApplicationPartsAssemblyInfo.cache
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.RazorAssemblyInfo.cache
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.RazorAssemblyInfo.cs
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.sourcelink.json
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\staticwebassets.build.json
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\staticwebassets.development.json
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\staticwebassets\msbuild.ASPCMVC01.Microsoft.AspNetCore.StaticWebAssets.props
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\staticwebassets\msbuild.build.ASPCMVC01.props
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.ASPCMVC01.props
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.ASPCMVC01.props
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\staticwebassets.pack.json
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\scopedcss\bundle\ASPCMVC01.styles.css
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\scopedcss\projectbundle\ASPCMVC01.bundle.scp.css
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.dll
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\refint\ASPCMVC01.dll
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.pdb
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ASPCMVC01.genruntimeconfig.cache
+d:\6-term\ISD\labs\2\ASPCMVC01\obj\Debug\net8.0\ref\ASPCMVC01.dll
