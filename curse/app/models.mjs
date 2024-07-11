@@ -1,7 +1,7 @@
 import { Sequelize, Model, DataTypes } from "sequelize"
 import { ClientError } from "./utilFunctions.mjs";
 const sequelize = new Sequelize('xd', 'postgres', 'mysecretpassword', {
-	host: 'ugabuntu',
+	host: '192.168.31.128',
 	dialect: 'postgres',
 	pool: {
 		max: 10,
